@@ -220,3 +220,577 @@ function validateCsrf(string $submittedToken): bool
     $sessionToken = $_SESSION['csrf_token'] ?? '';
     return $sessionToken === $submittedToken;
 }
+
+/**
+ * Detects whether the server supports the blog's "pretty" URLs
+ * (e.g. `/post/my-slug`). Performs a lightweight HTTP probe once and
+ * caches the result to avoid repeated network calls.
+ *
+ * Returns TRUE when slug-based URLs are routed to `post.php` correctly,
+ * otherwise FALSE so callers can fall back to `post.php?id=...` links.
+ *
+ * @return bool
+ */
+function supportsPrettyUrls(): bool
+{
+    static $cached = null;
+
+    if ($cached !== null) {
+        return $cached;
+    }
+
+    $cacheFile = ROOT_PATH . '/db/pretty_url_cache.json';
+    $ttl = 3600; // 1 hour
+
+    if (file_exists($cacheFile)) {
+        $data = @json_decode(@file_get_contents($cacheFile), true);
+        if (is_array($data) && isset($data['ts']) && isset($data['value']) && (time() - $data['ts'] < $ttl)) {
+            $cached = (bool) $data['value'];
+            return $cached;
+        }
+    }
+
+    // Built-in PHP server: look for `router.php` to detect rewrite routing.
+    if (PHP_SAPI === 'cli-server') {
+        $routerFound = file_exists(ROOT_PATH . '/router.php') || file_exists(dirname(ROOT_PATH) . '/router.php');
+        if ($routerFound && (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'router.php' || basename($_SERVER['SCRIPT_NAME'] ?? '') === 'router.php')) {
+            $detected = true;
+            if (!is_dir(dirname($cacheFile))) {
+                @mkdir(dirname($cacheFile), 0750, true);
+            }
+            @file_put_contents($cacheFile, json_encode(['ts' => time(), 'value' => $detected]));
+            $cached = $detected;
+            return $detected;
+        }
+
+        $detected = false;
+        if (!is_dir(dirname($cacheFile))) {
+            @mkdir(dirname($cacheFile), 0750, true);
+        }
+        @file_put_contents($cacheFile, json_encode(['ts' => time(), 'value' => $detected]));
+        $cached = $detected;
+        return $detected;
+    }
+
+    // Probe a fake slug and look for the public "Post Not Found" text
+    // — indicates rewrites route to `post.php` correctly.
+    try {
+        $testSlug = 'rewrite-detect-' . substr(bin2hex(random_bytes(4)), 0, 8);
+    } catch (Exception $e) {
+        $testSlug = 'rewrite-detect';
+    }
+    $testUrl = SITE_URL . '/post/' . $testSlug;
+
+    $body = false;
+    $httpCode = 0;
+
+    if (function_exists('curl_init')) {
+        $ch = @curl_init();
+        @curl_setopt($ch, CURLOPT_URL, $testUrl);
+        @curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        @curl_setopt($ch, CURLOPT_HEADER, false);
+        @curl_setopt($ch, CURLOPT_TIMEOUT, 2);
+        @curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        @curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        @curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        $body = @curl_exec($ch);
+        $httpCode = @curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        @curl_close($ch);
+    } elseif (ini_get('allow_url_fopen')) {
+        $ctx = stream_context_create(['http' => ['timeout' => 2, 'ignore_errors' => true]]);
+        $body = @file_get_contents($testUrl, false, $ctx);
+        if (isset($http_response_header) && is_array($http_response_header)) {
+            foreach ($http_response_header as $hdr) {
+                if (preg_match('#^HTTP/[\d.]+\s+(\d{3})#i', $hdr, $m)) {
+                    $httpCode = (int) $m[1];
+                    break;
+                }
+            }
+        }
+    } else {
+        // Can't probe this environment — assume pretty URLs are available.
+        $detected = true;
+        if (!is_dir(dirname($cacheFile))) {
+            @mkdir(dirname($cacheFile), 0750, true);
+        }
+        @file_put_contents($cacheFile, json_encode(['ts' => time(), 'value' => $detected]));
+        $cached = $detected;
+        return $detected;
+    }
+
+    $detected = false;
+    if ($body !== false && $body !== null) {
+        if (strpos($body, '404 – Post Not Found') !== false || strpos($body, '404 - Post Not Found') !== false || strpos($body, 'The post you are looking for does not exist') !== false) {
+            $detected = true;
+        }
+    } else {
+        if ($httpCode === 404) {
+            $detected = true;
+        }
+    }
+
+    if (!is_dir(dirname($cacheFile))) {
+        @mkdir(dirname($cacheFile), 0750, true);
+    }
+    @file_put_contents($cacheFile, json_encode(['ts' => time(), 'value' => $detected]));
+    $cached = $detected;
+    return $detected;
+}
+
+// ===========================================================================
+// Post queries
+// ===========================================================================
+
+/**
+ * Retrieves a paginated list of published posts with author and category info.
+ *
+ * Joins posts with users and categories so each returned row contains all
+ * data needed to render a post card without additional queries.
+ *
+ * @param int $page    Current page number (1-based).
+ * @param int $perPage Number of posts per page.
+ *
+ * @return array<int, array<string, mixed>>  Array of post rows.
+ */
+function getPosts(int $page = 1, int $perPage = POSTS_PER_PAGE): array
+{
+    $offset = ($page - 1) * $perPage;
+    $stmt = getDB()->prepare("
+        SELECT p.*, u.username AS author_name, c.name AS category_name, c.slug AS category_slug
+        FROM posts p
+        LEFT JOIN users      u ON u.id = p.author_id
+        LEFT JOIN categories c ON c.id = p.category_id
+        WHERE p.status = 'published'
+        ORDER BY p.created_at DESC
+        LIMIT :limit OFFSET :offset
+    ");
+    $stmt->bindValue(':limit',  $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset,  PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll();
+}
+
+/**
+ * Returns the total count of published posts (used for pagination).
+ *
+ * @return int  Total number of published posts.
+ */
+function countPosts(): int
+{
+    return (int) getDB()->query("SELECT COUNT(*) FROM posts WHERE status = 'published'")->fetchColumn();
+}
+
+/**
+ * Retrieves a single post by its numeric ID.
+ *
+ * Includes joined author and category data. Returns NULL if not found.
+ *
+ * @param int $id  Post ID.
+ *
+ * @return array<string, mixed>|null  Post row or NULL if not found.
+ */
+function getPostById(int $id): ?array
+{
+    $stmt = getDB()->prepare("
+        SELECT p.*, u.username AS author_name, c.name AS category_name, c.slug AS category_slug
+        FROM posts p
+        LEFT JOIN users      u ON u.id = p.author_id
+        LEFT JOIN categories c ON c.id = p.category_id
+        WHERE p.id = :id
+    ");
+    $stmt->execute([':id' => $id]);
+    $row = $stmt->fetch();
+    return $row ?: null;
+}
+
+/**
+ * Retrieves a single published post by its URL slug.
+ *
+ * @param string $slug  URL slug of the post.
+ *
+ * @return array<string, mixed>|null  Post row or NULL if not found.
+ */
+function getPostBySlug(string $slug): ?array
+{
+    $stmt = getDB()->prepare("
+        SELECT p.*, u.username AS author_name, c.name AS category_name, c.slug AS category_slug
+        FROM posts p
+        LEFT JOIN users      u ON u.id = p.author_id
+        LEFT JOIN categories c ON c.id = p.category_id
+        WHERE p.slug = :slug AND p.status = 'published'
+    ");
+    $stmt->execute([':slug' => $slug]);
+    $row = $stmt->fetch();
+    return $row ?: null;
+}
+
+/**
+ * Retrieves published posts filtered by category slug with pagination.
+ *
+ * @param string $categorySlug  The category's URL slug.
+ * @param int    $page          Current page number (1-based).
+ * @param int    $perPage       Posts per page.
+ *
+ * @return array<int, array<string, mixed>>  Array of matching post rows.
+ */
+function getPostsByCategory(string $categorySlug, int $page = 1, int $perPage = POSTS_PER_PAGE): array
+{
+    $offset = ($page - 1) * $perPage;
+    $stmt = getDB()->prepare("
+        SELECT p.*, u.username AS author_name, c.name AS category_name, c.slug AS category_slug
+        FROM posts p
+        LEFT JOIN users      u ON u.id = p.author_id
+        INNER JOIN categories c ON c.id = p.category_id
+        WHERE p.status = 'published' AND c.slug = :slug
+        ORDER BY p.created_at DESC
+        LIMIT :limit OFFSET :offset
+    ");
+    $stmt->bindValue(':slug',   $categorySlug, PDO::PARAM_STR);
+    $stmt->bindValue(':limit',  $perPage,      PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset,       PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll();
+}
+
+/**
+ * Returns the count of published posts belonging to a given category.
+ *
+ * @param string $categorySlug  The category's URL slug.
+ *
+ * @return int  Total matching post count.
+ */
+function countPostsByCategory(string $categorySlug): int
+{
+    $stmt = getDB()->prepare("
+        SELECT COUNT(*)
+        FROM posts p
+        INNER JOIN categories c ON c.id = p.category_id
+        WHERE p.status = 'published' AND c.slug = :slug
+    ");
+    $stmt->execute([':slug' => $categorySlug]);
+    return (int) $stmt->fetchColumn();
+}
+
+/**
+ * Retrieves published posts that have a given tag, with pagination.
+ *
+ * @param string $tagSlug  The tag's URL slug.
+ * @param int    $page     Current page number (1-based).
+ * @param int    $perPage  Posts per page.
+ *
+ * @return array<int, array<string, mixed>>  Array of matching post rows.
+ */
+function getPostsByTag(string $tagSlug, int $page = 1, int $perPage = POSTS_PER_PAGE): array
+{
+    $offset = ($page - 1) * $perPage;
+    $stmt = getDB()->prepare("
+        SELECT p.*, u.username AS author_name, c.name AS category_name, c.slug AS category_slug
+        FROM posts p
+        LEFT JOIN users      u  ON u.id  = p.author_id
+        LEFT JOIN categories c  ON c.id  = p.category_id
+        INNER JOIN post_tags pt ON pt.post_id = p.id
+        INNER JOIN tags      t  ON t.id  = pt.tag_id
+        WHERE p.status = 'published' AND t.slug = :slug
+        ORDER BY p.created_at DESC
+        LIMIT :limit OFFSET :offset
+    ");
+    $stmt->bindValue(':slug',   $tagSlug, PDO::PARAM_STR);
+    $stmt->bindValue(':limit',  $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset,  PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll();
+}
+
+/**
+ * Returns the count of published posts associated with a given tag.
+ *
+ * @param string $tagSlug  The tag's URL slug.
+ *
+ * @return int  Total matching post count.
+ */
+function countPostsByTag(string $tagSlug): int
+{
+    $stmt = getDB()->prepare("
+        SELECT COUNT(*)
+        FROM posts p
+        INNER JOIN post_tags pt ON pt.post_id = p.id
+        INNER JOIN tags      t  ON t.id = pt.tag_id
+        WHERE p.status = 'published' AND t.slug = :slug
+    ");
+    $stmt->execute([':slug' => $tagSlug]);
+    return (int) $stmt->fetchColumn();
+}
+
+/**
+ * Performs a full-text search across post titles and content.
+ *
+ * Uses LIKE with a sanitised search term. Returns only published posts.
+ *
+ * @param string $query    The raw search string entered by the user.
+ * @param int    $page     Current page number (1-based).
+ * @param int    $perPage  Posts per page.
+ *
+ * @return array<int, array<string, mixed>>  Array of matching post rows.
+ */
+function searchPosts(string $query, int $page = 1, int $perPage = POSTS_PER_PAGE): array
+{
+    $offset = ($page - 1) * $perPage;
+    $like   = '%' . $query . '%';
+    $stmt = getDB()->prepare("
+        SELECT p.*, u.username AS author_name, c.name AS category_name, c.slug AS category_slug
+        FROM posts p
+        LEFT JOIN users      u ON u.id = p.author_id
+        LEFT JOIN categories c ON c.id = p.category_id
+        WHERE p.status = 'published'
+          AND (p.title LIKE :like OR p.content LIKE :like2)
+        ORDER BY p.created_at DESC
+        LIMIT :limit OFFSET :offset
+    ");
+    $stmt->bindValue(':like',   $like,    PDO::PARAM_STR);
+    $stmt->bindValue(':like2',  $like,    PDO::PARAM_STR);
+    $stmt->bindValue(':limit',  $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset,  PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll();
+}
+
+/**
+ * Returns the count of published posts matching a search query.
+ *
+ * @param string $query  The raw search string.
+ *
+ * @return int  Total matching post count.
+ */
+function countSearchPosts(string $query): int
+{
+    $like = '%' . $query . '%';
+    $stmt = getDB()->prepare("
+        SELECT COUNT(*)
+        FROM posts
+        WHERE status = 'published'
+          AND (title LIKE :like OR content LIKE :like2)
+    ");
+    $stmt->bindValue(':like',  $like, PDO::PARAM_STR);
+    $stmt->bindValue(':like2', $like, PDO::PARAM_STR);
+    $stmt->execute();
+    return (int) $stmt->fetchColumn();
+}
+
+// ===========================================================================
+// Tag queries
+// ===========================================================================
+
+/**
+ * Retrieves all tags associated with a given post.
+ *
+ * @param int $postId  The post's numeric ID.
+ *
+ * @return array<int, array<string, mixed>>  Array of tag rows (id, name, slug).
+ */
+function getTagsForPost(int $postId): array
+{
+    $stmt = getDB()->prepare("
+        SELECT t.id, t.name, t.slug
+        FROM tags t
+        INNER JOIN post_tags pt ON pt.tag_id = t.id
+        WHERE pt.post_id = :post_id
+        ORDER BY t.name
+    ");
+    $stmt->execute([':post_id' => $postId]);
+    return $stmt->fetchAll();
+}
+
+/**
+ * Retrieves all tags ordered alphabetically.
+ *
+ * @return array<int, array<string, mixed>>  Array of all tag rows.
+ */
+function getAllTags(): array
+{
+    return getDB()->query("SELECT * FROM tags ORDER BY name")->fetchAll();
+}
+
+/**
+ * Retrieves all categories ordered alphabetically.
+ *
+ * @return array<int, array<string, mixed>>  Array of all category rows.
+ */
+function getAllCategories(): array
+{
+    return getDB()->query("SELECT * FROM categories ORDER BY name")->fetchAll();
+}
+
+/**
+ * Replaces all tag associations for a post with a new set of tag IDs.
+ *
+ * Deletes the existing post_tags rows for the given post then inserts
+ * fresh rows for each tag ID in the supplied array.  Uses INSERT OR IGNORE
+ * so any FK violations are silently discarded rather than throwing.
+ *
+ * @param int   $postId  The post's numeric ID.
+ * @param int[] $tagIds  Array of tag IDs to associate with the post.
+ *
+ * @return void
+ */
+function syncPostTags(int $postId, array $tagIds): void
+{
+    $db = getDB();
+    $db->prepare("DELETE FROM post_tags WHERE post_id = :post_id")->execute([':post_id' => $postId]);
+
+    if (empty($tagIds)) {
+        return;
+    }
+
+    $insert = $db->prepare("INSERT OR IGNORE INTO post_tags (post_id, tag_id) VALUES (:post_id, :tag_id)");
+    foreach ($tagIds as $tagId) {
+        $insert->execute([':post_id' => $postId, ':tag_id' => $tagId]);
+    }
+}
+
+// ===========================================================================
+// Flash messages
+// ===========================================================================
+
+/**
+ * Stores a one-time "flash" message and its type in the session.
+ *
+ * The message is consumed by getFlash() on the next page load and then
+ * automatically cleared from the session.
+ *
+ * @param string $message  The message text to show.
+ * @param string $type     Alert type: 'success' | 'error' | 'info'.
+ *
+ * @return void
+ */
+function flashMessage(string $message, string $type = 'success'): void
+{
+    $_SESSION['flash'] = ['message' => $message, 'type' => $type];
+}
+
+/**
+ * Retrieves the stored flash message and removes it from the session.
+ *
+ * Returns NULL if no flash message has been set.
+ *
+ * @return array{message: string, type: string}|null  The flash data or NULL.
+ */
+function getFlash(): ?array
+{
+    if (isset($_SESSION['flash'])) {
+        $flash = $_SESSION['flash'];
+        unset($_SESSION['flash']);
+        return $flash;
+    }
+    return null;
+}
+
+/**
+ * Renders a flash message as an HTML alert div if one exists.
+ *
+ * Reads and clears the flash message then outputs the appropriate HTML.
+ * Intended to be called once at the top of each admin page's content area.
+ *
+ * @return void
+ */
+function renderFlash(): void
+{
+    $flash = getFlash();
+    if ($flash) {
+        echo '<div class="alert alert--' . e($flash['type']) . '" role="alert">' . e($flash['message']) . '</div>';
+    }
+}
+
+// ===========================================================================
+// Pagination helpers
+// ===========================================================================
+
+/**
+ * Calculates the total number of pages given a total item count and page size.
+ *
+ * @param int $total    Total number of items.
+ * @param int $perPage  Items per page.
+ *
+ * @return int  Total page count (minimum 1).
+ */
+function totalPages(int $total, int $perPage = POSTS_PER_PAGE): int
+{
+    return max(1, (int) ceil($total / $perPage));
+}
+
+/**
+ * Builds an array of pagination data for rendering page links.
+ *
+ * Returns the current page, total pages, and boolean flags for whether
+ * previous/next pages exist.
+ *
+ * @param int    $currentPage  The currently displayed page.
+ * @param int    $totalItems   Total items across all pages.
+ * @param string $baseUrl      Base URL to prepend to page query strings.
+ * @param int    $perPage      Items per page.
+ *
+ * @return array{current: int, total: int, hasPrev: bool, hasNext: bool, baseUrl: string}
+ */
+function buildPagination(int $currentPage, int $totalItems, string $baseUrl, int $perPage = POSTS_PER_PAGE): array
+{
+    $totalPgs = totalPages($totalItems, $perPage);
+    return [
+        'current' => $currentPage,
+        'total'   => $totalPgs,
+        'hasPrev' => $currentPage > 1,
+        'hasNext' => $currentPage < $totalPgs,
+        'baseUrl' => $baseUrl,
+    ];
+}
+
+// ===========================================================================
+// File upload helpers
+// ===========================================================================
+
+/**
+ * Handles a featured image upload for a blog post.
+ *
+ * Validates the file type and size, generates a unique filename, then
+ * moves the file to the assets/images/uploads/ directory.
+ *
+ * Allowed MIME types: image/jpeg, image/png, image/gif, image/webp.
+ * Maximum file size: 5 MB.
+ *
+ * @param array<string, mixed> $fileInput  A single entry from $_FILES (e.g. $_FILES['featured_image']).
+ *
+ * @return string|null  The stored filename (relative to assets/images/uploads/) on success, or NULL on failure.
+ */
+function handleImageUpload(array $fileInput): ?string
+{
+    $allowedMime = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    $maxSize     = 5 * 1024 * 1024; // 5 MB
+
+    if ($fileInput['error'] !== UPLOAD_ERR_OK) {
+        return null;
+    }
+
+    if ($fileInput['size'] > $maxSize) {
+        return null;
+    }
+
+    // Verify MIME type from file contents, not the browser-supplied value
+    $finfo    = new finfo(FILEINFO_MIME_TYPE);
+    $mimeType = $finfo->file($fileInput['tmp_name']);
+
+    if (!in_array($mimeType, $allowedMime, true)) {
+        return null;
+    }
+
+    $ext      = pathinfo($fileInput['name'], PATHINFO_EXTENSION);
+    $filename = bin2hex(random_bytes(8)) . '.' . strtolower($ext);
+    $destDir  = ROOT_PATH . '/assets/images/uploads/';
+
+    if (!is_dir($destDir)) {
+        mkdir($destDir, 0750, true);
+    }
+
+    if (!move_uploaded_file($fileInput['tmp_name'], $destDir . $filename)) {
+        return null;
+    }
+
+    return $filename;
+}
