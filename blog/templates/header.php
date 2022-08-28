@@ -63,6 +63,18 @@ $categories = getAllCategories();
                 </li>
             </ul>
 
+            <form class="header-search" action="<?= SITE_URL ?>/search" method="get" role="search">
+                <label for="header-search-input" class="sr-only">Search posts</label>
+                <input
+                    id="header-search-input"
+                    type="search"
+                    name="q"
+                    placeholder="Search…"
+                    value="<?= e($_GET['q'] ?? '') ?>"
+                    maxlength="150"
+                >
+                <button type="submit" aria-label="Submit search">&#8981;</button>
+            </form>
         </nav>
     </div>
 </header>

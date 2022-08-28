@@ -81,6 +81,7 @@ if (!empty($_GET['q'])) {
 }
 
 $pagination = buildPagination($currentPage, $total, $baseUrl);
+$allTags    = getAllTags();
 
 $pageTitle = ($mode === 'default') ? SITE_NAME : strip_tags($filterLabel) . ' – ' . SITE_NAME;
 $metaDesc  = SITE_TAGLINE;
@@ -95,6 +96,16 @@ require_once __DIR__ . '/templates/header.php';
     <?php endif; ?>
 </section>
 
+<?php if (!empty($allTags)): ?>
+<div class="tag-cloud" aria-label="Browse by tag">
+    <?php foreach ($allTags as $tag): ?>
+        <a href="<?= SITE_URL ?>/tag/<?= e($tag['slug']) ?>"
+           class="tag-pill <?= ($activeTag === $tag['slug']) ? 'tag-pill--active' : '' ?>">
+            <?= e($tag['name']) ?>
+        </a>
+    <?php endforeach; ?>
+</div>
+<?php endif; ?>
 
 <?php if (empty($posts)): ?>
     <div class="empty-state">
