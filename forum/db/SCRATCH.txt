@@ -1,0 +1,5 @@
+scratch notes
+
+- pagination helper still duplicated in category.php and index.php
+- category ordering: use position column, not name
+- check whether the table layout works on mobile Safari
