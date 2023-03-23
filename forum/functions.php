@@ -370,3 +370,487 @@ function requireAdmin(): void
         exit('Access denied.');
     }
 }
+
+// ===========================================================================
+// Categories
+// ===========================================================================
+
+/**
+ * Returns all categories with thread and post counts and last activity.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function getCategories(): array
+{
+    return getDB()->query(
+        "SELECT c.*,
+                COUNT(DISTINCT t.id) AS thread_count,
+                COUNT(DISTINCT p.id) AS post_count,
+                MAX(p.created_at)    AS last_post_at,
+                (SELECT t2.title
+                 FROM threads t2
+                 JOIN posts p2 ON p2.thread_id = t2.id AND p2.is_deleted = 0
+                 WHERE t2.category_id = c.id
+                 ORDER BY p2.created_at DESC LIMIT 1) AS last_thread_title,
+                (SELECT t2.slug
+                 FROM threads t2
+                 JOIN posts p2 ON p2.thread_id = t2.id AND p2.is_deleted = 0
+                 WHERE t2.category_id = c.id
+                 ORDER BY p2.created_at DESC LIMIT 1) AS last_thread_slug,
+                (SELECT u2.username
+                 FROM users u2
+                 JOIN posts p2 ON p2.user_id = u2.id AND p2.is_deleted = 0
+                 JOIN threads t2 ON t2.id = p2.thread_id
+                 WHERE t2.category_id = c.id
+                 ORDER BY p2.created_at DESC LIMIT 1) AS last_poster
+         FROM categories c
+         LEFT JOIN threads t ON t.category_id = c.id
+         LEFT JOIN posts   p ON p.thread_id   = t.id AND p.is_deleted = 0
+         GROUP BY c.id
+         ORDER BY c.display_order ASC, c.name ASC"
+    )->fetchAll();
+}
+
+/**
+ * Returns a single category by its ID, or null.
+ *
+ * @param int $id  Category ID.
+ * @return array<string, mixed>|null
+ */
+function getCategoryById(int $id): ?array
+{
+    $stmt = getDB()->prepare("SELECT * FROM categories WHERE id = :id");
+    $stmt->execute([':id' => $id]);
+    return $stmt->fetch() ?: null;
+}
+
+/**
+ * Returns a single category by its slug, or null.
+ *
+ * @param string $slug  URL slug.
+ * @return array<string, mixed>|null
+ */
+function getCategoryBySlug(string $slug): ?array
+{
+    $stmt = getDB()->prepare("SELECT * FROM categories WHERE slug = :slug");
+    $stmt->execute([':slug' => $slug]);
+    return $stmt->fetch() ?: null;
+}
+
+// ===========================================================================
+// Threads
+// ===========================================================================
+
+/**
+ * Returns a paginated list of threads for a category, sticky threads first.
+ *
+ * @param int $categoryId  Category ID.
+ * @param int $page        Current page (1-based).
+ * @param int $perPage     Threads per page.
+ * @return array<int, array<string, mixed>>
+ */
+function getThreadsByCategory(int $categoryId, int $page = 1, int $perPage = THREADS_PER_PAGE): array
+{
+    $offset = $page * $perPage;
+    $stmt   = getDB()->prepare(
+        "SELECT t.*,
+                u.username                                                  AS author_name,
+                COUNT(p.id)                                                 AS post_count,
+                MAX(p.created_at)                                           AS last_post_at,
+                (SELECT u2.username
+                 FROM posts p2
+                 JOIN users u2 ON u2.id = p2.user_id
+                 WHERE p2.thread_id = t.id AND p2.is_deleted = 0
+                 ORDER BY p2.created_at DESC LIMIT 1)                      AS last_poster
+         FROM threads t
+         JOIN users u      ON u.id = t.user_id
+         LEFT JOIN posts p ON p.thread_id = t.id AND p.is_deleted = 0
+         WHERE t.category_id = :cid
+         GROUP BY t.id
+         ORDER BY t.is_sticky DESC, COALESCE(MAX(p.created_at), t.created_at) DESC
+         LIMIT :limit OFFSET :offset"
+    );
+    $stmt->execute([':cid' => $categoryId, ':limit' => $perPage, ':offset' => $offset]);
+    return $stmt->fetchAll();
+}
+
+/**
+ * Returns the total number of threads in a category.
+ *
+ * @param int $categoryId  Category ID.
+ * @return int
+ */
+function countThreadsByCategory(int $categoryId): int
+{
+    $stmt = getDB()->prepare("SELECT COUNT(*) FROM threads WHERE category_id = :cid");
+    $stmt->execute([':cid' => $categoryId]);
+    return (int) $stmt->fetchColumn();
+}
+
+/**
+ * Returns a thread by its ID, joined with author and category data, or null.
+ *
+ * @param int $id  Thread ID.
+ * @return array<string, mixed>|null
+ */
+function getThreadById(int $id): ?array
+{
+    $stmt = getDB()->prepare(
+        "SELECT t.*, u.username AS author_name, c.name AS category_name, c.slug AS category_slug
+         FROM threads t
+         JOIN users u      ON u.id = t.user_id
+         JOIN categories c ON c.id = t.category_id
+         WHERE t.id = :id"
+    );
+    $stmt->execute([':id' => $id]);
+    return $stmt->fetch() ?: null;
+}
+
+/**
+ * Generates a unique slug for a thread title.
+ *
+ * @param string $title  Thread title.
+ * @return string  Unique slug.
+ */
+function generateUniqueThreadSlug(string $title): string
+{
+    $base = slugify($title);
+    if ($base === '') {
+        $base = 'thread';
+    }
+    $slug = $base;
+    $n    = 2;
+    $stmt = getDB()->prepare("SELECT id FROM threads WHERE slug = :slug");
+    do {
+        $stmt->execute([':slug' => $slug]);
+        if (!$stmt->fetch()) {
+            break;
+        }
+        $slug = $base . '-' . $n++;
+    } while (true);
+    return $slug;
+}
+
+/**
+ * Increments the view counter for a thread.
+ *
+ * @param int $threadId  Thread ID.
+ * @return void
+ */
+function incrementThreadViews(int $threadId): void
+{
+    $stmt = getDB()->prepare("UPDATE threads SET view_count = view_count + 1 WHERE id = :id");
+    $stmt->execute([':id' => $threadId]);
+}
+
+// ===========================================================================
+// Posts
+// ===========================================================================
+
+/**
+ * Returns a paginated list of non-deleted posts for a thread, oldest first.
+ *
+ * @param int $threadId  Thread ID.
+ * @param int $page      Current page (1-based).
+ * @param int $perPage   Posts per page.
+ * @return array<int, array<string, mixed>>
+ */
+function getPostsByThread(int $threadId, int $page = 1, int $perPage = POSTS_PER_PAGE): array
+{
+    $offset = ($page - 1) * $perPage;
+    $stmt   = getDB()->prepare(
+        "SELECT p.*, u.username AS author_name, u.bio AS author_bio, u.created_at AS author_joined
+         , u.email AS author_email
+         FROM posts p
+         JOIN users u ON u.id = p.user_id
+         WHERE p.thread_id = :tid AND p.is_deleted = 0
+         ORDER BY p.created_at ASC
+         LIMIT :limit OFFSET :offset"
+    );
+    $stmt->execute([':tid' => $threadId, ':limit' => $perPage, ':offset' => $offset]);
+    return $stmt->fetchAll();
+}
+
+/**
+ * Returns the total number of non-deleted posts in a thread.
+ *
+ * @param int $threadId  Thread ID.
+ * @return int
+ */
+function countPostsByThread(int $threadId): int
+{
+    $stmt = getDB()->prepare(
+        "SELECT COUNT(*) FROM posts WHERE thread_id = :tid AND is_deleted = 0"
+    );
+    $stmt->execute([':tid' => $threadId]);
+    return (int) $stmt->fetchColumn();
+}
+
+/**
+ * Returns the total post count for a given user (excluding deleted posts).
+ *
+ * @param int $userId  User ID.
+ * @return int
+ */
+function getUserPostCount(int $userId): int
+{
+    $stmt = getDB()->prepare(
+        "SELECT COUNT(*) FROM posts WHERE user_id = :uid AND is_deleted = 0"
+    );
+    $stmt->execute([':uid' => $userId]);
+    return (int) $stmt->fetchColumn();
+}
+
+/**
+ * Returns the total thread count for a given user.
+ *
+ * @param int $userId  User ID.
+ * @return int
+ */
+function getUserThreadCount(int $userId): int
+{
+    $stmt = getDB()->prepare("SELECT COUNT(*) FROM threads WHERE user_id = :uid");
+    $stmt->execute([':uid' => $userId]);
+    return (int) $stmt->fetchColumn();
+}
+
+// ===========================================================================
+// Create content
+// ===========================================================================
+
+/**
+ * Creates a new thread and its opening post in a single transaction.
+ *
+ * @param int    $categoryId  Category ID.
+ * @param int    $userId      Author's user ID.
+ * @param string $title       Thread title (unsanitised - stored raw, escaped on output).
+ * @param string $content     Opening post content.
+ * @return int  The new thread's ID.
+ */
+function createThread(int $categoryId, int $userId, string $title, string $content): int
+{
+    $db   = getDB();
+    $slug = generateUniqueThreadSlug($title);
+
+    $db->beginTransaction();
+    try {
+        $stmt = $db->prepare(
+            "INSERT INTO threads (title, slug, category_id, user_id)
+             VALUES (:title, :slug, :cid, :uid)"
+        );
+        $stmt->execute([
+            ':title' => $title,
+            ':slug'  => $slug,
+            ':cid'   => $categoryId,
+            ':uid'   => $userId,
+        ]);
+        $threadId = (int) $db->lastInsertId();
+
+        $stmt = $db->prepare(
+            "INSERT INTO posts (thread_id, user_id, content) VALUES (:tid, :uid, :content)"
+        );
+        $stmt->execute([':tid' => $threadId, ':uid' => $userId, ':content' => $content]);
+
+        $db->commit();
+    } catch (PDOException $e) {
+        $db->rollBack();
+        throw $e;
+    }
+
+    return $threadId;
+}
+
+/**
+ * Creates a reply post and updates the thread's updated_at timestamp.
+ *
+ * @param int    $threadId  Thread ID.
+ * @param int    $userId    Author's user ID.
+ * @param string $content   Post content.
+ * @return int  The new post's ID.
+ */
+function createPost(int $threadId, int $userId, string $content): int
+{
+    $db   = getDB();
+    $stmt = $db->prepare(
+        "INSERT INTO posts (thread_id, user_id, content) VALUES (:tid, :uid, :content)"
+    );
+    $stmt->execute([':tid' => $threadId, ':uid' => $userId, ':content' => $content]);
+    $postId = (int) $db->lastInsertId();
+
+    $db->prepare("UPDATE threads SET updated_at = datetime('now') WHERE id = :id")
+       ->execute([':id' => $threadId]);
+
+    return $postId;
+}
+
+// ===========================================================================
+// Search
+// ===========================================================================
+
+/**
+ * Searches thread titles and returns a paginated result set.
+ *
+ * @param string $query    Search term.
+ * @param int    $page     Current page (1-based).
+ * @param int    $perPage  Results per page.
+ * @return array<int, array<string, mixed>>
+ */
+function searchThreads(string $query, int $page = 1, int $perPage = THREADS_PER_PAGE): array
+{
+    $offset  = ($page - 1) * $perPage;
+    $pattern = '%' . str_replace(['%', '_'], ['\%', '\_'], $query) . '%';
+    $stmt    = getDB()->prepare(
+        "SELECT t.*, u.username AS author_name, c.name AS category_name, c.slug AS category_slug,
+                COUNT(p.id) AS post_count
+         FROM threads t
+         JOIN users u      ON u.id = t.user_id
+         JOIN categories c ON c.id = t.category_id
+         LEFT JOIN posts p ON p.thread_id = t.id AND p.is_deleted = 0
+         WHERE t.title LIKE :q ESCAPE '\\'
+         GROUP BY t.id
+         ORDER BY t.updated_at DESC
+         LIMIT :limit OFFSET :offset"
+    );
+    $stmt->execute([':q' => $pattern, ':limit' => $perPage, ':offset' => $offset]);
+    return $stmt->fetchAll();
+}
+
+/**
+ * Returns the total number of threads matching a search query.
+ *
+ * @param string $query  Search term.
+ * @return int
+ */
+function countSearchResults(string $query): int
+{
+    $pattern = '%' . str_replace(['%', '_'], ['\%', '\_'], $query) . '%';
+    $stmt    = getDB()->prepare(
+        "SELECT COUNT(*) FROM threads WHERE title LIKE :q ESCAPE '\\'"
+    );
+    $stmt->execute([':q' => $pattern]);
+    return (int) $stmt->fetchColumn();
+}
+
+// ===========================================================================
+// Users
+// ===========================================================================
+
+/**
+ * Returns a user by ID (with role name), or null.
+ *
+ * @param int $id  User ID.
+ * @return array<string, mixed>|null
+ */
+function getUserById(int $id): ?array
+{
+    $stmt = getDB()->prepare(
+        "SELECT u.id, u.username, u.email, u.bio, u.created_at, r.name AS role
+         FROM users u
+         JOIN roles r ON r.id = u.role_id
+         WHERE u.id = :id"
+    );
+    $stmt->execute([':id' => $id]);
+    return $stmt->fetch() ?: null;
+}
+
+/**
+ * Returns a paginated list of all users (admin use).
+ *
+ * @param int $page     Current page (1-based).
+ * @param int $perPage  Users per page.
+ * @return array<int, array<string, mixed>>
+ */
+function getAllUsers(int $page = 1, int $perPage = 30): array
+{
+    $offset = ($page - 1) * $perPage;
+    $stmt   = getDB()->prepare(
+        "SELECT u.id, u.username, u.email, u.bio, u.created_at, r.name AS role
+         FROM users u
+         JOIN roles r ON r.id = u.role_id
+         ORDER BY u.created_at DESC
+         LIMIT :limit OFFSET :offset"
+    );
+    $stmt->execute([':limit' => $perPage, ':offset' => $offset]);
+    return $stmt->fetchAll();
+}
+
+/**
+ * Returns the total number of registered users.
+ *
+ * @return int
+ */
+function countUsers(): int
+{
+    return (int) getDB()->query("SELECT COUNT(*) FROM users")->fetchColumn();
+}
+
+// ===========================================================================
+// Pagination
+// ===========================================================================
+
+/**
+ * Builds a pagination navigation HTML string.
+ *
+ * @param int    $total       Total number of items.
+ * @param int    $perPage     Items per page.
+ * @param int    $currentPage Current page (1-based).
+ * @param string $baseUrl     Base URL (without the page param).
+ * @return string  HTML or empty string if pagination is not needed.
+ */
+function renderPagination(int $total, int $perPage, int $currentPage, string $baseUrl): string
+{
+    if ($perPage <= 0 || $total <= $perPage) {
+        return '';
+    }
+
+    $totalPages = (int) ceil($total / $perPage);
+    if ($totalPages <= 1) {
+        return '';
+    }
+
+    $sep  = str_contains($baseUrl, '?') ? '&' : '?';
+    $html = '<nav class="pagination" aria-label="Pagination">';
+
+    // Previous
+    if ($currentPage > 1) {
+        $html .= '<a href="' . e($baseUrl . $sep . 'page=' . ($currentPage - 1)) . '">&laquo; Previous</a>';
+    } else {
+        $html .= '<span class="disabled">&laquo; Previous</span>';
+    }
+
+    // Page numbers
+    $start = max(1, $currentPage - 2);
+    $end   = min($totalPages, $currentPage + 2);
+
+    if ($start > 1) {
+        $html .= '<a href="' . e($baseUrl . $sep . 'page=1') . '">1</a>';
+        if ($start > 2) {
+            $html .= '<span class="disabled">...</span>';
+        }
+    }
+
+    for ($i = $start; $i <= $end; $i++) {
+        if ($i === $currentPage) {
+            $html .= '<span class="current">' . $i . '</span>';
+        } else {
+            $html .= '<a href="' . e($baseUrl . $sep . 'page=' . $i) . '">' . $i . '</a>';
+        }
+    }
+
+    if ($end < $totalPages) {
+        if ($end < $totalPages - 1) {
+            $html .= '<span class="disabled">...</span>';
+        }
+        $html .= '<a href="' . e($baseUrl . $sep . 'page=' . $totalPages) . '">' . $totalPages . '</a>';
+    }
+
+    // Next
+    if ($currentPage < $totalPages) {
+        $html .= '<a href="' . e($baseUrl . $sep . 'page=' . ($currentPage + 1)) . '">Next &raquo;</a>';
+    } else {
+        $html .= '<span class="disabled">Next &raquo;</span>';
+    }
+
+    $html .= '</nav>';
+    return $html;
+}
