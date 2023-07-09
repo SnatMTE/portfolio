@@ -451,7 +451,7 @@ function getCategoryBySlug(string $slug): ?array
  */
 function getThreadsByCategory(int $categoryId, int $page = 1, int $perPage = THREADS_PER_PAGE): array
 {
-    $offset = $page * $perPage;
+    $offset = ($page - 1) * $perPage;
     $stmt   = getDB()->prepare(
         "SELECT t.*,
                 u.username                                                  AS author_name,
