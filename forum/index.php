@@ -26,16 +26,23 @@ require_once __DIR__ . '/templates/header.php';
         <?php endif; ?>
     </div>
 <?php else: ?>
-    <ul class="category-list">
-        <?php foreach ($categories as $cat): ?>
-            <li class="category-list__item">
-                <a href="<?= SITE_URL ?>/category/<?= e($cat['slug']) ?>">
-                    <?= e($cat['name']) ?>
-                </a>
-                <p class="category-list__description"><?= e($cat['description']) ?></p>
-            </li>
-        <?php endforeach; ?>
-    </ul>
+    <section class="forum-index-section" aria-label="Forum categories">
+        <div class="fi-table" role="table" aria-label="Forum categories">
+            <div class="fi-table__head" role="rowgroup">
+                <div class="fi-table__row fi-table__row--head" role="row">
+                    <div class="fi-col-forum" role="columnheader">Forum</div>
+                    <div class="fi-col-topics" role="columnheader">Topics</div>
+                    <div class="fi-col-posts" role="columnheader">Posts</div>
+                    <div class="fi-col-last" role="columnheader">Last Post</div>
+                </div>
+            </div>
+            <div class="fi-table__body" role="rowgroup">
+                <?php foreach ($categories as $cat): ?>
+                    <?php require __DIR__ . '/templates/category_card.php'; ?>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
 <?php endif; ?>
 
 <?php require_once __DIR__ . '/templates/footer.php'; ?>
