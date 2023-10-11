@@ -1,0 +1,48 @@
+<?php
+/**
+ * index.php
+ *
+ * Forum homepage - displays all categories with thread/post counts and
+ * last activity timestamps.
+ *
+ * @author  M. Terra Ellis
+ * @link    https://terra.me.uk
+ */
+
+require_once __DIR__ . '/functions.php';
+
+$pageTitle = SITE_NAME . ' - Community Discussions';
+$metaDesc  = 'Browse all discussion categories on ' . SITE_NAME . '.';
+$categories = getCategories();
+
+require_once __DIR__ . '/templates/header.php';
+?>
+
+<?php if (empty($categories)): ?>
+    <div class="empty-state">
+        <p>No categories have been created yet.</p>
+        <?php if (isAdmin()): ?>
+            <a href="<?= SITE_URL ?>/admin/categories.php" class="btn btn--primary">Add a category</a>
+        <?php endif; ?>
+    </div>
+<?php else: ?>
+    <section class="forum-index-section" aria-label="Forum categories">
+        <div class="fi-table" role="table" aria-label="Forum categories">
+            <div class="fi-table__head" role="rowgroup">
+                <div class="fi-table__row fi-table__row--head" role="row">
+                    <div class="fi-col-forum" role="columnheader">Forum</div>
+                    <div class="fi-col-topics" role="columnheader">Topics</div>
+                    <div class="fi-col-posts" role="columnheader">Posts</div>
+                    <div class="fi-col-last" role="columnheader">Last Post</div>
+                </div>
+            </div>
+            <div class="fi-table__body" role="rowgroup">
+                <?php foreach ($categories as $cat): ?>
+                    <?php require __DIR__ . '/templates/category_card.php'; ?>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+<?php endif; ?>
+
+<?php require_once __DIR__ . '/templates/footer.php'; ?>
