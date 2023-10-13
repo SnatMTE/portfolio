@@ -1,25 +1,35 @@
 # Portfolio
 
-A place for the small PHP projects I build while working through the language
-properly: no frameworks, no build step, just PHP, SQLite and hand-written CSS.
+A collection of small PHP applications I maintain to keep my core web
+development skills sharp. No frameworks, no build step: PHP 8, PDO + SQLite and
+hand-written CSS throughout.
 
 ## Projects
 
 ### blog
 
-A small blogging platform with an admin area for posts, a public listing and a
-single-post view.
+A small blogging platform with an admin area.
 
-- PHP 8, PDO + SQLite
-- BCRYPT password hashing
-- Server-rendered templates and custom CSS
+- Posts, categories and tags
+- BCRYPT password hashing and CSRF protection on every form
+- Pretty URLs with a query-string fallback
+- RSS feed
+
+### forum
+
+A threaded discussion forum built on the same patterns as the blog.
+
+- Categories, threads and replies
+- Public registration and user profiles
+- Basic moderation tools in the admin area
+- Full-text style search across threads and posts
 
 ## Running locally
 
 ```bash
-cd blog
-php -S localhost:8000
+cd blog   && php -S localhost:8000
+cd forum  && php -S localhost:8001
 ```
 
-Copy the folder to a web server and point PHP at it; the SQLite database and its
-tables are created on first run.
+Each project is self-contained. Run `setup.php` once to create the database and
+admin account, then remove it.
