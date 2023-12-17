@@ -369,3 +369,243 @@ function getCartTotal(): float
     }
     return round($total, 2);
 }
+
+// ===========================================================================
+// 7. Product queries
+// ===========================================================================
+
+/**
+ * Returns all active products, optionally filtered by category or search term.
+ *
+ * @param int         $page       Page number (1-based).
+ * @param int         $perPage    Rows per page.
+ * @param int|null    $categoryId Filter by category ID.
+ * @param string|null $search     Filter by name / description keyword.
+ * @return array<int, array<string, mixed>>
+ */
+function getProducts(
+    int    $page       = 1,
+    int    $perPage    = PRODUCTS_PER_PAGE,
+    ?int   $categoryId = null,
+    ?string $search    = null
+): array {
+    $offset = ($page - 1) * $perPage;
+    $where  = ["p.status = 'active'"];
+    $params = [];
+
+    if ($categoryId !== null) {
+        $where[]               = 'p.category_id = :cat';
+        $params[':cat']        = $categoryId;
+    }
+
+    if ($search !== null && $search !== '') {
+        $where[]               = "(p.name LIKE :q OR p.short_desc LIKE :q OR p.description LIKE :q)";
+        $params[':q']          = '%' . $search . '%';
+    }
+
+    $whereClause = implode(' AND ', $where);
+
+    $stmt = getDB()->prepare("
+        SELECT p.*, c.name AS category_name, c.slug AS category_slug
+        FROM   products p
+        LEFT JOIN categories c ON c.id = p.category_id
+        WHERE  {$whereClause}
+        ORDER  BY p.created_at DESC
+        LIMIT  :limit OFFSET :offset
+    ");
+
+    foreach ($params as $key => $val) {
+        $stmt->bindValue($key, $val);
+    }
+    $stmt->bindValue(':limit',  $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset,  PDO::PARAM_INT);
+    $stmt->execute();
+
+    return $stmt->fetchAll();
+}
+
+/**
+ * Returns the total count of active products (used for pagination).
+ *
+ * @param int|null    $categoryId  Filter by category.
+ * @param string|null $search      Filter by keyword.
+ * @return int
+ */
+function countProducts(?int $categoryId = null, ?string $search = null): int
+{
+    $where  = ["p.status = 'active'"];
+    $params = [];
+
+    if ($categoryId !== null) {
+        $where[]        = 'p.category_id = :cat';
+        $params[':cat'] = $categoryId;
+    }
+    if ($search !== null && $search !== '') {
+        $where[]      = "(p.name LIKE :q OR p.short_desc LIKE :q OR p.description LIKE :q)";
+        $params[':q'] = '%' . $search . '%';
+    }
+
+    $whereClause = implode(' AND ', $where);
+    $stmt = getDB()->prepare("SELECT COUNT(*) FROM products p WHERE {$whereClause}");
+    $stmt->execute($params);
+    return (int) $stmt->fetchColumn();
+}
+
+/**
+ * Retrieves a single product by its numeric ID.
+ *
+ * @param int $id  Product ID.
+ * @return array<string, mixed>|null  Product row or NULL.
+ */
+function getProductById(int $id): ?array
+{
+    $stmt = getDB()->prepare("
+        SELECT p.*, c.name AS category_name, c.slug AS category_slug
+        FROM   products p
+        LEFT JOIN categories c ON c.id = p.category_id
+        WHERE  p.id = :id
+        LIMIT  1
+    ");
+    $stmt->execute([':id' => $id]);
+    $row = $stmt->fetch();
+    return $row ?: null;
+}
+
+/**
+ * Retrieves a single product by its slug.
+ *
+ * @param string $slug  URL slug.
+ * @return array<string, mixed>|null
+ */
+function getProductBySlug(string $slug): ?array
+{
+    $stmt = getDB()->prepare("
+        SELECT p.*, c.name AS category_name, c.slug AS category_slug
+        FROM   products p
+        LEFT JOIN categories c ON c.id = p.category_id
+        WHERE  p.slug = :slug AND p.status = 'active'
+        LIMIT  1
+    ");
+    $stmt->execute([':slug' => $slug]);
+    $row = $stmt->fetch();
+    return $row ?: null;
+}
+
+/**
+ * Returns all products (including inactive) for admin management.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function getAllProductsAdmin(): array
+{
+    return getDB()->query("
+        SELECT p.*, c.name AS category_name
+        FROM   products p
+        LEFT JOIN categories c ON c.id = p.category_id
+        ORDER  BY p.created_at DESC
+    ")->fetchAll();
+}
+
+/**
+ * Inserts a new product and returns its new ID.
+ *
+ * @param array<string, mixed> $data  Validated product fields.
+ * @return int  New product ID.
+ */
+function createProduct(array $data): int
+{
+    $db = getDB();
+    $stmt = $db->prepare("
+        INSERT INTO products (name, slug, description, short_desc, price, stock, image, category_id, status)
+        VALUES (:name, :slug, :description, :short_desc, :price, :stock, :image, :category_id, :status)
+    ");
+    $stmt->execute([
+        ':name'        => $data['name'],
+        ':slug'        => $data['slug'],
+        ':description' => $data['description'],
+        ':short_desc'  => $data['short_desc'],
+        ':price'       => $data['price'],
+        ':stock'       => $data['stock'],
+        ':image'       => $data['image'] ?? null,
+        ':category_id' => $data['category_id'] ?? null,
+        ':status'      => $data['status'] ?? 'active',
+    ]);
+    return (int) $db->lastInsertId();
+}
+
+/**
+ * Updates an existing product by ID.
+ *
+ * @param int                  $id    Product ID.
+ * @param array<string, mixed> $data  Validated product fields.
+ * @return void
+ */
+function updateProduct(int $id, array $data): void
+{
+    $stmt = getDB()->prepare("
+        UPDATE products
+        SET    name        = :name,
+               slug        = :slug,
+               description = :description,
+               short_desc  = :short_desc,
+               price       = :price,
+               stock       = :stock,
+               image       = :image,
+               category_id = :category_id,
+               status      = :status,
+               updated_at  = datetime('now')
+        WHERE  id = :id
+    ");
+    $stmt->execute([
+        ':name'        => $data['name'],
+        ':slug'        => $data['slug'],
+        ':description' => $data['description'],
+        ':short_desc'  => $data['short_desc'],
+        ':price'       => $data['price'],
+        ':stock'       => $data['stock'],
+        ':image'       => $data['image'] ?? null,
+        ':category_id' => $data['category_id'] ?? null,
+        ':status'      => $data['status'] ?? 'active',
+        ':id'          => $id,
+    ]);
+}
+
+/**
+ * Deletes a product by ID.
+ *
+ * @param int $id  Product ID.
+ * @return void
+ */
+function deleteProduct(int $id): void
+{
+    $stmt = getDB()->prepare("DELETE FROM products WHERE id = :id");
+    $stmt->execute([':id' => $id]);
+}
+
+/**
+ * Generates a unique slug for a product name.
+ *
+ * Appends a numeric suffix if the base slug is already taken.
+ *
+ * @param string   $name       Product name.
+ * @param int|null $excludeId  ID to exclude when editing (avoids self-collision).
+ * @return string  Unique slug.
+ */
+function uniqueProductSlug(string $name, ?int $excludeId = null): string
+{
+    $base   = slugify($name);
+    $slug   = $base;
+    $suffix = 1;
+
+    while (true) {
+        $stmt = getDB()->prepare("SELECT id FROM products WHERE slug = :slug LIMIT 1");
+        $stmt->execute([':slug' => $slug]);
+        $row = $stmt->fetch();
+        if (!$row || ($excludeId !== null && (int) $row['id'] === $excludeId)) {
+            break;
+        }
+        $slug = $base . '-' . (++$suffix);
+    }
+
+    return $slug;
+}
