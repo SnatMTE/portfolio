@@ -69,6 +69,26 @@ require_once __DIR__ . '/templates/header.php';
         <p class="page-subtitle"><?= $totalCount ?> product<?= $totalCount !== 1 ? 's' : '' ?> found</p>
     <?php endif; ?>
 
+    <!-- Category filter pills -->
+    <?php
+    $allCats = getAllCategories();
+    if (count($allCats) > 0):
+    ?>
+    <div class="filter-pills">
+        <a
+            href="<?= SITE_URL ?>?<?= $search !== '' ? 'q=' . urlencode($search) : '' ?>"
+            class="filter-pill <?= $categoryId === null ? 'is-active' : '' ?>"
+        >All</a>
+        <?php foreach ($allCats as $cat): ?>
+            <a
+                href="<?= SITE_URL ?>?category=<?= e($cat['slug']) ?><?= $search !== '' ? '&q=' . urlencode($search) : '' ?>"
+                class="filter-pill <?= (int) ($category['id'] ?? 0) === (int) $cat['id'] ? 'is-active' : '' ?>"
+            >
+                <?= e($cat['name']) ?>
+            </a>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
 </div>
 
 <!-- Product grid -->
