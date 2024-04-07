@@ -609,3 +609,211 @@ function uniqueProductSlug(string $name, ?int $excludeId = null): string
 
     return $slug;
 }
+
+// ===========================================================================
+// 8. Category queries
+// ===========================================================================
+
+/**
+ * Returns all product categories.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function getAllCategories(): array
+{
+    return getDB()->query("SELECT * FROM categories ORDER BY name ASC")->fetchAll();
+}
+
+/**
+ * Returns a single category by ID.
+ *
+ * @param int $id  Category ID.
+ * @return array<string, mixed>|null
+ */
+function getCategoryById(int $id): ?array
+{
+    $stmt = getDB()->prepare("SELECT * FROM categories WHERE id = :id LIMIT 1");
+    $stmt->execute([':id' => $id]);
+    $row = $stmt->fetch();
+    return $row ?: null;
+}
+
+/**
+ * Returns a single category by slug.
+ *
+ * @param string $slug  Category slug.
+ * @return array<string, mixed>|null
+ */
+function getCategoryBySlug(string $slug): ?array
+{
+    $stmt = getDB()->prepare("SELECT * FROM categories WHERE slug = :slug LIMIT 1");
+    $stmt->execute([':slug' => $slug]);
+    $row = $stmt->fetch();
+    return $row ?: null;
+}
+
+// ===========================================================================
+// 9. Order queries
+// ===========================================================================
+
+/**
+ * Creates a new order and its line items in a transaction.
+ *
+ * Recalculates totals server-side from the database—never trusts the
+ * client-submitted total.
+ *
+ * @param string               $name   Customer name.
+ * @param string               $email  Customer email.
+ * @param array<int, array<string, mixed>> $items  Enriched cart items (from getCartItems()).
+ * @return int  New order ID.
+ */
+function createOrder(string $name, string $email, array $items): int
+{
+    $db = getDB();
+
+    // Recalculate total from database prices
+    $total = 0.0;
+    foreach ($items as $item) {
+        $total += $item['price'] * $item['qty'];
+    }
+    $total = round($total, 2);
+
+    $db->beginTransaction();
+
+    try {
+        $stmt = $db->prepare("
+            INSERT INTO orders (customer_name, customer_email, total, status, payment_provider)
+            VALUES (:name, :email, :total, 'pending', 'paypal')
+        ");
+        $stmt->execute([
+            ':name'  => $name,
+            ':email' => $email,
+            ':total' => $total,
+        ]);
+        $orderId = (int) $db->lastInsertId();
+
+        $itemStmt = $db->prepare("
+            INSERT INTO order_items (order_id, product_id, product_name, price, quantity)
+            VALUES (:order_id, :product_id, :product_name, :price, :quantity)
+        ");
+
+        foreach ($items as $item) {
+            $itemStmt->execute([
+                ':order_id'    => $orderId,
+                ':product_id'  => $item['id'],
+                ':product_name'=> $item['name'],
+                ':price'       => $item['price'],
+                ':quantity'    => $item['qty'],
+            ]);
+
+            // Decrement stock
+            if ($item['stock'] >= 0) {
+                $db->prepare("UPDATE products SET stock = MAX(0, stock - :qty) WHERE id = :id")
+                   ->execute([':qty' => $item['qty'], ':id' => $item['id']]);
+            }
+        }
+
+        $db->commit();
+    } catch (Throwable $e) {
+        $db->rollBack();
+        throw $e;
+    }
+
+    return $orderId;
+}
+
+/**
+ * Retrieves a single order by ID, including its line items.
+ *
+ * @param int $id  Order ID.
+ * @return array<string, mixed>|null  Order row with 'items' key, or NULL.
+ */
+function getOrderById(int $id): ?array
+{
+    $stmt = getDB()->prepare("SELECT * FROM orders WHERE id = :id LIMIT 1");
+    $stmt->execute([':id' => $id]);
+    $order = $stmt->fetch();
+    if (!$order) return null;
+
+    $itemsStmt = getDB()->prepare("SELECT * FROM order_items WHERE order_id = :id");
+    $itemsStmt->execute([':id' => $id]);
+    $order['items'] = $itemsStmt->fetchAll();
+
+    return $order;
+}
+
+/**
+ * Updates the payment status and payment ID for an order.
+ *
+ * @param int    $orderId      Order ID.
+ * @param string $status       New status ('paid', 'cancelled', 'refunded').
+ * @param string $paymentId    PayPal capture/transaction ID.
+ * @param string $paymentDetail  JSON-encoded payment detail for auditing.
+ * @return void
+ */
+function updateOrderPayment(int $orderId, string $status, string $paymentId, string $paymentDetail = ''): void
+{
+    $stmt = getDB()->prepare("
+        UPDATE orders
+        SET    status         = :status,
+               payment_id     = :payment_id,
+               payment_detail = :payment_detail,
+               updated_at     = datetime('now')
+        WHERE  id = :id
+    ");
+    $stmt->execute([
+        ':status'         => $status,
+        ':payment_id'     => $paymentId,
+        ':payment_detail' => $paymentDetail,
+        ':id'             => $orderId,
+    ]);
+}
+
+/**
+ * Returns all orders for the admin panel (most recent first).
+ *
+ * @param int $limit  Maximum rows to return.
+ * @return array<int, array<string, mixed>>
+ */
+function getAllOrders(int $limit = 100): array
+{
+    $stmt = getDB()->prepare("
+        SELECT * FROM orders ORDER BY created_at DESC LIMIT :limit
+    ");
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll();
+}
+
+// ===========================================================================
+// 10. User / auth queries
+// ===========================================================================
+
+/**
+ * Returns a user row by username.
+ *
+ * @param string $username  Username to look up.
+ * @return array<string, mixed>|null
+ */
+function getUserByUsername(string $username): ?array
+{
+    $stmt = getDB()->prepare("SELECT * FROM users WHERE username = :username LIMIT 1");
+    $stmt->execute([':username' => $username]);
+    $row = $stmt->fetch();
+    return $row ?: null;
+}
+
+// ===========================================================================
+// 11. Currency helpers
+// ===========================================================================
+
+/**
+ * Formats a numeric price for display using the configured currency symbol.
+ *
+ * @param float $amount  Price amount.
+ * @return string  e.g. "£9.99"
+ */
+function formatPrice(float $amount): string
+{
+    return CURRENCY_SYMBOL . number_format($amount, 2);
+}
