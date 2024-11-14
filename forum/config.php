@@ -5,10 +5,21 @@
  * Central configuration for the Forum.
  * Defines the database path, site constants, and initialises the PDO connection.
  *
+ * CMS Integration
+ * ---------------
+ * When placed inside a CMS (detected by ../core/database.php), defines CMS_ROOT
+ * and CMS_URL so that login/logout redirect to the shared CMS auth pages.
  *
  * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
+
+// ---------------------------------------------------------------------------
+// CMS detection
+// ---------------------------------------------------------------------------
+if (!defined('CMS_ROOT') && file_exists(__DIR__ . '/../core/database.php')) {
+    define('CMS_ROOT', dirname(__DIR__));
+}
 
 define('ROOT_PATH', __DIR__);
 define('DB_FILE',   ROOT_PATH . '/db/forum.sqlite');
@@ -66,6 +77,14 @@ if (!defined('SITE_URL')) {
     }
 
     define('SITE_URL', detectForumSiteUrl());
+}
+
+// When inside CMS, compute CMS_URL as the parent of this module's SITE_URL.
+if (defined('CMS_ROOT') && !defined('CMS_URL')) {
+    $__parts = explode('/', rtrim(SITE_URL, '/'));
+    array_pop($__parts);
+    define('CMS_URL', implode('/', $__parts));
+    unset($__parts);
 }
 
 // ---------------------------------------------------------------------------
