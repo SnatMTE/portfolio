@@ -346,3 +346,109 @@ function deleteEvent(int $id): void
     $stmt = getDB()->prepare("DELETE FROM cal_events WHERE id = :id");
     $stmt->execute([':id' => $id]);
 }
+
+// ---------------------------------------------------------------------------
+// Sync token helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Creates a new sync token and returns the raw token string.
+ *
+ * @param int|null $userId
+ * @param string   $label
+ * @return string  48-char hex token.
+ */
+function createSyncToken(?int $userId, string $label = 'My Calendar'): string
+{
+    $token = bin2hex(random_bytes(24));
+    $stmt  = getDB()->prepare(
+        "INSERT INTO cal_tokens (user_id, token, label) VALUES (:user_id, :token, :label)"
+    );
+    $stmt->execute([':user_id' => $userId, ':token' => $token, ':label' => $label]);
+    return $token;
+}
+
+/**
+ * Returns true if the token exists and is active.
+ *
+ * @param string $token
+ * @return bool
+ */
+function validateSyncToken(string $token): bool
+{
+    $stmt = getDB()->prepare(
+        "SELECT id FROM cal_tokens WHERE token = :token AND is_active = 1"
+    );
+    $stmt->execute([':token' => $token]);
+    return $stmt->fetchColumn() !== false;
+}
+
+/**
+ * Returns all active sync tokens.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function getSyncTokens(): array
+{
+    return getDB()
+        ->query("SELECT * FROM cal_tokens WHERE is_active = 1 ORDER BY created_at DESC")
+        ->fetchAll();
+}
+
+/**
+ * Deactivates a sync token by ID.
+ *
+ * @param int $id
+ */
+function revokeSyncToken(int $id): void
+{
+    $stmt = getDB()->prepare("UPDATE cal_tokens SET is_active = 0 WHERE id = :id");
+    $stmt->execute([':id' => $id]);
+}
+
+// ---------------------------------------------------------------------------
+// Auth helpers (standalone mode only)
+// ---------------------------------------------------------------------------
+
+/**
+ * Returns the currently logged-in admin user, or null.
+ * Works in both standalone (admin_id) and CMS (user_id) modes.
+ *
+ * @return array<string, mixed>|null
+ */
+function currentUser(): ?array
+{
+    if (defined('CMS_ROOT')) {
+        // CMS mode: user_id set by CMS auth
+        $id = (int) ($_SESSION['user_id'] ?? 0);
+        if ($id === 0) return null;
+        return [
+            'id'       => $id,
+            'username' => $_SESSION['username'] ?? '',
+            'email'    => $_SESSION['email']    ?? '',
+            'role'     => $_SESSION['role']     ?? 'user',
+        ];
+    }
+
+    // Standalone mode
+    $id = (int) ($_SESSION['admin_id'] ?? 0);
+    if ($id === 0) return null;
+
+    $stmt = getDB()->prepare("SELECT id, username, email FROM users WHERE id = :id");
+    $stmt->execute([':id' => $id]);
+    $row = $stmt->fetch();
+    return $row ?: null;
+}
+
+/**
+ * Returns true when an admin session is active.
+ *
+ * @return bool
+ */
+function isLoggedIn(): bool
+{
+    if (defined('CMS_ROOT')) {
+        return !empty($_SESSION['user_id']);
+    }
+    return !empty($_SESSION['admin_id']);
+}
