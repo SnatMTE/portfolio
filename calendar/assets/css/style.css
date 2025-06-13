@@ -715,3 +715,215 @@ button  { cursor: pointer; font-family: inherit; }
     margin-top: .25rem;
 }
 
+/* ---------------------------------------------------------
+   Event Detail Page
+   --------------------------------------------------------- */
+.event-detail { max-width: 760px; }
+
+.event-detail__header {
+    display:         flex;
+    align-items:     center;
+    justify-content: space-between;
+    margin-bottom:   1.5rem;
+    flex-wrap:       wrap;
+    gap:             .75rem;
+}
+.event-detail__actions { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+
+.event-card {
+    background:    var(--clr-bg);
+    border:        1px solid var(--clr-border);
+    border-radius: var(--radius-lg);
+    padding:       2rem;
+    box-shadow:    var(--shadow-sm);
+}
+.event-card__title {
+    font-size:     1.8rem;
+    font-weight:   800;
+    margin-bottom: 1.25rem;
+    line-height:   1.2;
+}
+.event-card__meta {
+    display:       flex;
+    flex-direction: column;
+    gap:           .6rem;
+    padding:       1rem;
+    background:    var(--clr-surface);
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+    border:        1px solid var(--clr-border);
+}
+.event-card__meta-item {
+    display:     flex;
+    align-items: center;
+    gap:         .6rem;
+    font-size:   .9rem;
+}
+.meta-icon { font-size: 1rem; }
+.event-card__desc {
+    font-size:   1rem;
+    line-height: 1.8;
+    color:       var(--clr-text);
+    margin-bottom: 1.5rem;
+    white-space: pre-wrap;
+}
+.event-card__created {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--clr-border);
+    font-size:  .85rem;
+}
+
+/* ---------------------------------------------------------
+   Modal
+   --------------------------------------------------------- */
+.modal {
+    position: fixed;
+    inset:    0;
+    z-index:  200;
+    display:  flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal[hidden] { display: none; }
+
+.modal__backdrop {
+    position:   absolute;
+    inset:      0;
+    background: rgba(0,0,0,.45);
+    backdrop-filter: blur(2px);
+}
+
+.modal__box {
+    position:      relative;
+    background:    var(--clr-bg);
+    border-radius: var(--radius-lg);
+    padding:       2rem;
+    width:         100%;
+    max-width:     520px;
+    box-shadow:    var(--shadow-lg);
+    max-height:    90vh;
+    overflow-y:    auto;
+    z-index:       1;
+}
+
+.modal__close {
+    position:      absolute;
+    top:           1rem;
+    right:         1rem;
+    background:    transparent;
+    border:        none;
+    font-size:     1.5rem;
+    line-height:   1;
+    color:         var(--clr-text-muted);
+    transition:    color var(--transition);
+}
+.modal__close:hover { color: var(--clr-accent); }
+
+.modal__title { font-size: 1.25rem; font-weight: 700; margin-bottom: .75rem; }
+.modal__meta  { font-size: .9rem; color: var(--clr-text-muted); margin-bottom: .4rem; }
+.modal__desc  {
+    font-size:    .95rem;
+    color:        var(--clr-text);
+    margin-top:   .75rem;
+    white-space:  pre-wrap;
+    max-height:   120px;
+    overflow-y:   auto;
+}
+.modal__footer {
+    display:    flex;
+    gap:        .75rem;
+    margin-top: 1.5rem;
+    flex-wrap:  wrap;
+}
+
+/* ---------------------------------------------------------
+   Token URL (admin tokens page)
+   --------------------------------------------------------- */
+.token-url {
+    display:       block;
+    font-family:   var(--font-mono);
+    font-size:     .75rem;
+    background:    var(--clr-surface);
+    border:        1px solid var(--clr-border);
+    border-radius: var(--radius-sm);
+    padding:       .3rem .5rem;
+    word-break:    break-all;
+    cursor:        pointer;
+    max-width:     360px;
+    color:         var(--clr-text-muted);
+    transition:    border-color var(--transition);
+}
+.token-url:hover { border-color: var(--clr-accent); }
+
+/* ---------------------------------------------------------
+   Back link
+   --------------------------------------------------------- */
+.back-link { font-size: .85rem; }
+
+/* ---------------------------------------------------------
+   Responsive
+   --------------------------------------------------------- */
+@media (max-width: 960px) {
+    .cal-layout {
+        grid-template-columns: 1fr;
+    }
+    .cal-sidebar {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .cal-cell {
+        padding:    .3rem;
+        aspect-ratio: 1 / 1;
+    }
+    .cal-event-chip { font-size: .65rem; }
+    .cal-toolbar__title { font-size: 1.1rem; }
+
+    .admin-layout {
+        grid-template-columns: 1fr;
+    }
+    .admin-nav {
+        position: static;
+        height:   auto;
+        border-right:  none;
+        border-bottom: 1px solid var(--clr-border);
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding:   .75rem;
+    }
+    .admin-nav__list { display: flex; flex-wrap: wrap; gap: .25rem; }
+    .admin-nav__item a { padding: .4rem .75rem; border-left: none; border-radius: var(--radius-md); }
+    .admin-nav__brand { padding: 0 .75rem .75rem; border-bottom: none; margin-bottom: 0; }
+    .admin-content { padding: 1.25rem; }
+
+    .form-row { grid-template-columns: 1fr; }
+
+    .nav-toggle { display: flex; }
+    .primary-nav { display: none; }
+    .primary-nav.is-open {
+        display:        flex;
+        flex-direction: column;
+        position:       absolute;
+        top:            100%;
+        left:           0; right: 0;
+        background:     var(--clr-bg);
+        border-bottom:  1px solid var(--clr-border);
+        padding:        1rem var(--container-pad);
+        box-shadow:     var(--shadow-md);
+        z-index:        99;
+    }
+    .primary-nav.is-open ul {
+        flex-direction: column;
+        gap:            .75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .cal-grid__day-name { font-size: .65rem; padding: .4rem .2rem; }
+    .form-card { padding: 1.25rem; }
+    .auth-card { padding: 1.25rem; }
+    .event-card { padding: 1.25rem; }
+    .admin-content { padding: 1rem; }
+}
