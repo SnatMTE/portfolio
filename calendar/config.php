@@ -5,10 +5,22 @@
  * Central configuration for the Calendar module.
  * Works standalone (calendar/) or integrated inside /cms/calendar/.
  *
+ * CMS Integration
+ * ---------------
+ * When placed inside a CMS (detected via ../core/database.php), the calendar
+ * shares the CMS session and SQLite database. Calendar tables are added to
+ * the shared CMS database; no separate DB file is created.
  *
  * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
+
+// ---------------------------------------------------------------------------
+// CMS detection
+// ---------------------------------------------------------------------------
+if (!defined('CMS_ROOT') && file_exists(__DIR__ . '/../core/database.php')) {
+    define('CMS_ROOT', dirname(__DIR__));
+}
 
 // ---------------------------------------------------------------------------
 // Site constants
@@ -79,6 +91,14 @@ if (!defined('SITE_URL')) {
     }
 
     define('SITE_URL', detectCalSiteUrl());
+}
+
+// When inside CMS, compute CMS_URL as the parent of SITE_URL.
+if (defined('CMS_ROOT') && !defined('CMS_URL')) {
+    $__parts = explode('/', rtrim(SITE_URL, '/'));
+    array_pop($__parts);
+    define('CMS_URL', implode('/', $__parts));
+    unset($__parts);
 }
 
 /** Human-readable module name. */
