@@ -5,38 +5,30 @@ PDO + SQLite and hand-written CSS.
 
 ## Projects
 
-### blog
+- **blog** — posts, categories, tags, RSS and pretty URLs
+- **forum** — categories, threads, replies, profiles and moderation
+- **store** — catalogue, session cart, PayPal checkout and order admin
+- **cms** — shared authentication, roles and a module loader
+- **calendar** — month grid, event management, ICS import/export and sync feeds
 
-A blogging platform with an admin area for posts, categories and tags, an RSS
-feed and pretty URLs.
+### calendar
 
-### forum
+A lightweight scheduling module.
 
-A threaded discussion forum with categories, replies, profiles, search and
-basic moderation.
-
-### store
-
-A minimal e-commerce system with a product catalogue, session cart, PayPal
-checkout and an admin area for products, orders and settings.
-
-### cms
-
-A modular content management system that acts as the hub for the other projects.
-
-- Shared user authentication, roles and sessions
-- Module loader that discovers `module.php` manifests automatically
-- Page management and site settings
-- Modules placed inside `cms/` inherit the CMS session and database
+- Monthly calendar grid with quick-add
+- Event creation and editing with public/private visibility
+- iCalendar import and export
+- Token-protected sync feeds for Google Calendar, Apple Calendar and Outlook
 
 ## Running locally
 
 ```bash
-cd blog   && php -S localhost:8000
-cd forum  && php -S localhost:8001
-cd store  && php -S localhost:8002
-cd cms    && php -S localhost:8003
+cd blog     && php -S localhost:8000
+cd forum    && php -S localhost:8001
+cd store    && php -S localhost:8002
+cd cms      && php -S localhost:8003
+cd calendar && php -S localhost:8004
 ```
 
-Each project still runs standalone. Run `setup.php` once per application, then
-remove it.
+Each project still runs standalone, and each one can be dropped inside the CMS
+to share authentication.
