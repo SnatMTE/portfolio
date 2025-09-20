@@ -63,6 +63,26 @@ require_once __DIR__ . '/templates/header.php';
     </div>
 </div>
 
+<!-- Active filter strip -->
+<?php if ($search !== '' || $category !== ''): ?>
+    <div class="filter-strip">
+        <?php if ($category !== ''): ?>
+            <span class="filter-pill">
+                Category: <strong><?= e($category) ?></strong>
+                <a href="<?= SITE_URL ?>?<?= $search !== '' ? 'q=' . urlencode($search) : '' ?>"
+                   class="filter-pill__remove" aria-label="Remove category filter">&#10005;</a>
+            </span>
+        <?php endif; ?>
+        <?php if ($search !== ''): ?>
+            <span class="filter-pill">
+                Search: <strong><?= e($search) ?></strong>
+                <a href="<?= SITE_URL ?>?<?= $category !== '' ? 'category=' . urlencode($category) : '' ?>"
+                   class="filter-pill__remove" aria-label="Remove search filter">&#10005;</a>
+            </span>
+        <?php endif; ?>
+        <a href="<?= SITE_URL ?>" class="filter-strip__clear">Clear all</a>
+    </div>
+<?php endif; ?>
 
 <?php if (empty($files)): ?>
     <div class="empty-state">
