@@ -349,3 +349,114 @@ function getCategories(): array
         ->fetchAll(PDO::FETCH_COLUMN);
     return $rows;
 }
+
+// ===========================================================================
+// Download token helpers
+// ===========================================================================
+
+/**
+ * Generates a cryptographically secure random token string.
+ *
+ * @return string  64-character hex token.
+ */
+function generateToken(): string
+{
+    return bin2hex(random_bytes(32));
+}
+
+/**
+ * Creates a time-limited secure download token for a file.
+ *
+ * @param int $downloadId     ID of the download record.
+ * @param int $expiresInHours Number of hours until the token expires.
+ *
+ * @return string  The generated token string.
+ */
+function createDownloadToken(int $downloadId, int $expiresInHours = 24): string
+{
+    $token     = generateToken();
+    $expiresAt = gmdate('Y-m-d H:i:s', time() + ($expiresInHours * 3600));
+
+    $stmt = getDB()->prepare(
+        'INSERT INTO dm_download_tokens (download_id, token, expires_at)
+         VALUES (:download_id, :token, :expires_at)'
+    );
+    $stmt->execute([
+        ':download_id' => $downloadId,
+        ':token'       => $token,
+        ':expires_at'  => $expiresAt,
+    ]);
+
+    return $token;
+}
+
+/**
+ * Validates a download token and returns the associated download ID.
+ *
+ * Returns null if the token is missing, expired, or does not match
+ * the given download ID. Does not consume (delete) the token.
+ *
+ * @param int    $downloadId  Expected download ID.
+ * @param string $token       Token string from the query string.
+ *
+ * @return bool  True when the token is valid and unexpired.
+ */
+function validateDownloadToken(int $downloadId, string $token): bool
+{
+    $stmt = getDB()->prepare(
+        "SELECT id FROM dm_download_tokens
+         WHERE download_id = :download_id
+           AND token       = :token
+           AND expires_at  > datetime('now')
+         LIMIT 1"
+    );
+    $stmt->execute([
+        ':download_id' => $downloadId,
+        ':token'       => $token,
+    ]);
+    return $stmt->fetch() !== false;
+}
+
+// ===========================================================================
+// Pagination helper
+// ===========================================================================
+
+/**
+ * Renders HTML pagination links.
+ *
+ * @param int    $total    Total number of items.
+ * @param int    $perPage  Items per page.
+ * @param int    $current  Current page number (1-based).
+ * @param string $baseUrl  Base URL without page parameter.
+ *
+ * @return string  HTML pagination markup.
+ */
+function renderPagination(int $total, int $perPage, int $current, string $baseUrl): string
+{
+    $pages = (int) ceil($total / $perPage);
+    if ($pages <= 1) {
+        return '';
+    }
+
+    $sep  = str_contains($baseUrl, '?') ? '&' : '?';
+    $html = '<nav class="pagination" aria-label="Page navigation">';
+
+    $html .= $current > 1
+        ? '<a href="' . e($baseUrl . $sep . 'page=' . ($current - 1)) . '" aria-label="Previous">&laquo; Prev</a>'
+        : '<span class="disabled" aria-disabled="true">&laquo; Prev</span>';
+
+    for ($i = 1; $i <= $pages; $i++) {
+        if ($i === $current) {
+            $html .= '<span class="current" aria-current="page">' . $i . '</span>';
+        } else {
+            $html .= '<a href="' . e($baseUrl . $sep . 'page=' . $i) . '">' . $i . '</a>';
+        }
+    }
+
+    $html .= $current < $pages
+        ? '<a href="' . e($baseUrl . $sep . 'page=' . ($current + 1)) . '" aria-label="Next">Next &raquo;</a>'
+        : '<span class="disabled" aria-disabled="true">Next &raquo;</span>';
+
+    $html .= '</nav>';
+    return $html;
+}
