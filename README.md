@@ -10,15 +10,16 @@ PDO + SQLite and hand-written CSS.
 - **store** — catalogue, session cart, PayPal checkout and order admin
 - **cms** — shared authentication, roles and a module loader
 - **calendar** — month grid, event management, ICS import/export and sync feeds
+- **dlm** — download manager with secure file delivery
 
-### calendar
+### dlm
 
-A lightweight scheduling module.
+A small file distribution module.
 
-- Monthly calendar grid with quick-add
-- Event creation and editing with public/private visibility
-- iCalendar import and export
-- Token-protected sync feeds for Google Calendar, Apple Calendar and Outlook
+- Public listing with search and category filters
+- Files streamed through PHP, never linked directly
+- MIME validation on upload and token-based download links
+- Admin area for uploading, editing and deleting files
 
 ## Running locally
 
@@ -28,6 +29,7 @@ cd forum    && php -S localhost:8001
 cd store    && php -S localhost:8002
 cd cms      && php -S localhost:8003
 cd calendar && php -S localhost:8004
+cd dlm      && php -S localhost:8005
 ```
 
 Each project still runs standalone, and each one can be dropped inside the CMS
