@@ -29,13 +29,13 @@
      * @returns {void}
      */
     function initNavToggle() {
-        var toggle = document.querySelector('.nav-toggle');
-        var nav    = document.querySelector('.primary-nav');
+        const toggle = document.querySelector('.nav-toggle');
+        const nav    = document.querySelector('.primary-nav');
 
         if (!toggle || !nav) return;
 
         toggle.addEventListener('click', function () {
-            var isOpen = nav.classList.toggle('is-open');
+            const isOpen = nav.classList.toggle('is-open');
             toggle.setAttribute('aria-expanded', String(isOpen));
         });
 
@@ -92,11 +92,11 @@
      * @returns {void}
      */
     function highlightActiveNav() {
-        var currentPath = window.location.pathname;
+        const currentPath = window.location.pathname;
 
         document.querySelectorAll('.primary-nav a').forEach(function (link) {
             try {
-                var linkUrl  = new URL(link.href, window.location.origin);
+                const linkUrl  = new URL(link.href, window.location.origin);
                 if (linkUrl.pathname === currentPath) {
                     link.setAttribute('aria-current', 'page');
                     link.style.color       = 'var(--clr-accent)';
@@ -124,7 +124,7 @@
     function initConfirmActions() {
         document.querySelectorAll('[data-confirm]').forEach(function (el) {
             el.addEventListener('click', function (e) {
-                var message = el.getAttribute('data-confirm') || 'Are you sure?';
+                const message = el.getAttribute('data-confirm') || 'Are you sure?';
                 if (!window.confirm(message)) {
                     e.preventDefault();
                 }

@@ -19,12 +19,12 @@
     // -----------------------------------------------------------------------
     // Mobile navigation toggle
     // -----------------------------------------------------------------------
-    var navToggle = document.querySelector('.nav-toggle');
-    var primaryNav = document.querySelector('.primary-nav');
+    const navToggle = document.querySelector('.nav-toggle');
+    const primaryNav = document.querySelector('.primary-nav');
 
     if (navToggle && primaryNav) {
         navToggle.addEventListener('click', () => {
-            var expanded = navToggle.getAttribute('aria-expanded') === 'true';
+            const expanded = navToggle.getAttribute('aria-expanded') === 'true';
             navToggle.setAttribute('aria-expanded', String(!expanded));
             primaryNav.classList.toggle('is-open', !expanded);
         });
@@ -33,20 +33,20 @@
     // -----------------------------------------------------------------------
     // Datetime pickers: auto-advance end time when start changes
     // -----------------------------------------------------------------------
-    var startInput = document.getElementById('start_datetime');
-    var endInput   = document.getElementById('end_datetime');
+    const startInput = document.getElementById('start_datetime');
+    const endInput   = document.getElementById('end_datetime');
 
     if (startInput && endInput) {
         startInput.addEventListener('change', () => {
             if (!startInput.value) return;
             // If end is blank or earlier than start, set end = start + 1 hour
-            var startMs = new Date(startInput.value).getTime();
-            var endMs   = endInput.value ? new Date(endInput.value).getTime() : 0;
+            const startMs = new Date(startInput.value).getTime();
+            const endMs   = endInput.value ? new Date(endInput.value).getTime() : 0;
 
             if (!endInput.value || endMs < startMs) {
-                var newEnd = new Date(startMs + 60 * 60 * 1000);
+                const newEnd = new Date(startMs + 60 * 60 * 1000);
                 // Format as "YYYY-MM-DDTHH:MM"
-                var pad = n => String(n).padStart(2, '0');
+                const pad = n => String(n).padStart(2, '0');
                 endInput.value = newEnd.getFullYear()    + '-' +
                                  pad(newEnd.getMonth() + 1) + '-' +
                                  pad(newEnd.getDate())   + 'T' +
@@ -60,10 +60,10 @@
     // Copy-to-clipboard for token / sync URLs
     // -----------------------------------------------------------------------
     window.copyToClipboard = function (el) {
-        var text = el.textContent.trim();
+        const text = el.textContent.trim();
         if (!navigator.clipboard) {
             // Fallback for older browsers
-            var ta = document.createElement('textarea');
+            const ta = document.createElement('textarea');
             ta.value = text;
             ta.style.position = 'fixed';
             ta.style.opacity  = '0';
@@ -74,7 +74,7 @@
         } else {
             navigator.clipboard.writeText(text);
         }
-        var original = el.title;
+        const original = el.title;
         el.title = 'Copied!';
         el.style.borderColor = 'var(--clr-accent)';
         setTimeout(() => {
@@ -86,8 +86,8 @@
     // -----------------------------------------------------------------------
     // Event modal
     // -----------------------------------------------------------------------
-    var modal    = document.getElementById('event-modal');
-    var modalClose = document.getElementById('modal-close');
+    const modal    = document.getElementById('event-modal');
+    const modalClose = document.getElementById('modal-close');
 
     if (modal && modalClose) {
         // Close on backdrop click
@@ -118,7 +118,7 @@
                 document.getElementById('modal-datetime').textContent      = data.datetime   || '';
                 document.getElementById('modal-desc').textContent          = data.description || '';
 
-                var locEl = document.getElementById('modal-location');
+                const locEl = document.getElementById('modal-location');
                 if (data.location) {
                     locEl.textContent = '📍 ' + data.location;
                     locEl.hidden = false;
@@ -146,18 +146,18 @@
     // -----------------------------------------------------------------------
     // Wire up calendar event chip clicks to open modal
     // -----------------------------------------------------------------------
-    var calGrid = document.querySelector('.cal-grid');
+    const calGrid = document.querySelector('.cal-grid');
 
     if (calGrid) {
-        var baseUrl = calGrid.dataset.baseUrl || '';
+        const baseUrl = calGrid.dataset.baseUrl || '';
 
         calGrid.addEventListener('click', (e) => {
-            var chip = e.target.closest('.cal-event-chip');
+            const chip = e.target.closest('.cal-event-chip');
             if (!chip) return;
 
             // Extract event ID from the href: /event.php?id=X
-            var href  = chip.getAttribute('href') || '';
-            var match = href.match(/[?&]id=(\d+)/);
+            const href  = chip.getAttribute('href') || '';
+            const match = href.match(/[?&]id=(\d+)/);
             if (!match) return;
 
             e.preventDefault();
@@ -168,7 +168,7 @@
     // -----------------------------------------------------------------------
     // Flash message auto-dismiss (3 seconds)
     // -----------------------------------------------------------------------
-    var flash = document.querySelector('.alert--success');
+    const flash = document.querySelector('.alert--success');
     if (flash) {
         setTimeout(() => {
             flash.style.transition = 'opacity .4s ease';

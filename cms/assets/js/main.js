@@ -17,11 +17,11 @@
     // -----------------------------------------------------------------------
     // Slug auto-generation
     // -----------------------------------------------------------------------
-    var titleInput = document.getElementById('title');
-    var slugInput  = document.getElementById('slug');
+    const titleInput = document.getElementById('title');
+    const slugInput  = document.getElementById('slug');
 
     if (titleInput && slugInput) {
-        var slugEdited = slugInput.value.trim() !== '';
+        let slugEdited = slugInput.value.trim() !== '';
 
         titleInput.addEventListener('input', function () {
             if (slugEdited) return;
@@ -44,13 +44,13 @@
     // -----------------------------------------------------------------------
     // Mobile sidebar toggle
     // -----------------------------------------------------------------------
-    var sidebar    = document.querySelector('.sidebar');
-    var toggleBtn  = document.querySelector('.sidebar-toggle');
+    const sidebar    = document.querySelector('.sidebar');
+    const toggleBtn  = document.querySelector('.sidebar-toggle');
 
     if (sidebar && toggleBtn) {
         toggleBtn.addEventListener('click', function () {
             sidebar.classList.toggle('open');
-            var expanded = sidebar.classList.contains('open');
+            const expanded = sidebar.classList.contains('open');
             toggleBtn.setAttribute('aria-expanded', String(expanded));
         });
     }

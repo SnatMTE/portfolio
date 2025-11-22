@@ -18,12 +18,12 @@
     /* ------------------------------------------------------------------
        1. Mobile navigation toggle
        ------------------------------------------------------------------ */
-    var toggle = document.querySelector('.nav-toggle');
-    var nav    = document.querySelector('.primary-nav');
+    const toggle = document.querySelector('.nav-toggle');
+    const nav    = document.querySelector('.primary-nav');
 
     if (toggle && nav) {
         toggle.addEventListener('click', () => {
-            var expanded = toggle.getAttribute('aria-expanded') === 'true';
+            const expanded = toggle.getAttribute('aria-expanded') === 'true';
             toggle.setAttribute('aria-expanded', String(!expanded));
             nav.classList.toggle('is-open', !expanded);
         });
@@ -43,18 +43,18 @@
           have them. Works on product detail page and cart.
        ------------------------------------------------------------------ */
     function buildSpinner(input) {
-        var wrapper = document.createElement('div');
+        const wrapper = document.createElement('div');
         wrapper.className = 'qty-spinner';
         input.parentNode.insertBefore(wrapper, input);
         wrapper.appendChild(input);
 
-        var btnDec = document.createElement('button');
+        const btnDec = document.createElement('button');
         btnDec.type        = 'button';
         btnDec.textContent = '−';
         btnDec.className   = 'qty-spinner__btn';
         btnDec.setAttribute('aria-label', 'Decrease quantity');
 
-        var btnInc = document.createElement('button');
+        const btnInc = document.createElement('button');
         btnInc.type        = 'button';
         btnInc.textContent = '+';
         btnInc.className   = 'qty-spinner__btn';
@@ -64,15 +64,15 @@
         wrapper.appendChild(btnInc);
 
         btnDec.addEventListener('click', () => {
-            var val = parseInt(input.value, 10);
-            var min = parseInt(input.min || '0', 10);
+            const val = parseInt(input.value, 10);
+            const min = parseInt(input.min || '0', 10);
             if (val > min) input.value = val - 1;
             input.dispatchEvent(new Event('change'));
         });
 
         btnInc.addEventListener('click', () => {
-            var val = parseInt(input.value, 10);
-            var max = parseInt(input.max || '9999', 10);
+            const val = parseInt(input.value, 10);
+            const max = parseInt(input.max || '9999', 10);
             if (val < max) input.value = val + 1;
             input.dispatchEvent(new Event('change'));
         });
@@ -87,11 +87,11 @@
     /* ------------------------------------------------------------------
        3. Auto-submit cart update on quantity change (debounced 600ms)
        ------------------------------------------------------------------ */
-    var debounceTimer = null;
+    let debounceTimer = null;
 
     document.querySelectorAll('.qty-form .qty-input').forEach((input) => {
         input.addEventListener('change', () => {
-            var form = input.closest('form');
+            const form = input.closest('form');
             if (!form) return;
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => form.submit(), 600);
@@ -116,10 +116,10 @@
        ------------------------------------------------------------------ */
     document.querySelectorAll('input[type="file"][accept*="image"]').forEach((input) => {
         input.addEventListener('change', () => {
-            var file = input.files[0];
+            const file = input.files[0];
             if (!file) return;
 
-            var preview = input.parentNode.querySelector('.js-image-preview');
+            let preview = input.parentNode.querySelector('.js-image-preview');
             if (!preview) {
                 preview = document.createElement('img');
                 preview.className = 'js-image-preview';
@@ -127,7 +127,7 @@
                 input.parentNode.appendChild(preview);
             }
 
-            var reader = new FileReader();
+            const reader = new FileReader();
             reader.onload = (e) => { preview.src = e.target.result; };
             reader.readAsDataURL(file);
         });

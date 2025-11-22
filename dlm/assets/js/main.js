@@ -15,12 +15,12 @@
     // -------------------------------------------------------------------------
     // Mobile nav toggle
     // -------------------------------------------------------------------------
-    var toggle = document.querySelector('.nav-toggle');
-    var nav    = document.querySelector('.primary-nav');
+    const toggle = document.querySelector('.nav-toggle');
+    const nav    = document.querySelector('.primary-nav');
 
     if (toggle && nav) {
         toggle.addEventListener('click', function () {
-            var open = nav.classList.toggle('is-open');
+            const open = nav.classList.toggle('is-open');
             toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
         });
 
@@ -36,9 +36,9 @@
     // -------------------------------------------------------------------------
     // Upload zone — drag-and-drop styling and filename display
     // -------------------------------------------------------------------------
-    var zone     = document.getElementById('upload-zone');
-    var fileInput = document.getElementById('file');
-    var fileName  = document.getElementById('upload-filename');
+    const zone     = document.getElementById('upload-zone');
+    const fileInput = document.getElementById('file');
+    const fileName  = document.getElementById('upload-filename');
 
     if (zone && fileInput) {
         // Show selected filename when the user picks via browse
@@ -62,11 +62,11 @@
             e.preventDefault();
             zone.classList.remove('is-dragover');
 
-            var files = e.dataTransfer && e.dataTransfer.files;
+            const files = e.dataTransfer && e.dataTransfer.files;
             if (files && files.length > 0) {
                 // Assign the dropped file to the real input via DataTransfer
                 try {
-                    var dt = new DataTransfer();
+                    const dt = new DataTransfer();
                     dt.items.add(files[0]);
                     fileInput.files = dt.files;
                 } catch (_) {

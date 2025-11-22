@@ -18,13 +18,13 @@
     // -----------------------------------------------------------------------
     // Mobile navigation toggle
     // -----------------------------------------------------------------------
-    var navToggle = document.querySelector('.nav-toggle');
-    var primaryNav = document.querySelector('.primary-nav');
-    var headerAuth = document.querySelector('.header-auth');
+    const navToggle = document.querySelector('.nav-toggle');
+    const primaryNav = document.querySelector('.primary-nav');
+    const headerAuth = document.querySelector('.header-auth');
 
     if (navToggle && primaryNav) {
         navToggle.addEventListener('click', function () {
-            var isOpen = primaryNav.classList.toggle('is-open');
+            const isOpen = primaryNav.classList.toggle('is-open');
             navToggle.setAttribute('aria-expanded', String(isOpen));
 
             // Also show auth links inside the open menu on mobile
@@ -58,7 +58,7 @@
     // -----------------------------------------------------------------------
     // Auto-dismiss flash / alert messages after 5 seconds
     // -----------------------------------------------------------------------
-    var alerts = document.querySelectorAll('.alert');
+    const alerts = document.querySelectorAll('.alert');
     alerts.forEach(function (alert) {
         // Only auto-dismiss success and info alerts, not errors
         if (!alert.classList.contains('alert--error')) {
@@ -78,16 +78,16 @@
     // Character counter for textareas with maxlength
     // -----------------------------------------------------------------------
     document.querySelectorAll('textarea[maxlength]').forEach(function (textarea) {
-        var maxLen = parseInt(textarea.getAttribute('maxlength'), 10);
+        const maxLen = parseInt(textarea.getAttribute('maxlength'), 10);
         if (!maxLen) return;
 
-        var counter = document.createElement('small');
+        const counter = document.createElement('small');
         counter.className = 'char-counter';
         counter.setAttribute('aria-live', 'polite');
         textarea.parentNode.insertBefore(counter, textarea.nextSibling);
 
         function updateCounter() {
-            var remaining = maxLen - textarea.value.length;
+            const remaining = maxLen - textarea.value.length;
             counter.textContent = remaining + ' characters remaining';
             counter.style.color = remaining < 200 ? '#f97316' : '#6b7280';
         }
@@ -100,7 +100,7 @@
     // Scroll to reply anchor if present in URL hash on page load
     // -----------------------------------------------------------------------
     if (window.location.hash && window.location.hash.startsWith('#post-')) {
-        var target = document.querySelector(window.location.hash);
+        const target = document.querySelector(window.location.hash);
         if (target) {
             setTimeout(function () {
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -111,7 +111,7 @@
     // -----------------------------------------------------------------------
     // Thread form: focus on title field on page load
     // -----------------------------------------------------------------------
-    var titleInput = document.querySelector('.thread-form #title');
+    const titleInput = document.querySelector('.thread-form #title');
     if (titleInput && !titleInput.value) {
         titleInput.focus();
     }
