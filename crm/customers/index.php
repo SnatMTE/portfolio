@@ -106,7 +106,32 @@ require_once CRM_ROOT . '/templates/header.php';
     <?php endif; ?>
 </div>
 
-<p class="text-muted">Showing all customers.</p>
+<!-- ── Filter bar ────────────────────────────────────────────────── -->
+<form class="crm-filter-bar" method="get" action="">
+    <input type="search" name="q" class="form-control crm-filter-bar__search"
+           placeholder="Search name, email, phone…" value="<?= htmlspecialchars($search, ENT_QUOTES) ?>">
+
+    <select name="status" class="form-control crm-filter-bar__select">
+        <option value="">All statuses</option>
+        <?php foreach (['active','inactive','prospect','churned'] as $s): ?>
+            <option value="<?= $s ?>" <?= $status === $s ? 'selected' : '' ?>><?= ucfirst($s) ?></option>
+        <?php endforeach; ?>
+    </select>
+
+    <select name="company" class="form-control crm-filter-bar__select">
+        <option value="">All companies</option>
+        <?php foreach ($companies as $co): ?>
+            <option value="<?= $co['id'] ?>" <?= $company === (int)$co['id'] ? 'selected' : '' ?>>
+                <?= htmlspecialchars($co['name'], ENT_QUOTES) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <button type="submit" class="btn btn--primary btn--sm">Filter</button>
+    <?php if ($search || $status || $company): ?>
+        <a href="?" class="btn btn--outline btn--sm">Clear</a>
+    <?php endif; ?>
+</form>
 
 <!-- ── Table ─────────────────────────────────────────────────────── -->
 <?php if ($customers): ?>
