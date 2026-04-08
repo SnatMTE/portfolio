@@ -47,5 +47,3 @@ php -S localhost:8000
 ```
 
 4. Open `http://localhost:8000` in your browser. Use `setup.php` to create the initial admin account, then delete `setup.php` from the server for security.
-
-If you want me to add a license, CI, or a CONTRIBUTING guide, tell me which license and I'll update the README.
