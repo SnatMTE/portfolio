@@ -1,0 +1,74 @@
+# ============================================================
+# .htaccess – URL rewrites & security hardening
+# portfolio blog · https://terra.me.uk
+# ============================================================
+
+Options -Indexes
+ServerSignature Off
+
+# Require HTTPS
+# (uncomment on live server)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # ---------------------------------------------------------
+    # Protect sensitive files from direct access
+    # ---------------------------------------------------------
+    RewriteRule ^db/.*$       - [F,L]
+    RewriteRule ^config\.php$ - [F,L]
+    RewriteRule ^functions\.php$ - [F,L]
+
+    # ---------------------------------------------------------
+    # Clean URL rewrites
+    # ---------------------------------------------------------
+
+    # /post/my-slug  → post.php?slug=my-slug
+    RewriteRule ^post/([a-z0-9\-]+)/?$  post.php?slug=$1  [L,QSA]
+
+    # /category/my-cat → index.php?category=my-cat
+    RewriteRule ^category/([a-z0-9\-]+)/?$  index.php?category=$1  [L,QSA]
+
+    # /tag/my-tag → index.php?tag=my-tag
+    RewriteRule ^tag/([a-z0-9\-]+)/?$  index.php?tag=$1  [L,QSA]
+
+    # /search → index.php?search=... (handled by index.php)
+    RewriteRule ^search/?$  index.php  [L,QSA]
+
+    # /page/2 → index.php?page=2
+    RewriteRule ^page/([0-9]+)/?$  index.php?page=$1  [L,QSA]
+
+    # /rss or /feed → rss.php
+    RewriteRule ^(rss|feed)/?$  rss.php  [L]
+</IfModule>
+
+# ---------------------------------------------------------
+# Security headers
+# ---------------------------------------------------------
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=()"
+</IfModule>
+
+# ---------------------------------------------------------
+# Deny access to hidden files (e.g. .git, .env)
+# ---------------------------------------------------------
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# ---------------------------------------------------------
+# PHP settings (shared hosting friendly)
+# ---------------------------------------------------------
+<IfModule mod_php.c>
+    php_flag  display_errors    Off
+    php_flag  log_errors        On
+    php_value upload_max_filesize 8M
+    php_value post_max_size       9M
+</IfModule>
