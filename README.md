@@ -1,8 +1,10 @@
 # Portfolio Projects
 
-This repository contains personal projects by Snat. It only includes code I have written personally.
+This repository contains personal projects by Snat. It is intended to showcase code I've written personally and is not a set of projects I actively develop.
 
-Most professional work is delivered through my business, Nerd @ Technologies (https://nerd-at-tech.co.uk). I do not claim work completed by others at the business; projects stored here are my own code.
+While I contribute the majority of the code for projects delivered through my business, Nerd @ Technologies (https://nerd-at-tech.co.uk), other people also contribute there. To avoid implying those business projects are solely my work, this repository contains only code I've written personally.
+
+You're welcome to fork and use the code as you like but please let me know what you do with it (a link or shout-out would be appreciated). I will not accept pull/merge requests.
 
 ## Projects
 
