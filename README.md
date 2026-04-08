@@ -8,7 +8,7 @@ You're welcome to fork and use the code as you like but please let me know what 
 
 ## Projects
 
-- **blog** — A lightweight, self-hosted blog application.
+- **blog** - A lightweight, self-hosted blog application.
 
 ### Blog
 
@@ -26,14 +26,14 @@ How it's coded:
 
 Core files:
 
-- [blog/config.php](blog/config.php) — Site constants and PDO/SQLite setup.
-- [blog/functions.php](blog/functions.php) — Helper functions (auth, CSRF, helpers).
-- [blog/db/schema.php](blog/db/schema.php) — Database schema and initialization.
-- [blog/index.php](blog/index.php), [blog/post.php](blog/post.php) — Public-facing pages.
-- [blog/admin/](blog/admin/) — Admin UI and post management.
-- [blog/setup.php](blog/setup.php) — First-run admin creation (DELETE AFTER USE).
-- [blog/templates/](blog/templates/) — Server-side templates.
-- [blog/assets/](blog/assets/) — Styles, images and client-side JS.
+- [blog/config.php](blog/config.php) - Site constants and PDO/SQLite setup.
+- [blog/functions.php](blog/functions.php) - Helper functions (auth, CSRF, helpers).
+- [blog/db/schema.php](blog/db/schema.php) - Database schema and initialization.
+- [blog/index.php](blog/index.php), [blog/post.php](blog/post.php) - Public-facing pages.
+- [blog/admin/](blog/admin/) - Admin UI and post management.
+- [blog/setup.php](blog/setup.php) - First-run admin creation (DELETE AFTER USE).
+- [blog/templates/](blog/templates/) - Server-side templates.
+- [blog/assets/](blog/assets/) - Styles, images and client-side JS.
 
 Getting started (local):
 
