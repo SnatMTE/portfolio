@@ -18,17 +18,6 @@ $categories = getCategories();
 require_once __DIR__ . '/templates/header.php';
 ?>
 
-<div class="forum-hero">
-    <h1 class="forum-hero__title"><?= e(FORUM_NAME) ?></h1>
-    <p class="forum-hero__subtitle"><?= e(FORUM_TAGLINE) ?></p>
-    <?php if (!isLoggedIn()): ?>
-        <div class="forum-hero__actions">
-            <a href="<?= SITE_URL ?>/register.php" class="btn btn--primary">Join the community</a>
-            <a href="<?= SITE_URL ?>/login.php" class="btn btn--outline">Log in</a>
-        </div>
-    <?php endif; ?>
-</div>
-
 <?php if (empty($categories)): ?>
     <div class="empty-state">
         <p>No categories have been created yet.</p>
