@@ -1,0 +1,54 @@
+<?php
+/**
+ * admin/auth.php
+ *
+ * Authentication helper for the store admin panel.
+ * Every admin page must include this file before any output.
+ *
+ * @author  Snat
+ * @link    https://terra.me.uk
+ */
+
+require_once dirname(__DIR__) . '/config.php';
+require_once dirname(__DIR__) . '/functions.php';
+
+// ---------------------------------------------------------------------------
+// Access control
+// ---------------------------------------------------------------------------
+
+/**
+ * Redirects unauthenticated visitors to the login page.
+ *
+ * @return void
+ */
+function requireLogin(): void
+{
+    if (empty($_SESSION['admin_id'])) {
+        redirect(SITE_URL . '/login.php');
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Current user
+// ---------------------------------------------------------------------------
+
+/**
+ * Returns data for the currently authenticated admin user, or NULL.
+ *
+ * @return array<string, mixed>|null
+ */
+function currentAdminUser(): ?array
+{
+    $id = (int) ($_SESSION['admin_id'] ?? 0);
+    if ($id === 0) return null;
+
+    $stmt = getDB()->prepare("SELECT id, username, email FROM users WHERE id = :id LIMIT 1");
+    $stmt->execute([':id' => $id]);
+    $row = $stmt->fetch();
+    return $row ?: null;
+}
+
+// ---------------------------------------------------------------------------
+// Boot: require login on every admin include
+// ---------------------------------------------------------------------------
+requireLogin();
