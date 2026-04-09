@@ -26,7 +26,8 @@ function requireAdminAuth(): void
 {
     if (!isLoggedIn()) {
         flashMessage('Please log in to access the admin panel.', 'error');
-        redirect(SITE_URL . '/login.php');
+        $loginUrl = defined('CMS_URL') ? CMS_URL . '/login.php' : SITE_URL . '/login.php';
+        redirect($loginUrl);
     }
     if (!isAdmin()) {
         http_response_code(403);

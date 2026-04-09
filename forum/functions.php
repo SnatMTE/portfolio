@@ -238,17 +238,69 @@ function currentUser(): ?array
         return null;
     }
     static $user = null;
-    if ($user === null) {
-        $stmt = getDB()->prepare(
-            "SELECT u.id, u.username, u.email, u.bio, u.created_at, r.name AS role
-             FROM users u
-             JOIN roles r ON r.id = u.role_id
-             WHERE u.id = :id"
-        );
-        $stmt->execute([':id' => (int) $_SESSION['user_id']]);
-        $user = $stmt->fetch() ?: null;
+    if ($user !== null) {
+        return $user;
     }
+
+    // CMS mode: return session-based data and ensure a shadow record exists
+    // in the forum DB for FK constraints (threads/posts).
+    if (defined('CMS_ROOT')) {
+        $user = [
+            'id'         => (int) $_SESSION['user_id'],
+            'username'   => $_SESSION['username'] ?? 'User',
+            'email'      => '',
+            'bio'        => '',
+            'created_at' => '',
+            'role'       => $_SESSION['role'] ?? 'user',
+        ];
+        _ensureForumUserRecord($user['id'], $user['username'], $user['role']);
+        return $user;
+    }
+
+    // Standalone mode: query the forum DB.
+    $stmt = getDB()->prepare(
+        "SELECT u.id, u.username, u.email, u.bio, u.created_at, r.name AS role
+         FROM users u
+         JOIN roles r ON r.id = u.role_id
+         WHERE u.id = :id"
+    );
+    $stmt->execute([':id' => (int) $_SESSION['user_id']]);
+    $user = $stmt->fetch() ?: null;
     return $user;
+}
+
+/**
+ * Ensures a shadow user record exists in the forum DB for FK constraints.
+ * Only used in CMS mode. Silently no-ops on failure.
+ *
+ * @param int    $userId
+ * @param string $username
+ * @param string $role
+ * @return void
+ */
+function _ensureForumUserRecord(int $userId, string $username, string $role): void
+{
+    static $ensured = false;
+    if ($ensured) {
+        return;
+    }
+    $ensured = true;
+    try {
+        $db     = getDB();
+        $roleId = $role === 'admin' ? 1 : 2;
+        $stmt = $db->prepare(
+            "INSERT OR IGNORE INTO users (id, username, email, password_hash, role_id)
+             VALUES (:id, :username, :email, '', :role_id)"
+        );
+        $stmt->execute([
+            ':id'      => $userId,
+            ':username'=> $username,
+            ':email'   => 'cms-user-' . $userId . '@cms.local',
+            ':role_id' => $roleId,
+        ]);
+    } catch (\Exception $e) {
+        // Non-fatal: FK errors may surface later but we handle gracefully.
+    }
 }
 
 /**
@@ -258,6 +310,10 @@ function currentUser(): ?array
  */
 function isAdmin(): bool
 {
+    // CMS mode: trust the role stored in the session.
+    if (defined('CMS_ROOT')) {
+        return ($_SESSION['role'] ?? '') === 'admin';
+    }
     $user = currentUser();
     return $user !== null && $user['role'] === 'admin';
 }
@@ -271,7 +327,8 @@ function requireLogin(): void
 {
     if (!isLoggedIn()) {
         flashMessage('You must be logged in to do that.', 'error');
-        redirect(SITE_URL . '/login.php');
+        $loginUrl = defined('CMS_URL') ? CMS_URL . '/login.php' : SITE_URL . '/login.php';
+        redirect($loginUrl);
     }
 }
 

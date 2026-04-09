@@ -10,6 +10,15 @@
 
 require_once __DIR__ . '/functions.php';
 
+// When inside CMS, delegate logout to the shared CMS logout page
+if (defined('CMS_ROOT')) {
+    $cmsLogout = defined('CMS_URL') ? CMS_URL . '/logout.php' : '../logout.php';
+    // Pass any csrf token along for the CMS logout CSRF check
+    $csrf = $_GET['csrf'] ?? $_POST['csrf_token'] ?? '';
+    header('Location: ' . $cmsLogout . '?csrf=' . urlencode($csrf));
+    exit;
+}
+
 // Start a session if one exists so it can be destroyed
 if (session_status() === PHP_SESSION_NONE) {
     session_start();

@@ -35,7 +35,9 @@ require_once dirname(__DIR__) . '/functions.php';
 function requireLogin(): void
 {
     if (empty($_SESSION['admin_id'])) {
-        redirect(SITE_URL . '/login.php');
+        // In CMS mode, redirect to the shared CMS login; otherwise own login
+        $loginUrl = defined('CMS_URL') ? CMS_URL . '/login.php' : SITE_URL . '/login.php';
+        redirect($loginUrl);
     }
 }
 
@@ -56,6 +58,14 @@ function currentAdminUser(): ?array
     $id = (int) ($_SESSION['admin_id'] ?? 0);
     if ($id === 0) {
         return null;
+    }
+    // In CMS mode the blog users table is empty; return session-based data.
+    if (defined('CMS_ROOT')) {
+        return [
+            'id'       => $id,
+            'username' => $_SESSION['admin_username'] ?? ($_SESSION['username'] ?? ''),
+            'email'    => '',
+        ];
     }
     $stmt = getDB()->prepare("SELECT id, username, email FROM users WHERE id = :id");
     $stmt->execute([':id' => $id]);

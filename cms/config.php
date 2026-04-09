@@ -1,39 +1,38 @@
 <?php
 /**
- * config.php
+ * cms/config.php
  *
- * Central configuration for the Forum.
- * Defines the database path, site constants, and initialises the PDO connection.
- *
- * CMS Integration
- * ---------------
- * When placed inside a CMS (detected by ../core/database.php), defines CMS_ROOT
- * and CMS_URL so that login/logout redirect to the shared CMS auth pages.
+ * Central CMS configuration.
+ * Defines CMS_ROOT, CMS_DB_FILE, site constants, and starts the session.
+ * Loads the core database provider (getCMSDB) and module loader.
  *
  * @author  Snat
  * @link    https://terra.me.uk
  */
 
 // ---------------------------------------------------------------------------
-// CMS detection
+// CMS root & database path
 // ---------------------------------------------------------------------------
-if (!defined('CMS_ROOT') && file_exists(__DIR__ . '/../core/database.php')) {
-    define('CMS_ROOT', dirname(__DIR__));
-}
 
-define('ROOT_PATH', __DIR__);
-define('DB_FILE',   ROOT_PATH . '/db/forum.sqlite');
+/** Absolute path to the CMS directory (no trailing slash). */
+define('CMS_ROOT', __DIR__);
+
+/** Absolute path to the CMS SQLite database. */
+define('CMS_DB_FILE', CMS_ROOT . '/db/cms.sqlite');
+
+/** Cost factor for password_hash(). */
+define('HASH_COST', 12);
 
 // ---------------------------------------------------------------------------
 // Site URL auto-detection
 // ---------------------------------------------------------------------------
 if (!defined('SITE_URL')) {
     /**
-     * Detects the forum's base URL from server variables.
+     * Detects the CMS base URL from server variables.
      *
-     * @return string  Base URL with no trailing slash, e.g. "https://example.com/forum".
+     * @return string  Base URL with no trailing slash.
      */
-    function detectSiteUrl(): string
+    function detectCmsSiteUrl(): string
     {
         $proto = 'http';
         if (
@@ -57,7 +56,7 @@ if (!defined('SITE_URL')) {
 
         $basePath = '';
         $docRoot  = isset($_SERVER['DOCUMENT_ROOT']) ? realpath($_SERVER['DOCUMENT_ROOT']) : false;
-        $rootPath = realpath(ROOT_PATH);
+        $rootPath = realpath(CMS_ROOT);
 
         if ($docRoot && $rootPath && strpos($rootPath, $docRoot) === 0) {
             $basePath = str_replace('\\', '/', substr($rootPath, strlen($docRoot)));
@@ -67,76 +66,50 @@ if (!defined('SITE_URL')) {
         if ($basePath === '') {
             $script   = $_SERVER['SCRIPT_NAME'] ?? ($_SERVER['PHP_SELF'] ?? '/');
             $basePath = rtrim(str_replace('\\', '/', dirname($script)), '/');
-        }
-
-        if ($basePath === '.' || $basePath === '/') {
-            $basePath = '';
+            if ($basePath === '.' || $basePath === '/') {
+                $basePath = '';
+            }
         }
 
         return $proto . '://' . $host . $basePath;
     }
 
-    define('SITE_URL', detectSiteUrl());
+    define('SITE_URL', detectCmsSiteUrl());
 }
 
-// When inside CMS, compute CMS_URL as the parent of this module's SITE_URL.
-if (defined('CMS_ROOT') && !defined('CMS_URL')) {
-    $__parts = explode('/', rtrim(SITE_URL, '/'));
-    array_pop($__parts);
-    define('CMS_URL', implode('/', $__parts));
-    unset($__parts);
+/** Also expose as CMS_URL for use by modules checking parent CMS. */
+if (!defined('CMS_URL')) {
+    define('CMS_URL', SITE_URL);
 }
 
 // ---------------------------------------------------------------------------
-// Forum constants
+// CMS display constants
 // ---------------------------------------------------------------------------
-define('FORUM_NAME',       'Forum');
-define('FORUM_TAGLINE',    'Community discussions');
-define('THREADS_PER_PAGE', 20);
-define('POSTS_PER_PAGE',   20);
+define('CMS_NAME',    'CMS');
+define('CMS_TAGLINE', 'Unified Content Management');
 
 // ---------------------------------------------------------------------------
 // Session
 // ---------------------------------------------------------------------------
 if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path'     => '/',
+        'secure'   => true,
+        'httponly' => true,
+        'samesite' => 'Strict',
+    ]);
     session_start();
 }
 
 // ---------------------------------------------------------------------------
-// Database (PDO singleton)
+// Load core providers
 // ---------------------------------------------------------------------------
-
-/**
- * Returns the shared PDO instance, creating it on first call.
- * The schema is initialised automatically on the first connection.
- *
- * @return PDO
- */
-function getDB(): PDO
-{
-    static $pdo = null;
-
-    if ($pdo === null) {
-        $dbDir = ROOT_PATH . '/db';
-        if (!is_dir($dbDir)) {
-            mkdir($dbDir, 0755, true);
-        }
-
-        try {
-            $pdo = new PDO('sqlite:' . DB_FILE, null, null, [
-                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES   => false,
-            ]);
-            $pdo->exec('PRAGMA journal_mode=WAL');
-            $pdo->exec('PRAGMA foreign_keys=ON');
-        } catch (PDOException $e) {
-            http_response_code(500);
-            exit('Database connection failed.');
-        }
-
-        require_once ROOT_PATH . '/db/schema.php';
-    }
-
-    return $pdo;
+// Load small mbstring polyfills when the ext/mbstring PHP extension
+// is not available. This allows the CMS to run on environments where
+// mbstring isn't installed. For full unicode support install mbstring.
+if (file_exists(CMS_ROOT . '/core/mb_polyfill.php')) {
+    require_once CMS_ROOT . '/core/mb_polyfill.php';
 }
+require_once CMS_ROOT . '/core/database.php';
+require_once CMS_ROOT . '/core/module_loader.php';

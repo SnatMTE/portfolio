@@ -17,6 +17,13 @@
 
 require_once __DIR__ . '/functions.php';
 
+// When inside CMS, redirect to the shared CMS login page
+if (defined('CMS_ROOT')) {
+    $cmsLogin = defined('CMS_URL') ? CMS_URL . '/login.php' : '../login.php';
+    header('Location: ' . $cmsLogin);
+    exit;
+}
+
 // Already logged in – redirect to dashboard
 if (!empty($_SESSION['admin_id'])) {
     redirect(SITE_URL . '/admin/');

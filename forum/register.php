@@ -11,6 +11,12 @@
 
 require_once __DIR__ . '/functions.php';
 
+// When inside CMS, user accounts are managed centrally — no self-registration here.
+if (defined('CMS_ROOT')) {
+    flashMessage('User registration is managed by the CMS admin panel.', 'info');
+    redirect(SITE_URL . '/');
+}
+
 // Already logged in
 if (isLoggedIn()) {
     redirect(SITE_URL . '/');

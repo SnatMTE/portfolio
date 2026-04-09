@@ -5,9 +5,24 @@
  * Central configuration file for the portfolio blog.
  * Defines database path, site constants, and initialises the PDO connection.
  *
+ * CMS Integration
+ * ---------------
+ * When this module is placed inside a CMS (detected by the presence of
+ * ../core/database.php), it defines CMS_ROOT and computes CMS_URL so that
+ * login/logout redirects point to the shared CMS authentication pages.
+ * The session is shared; the module's own getDB() still connects to the
+ * module's own SQLite file for content tables.
+ *
  * @author  Snat
  * @link    https://terra.me.uk
  */
+
+// ---------------------------------------------------------------------------
+// CMS detection
+// ---------------------------------------------------------------------------
+if (!defined('CMS_ROOT') && file_exists(__DIR__ . '/../core/database.php')) {
+    define('CMS_ROOT', dirname(__DIR__));
+}
 
 // ---------------------------------------------------------------------------
 // Site constants
@@ -88,6 +103,14 @@ if (!defined('SITE_URL')) {
     }
 
     define('SITE_URL', detectSiteUrl());
+}
+
+// When inside CMS, compute CMS_URL as the parent of this module's SITE_URL.
+if (defined('CMS_ROOT') && !defined('CMS_URL')) {
+    $__parts = explode('/', rtrim(SITE_URL, '/'));
+    array_pop($__parts);
+    define('CMS_URL', implode('/', $__parts));
+    unset($__parts);
 }
 
 /** Human-readable site name shown in the browser title and header. */
