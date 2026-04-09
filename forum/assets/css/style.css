@@ -311,34 +311,6 @@ button     { cursor: pointer; font-family: inherit; }
 .page-top__info { flex: 1; }
 .page-top__info .page-heading { margin-bottom: .25rem; }
 
-/* ---------------------------------------------------------
-   Forum Hero (homepage banner)
-   --------------------------------------------------------- */
-.forum-hero {
-    text-align:    center;
-    padding-block: 3rem 2.5rem;
-    margin-bottom: 2rem;
-}
-
-.forum-hero__title {
-    font-size:     2.5rem;
-    font-weight:   800;
-    color:         var(--clr-text);
-    margin-bottom: .5rem;
-}
-
-.forum-hero__subtitle {
-    font-size:     1.1rem;
-    color:         var(--clr-text-muted);
-    margin-bottom: 1.5rem;
-}
-
-.forum-hero__actions {
-    display:     flex;
-    gap:         .75rem;
-    justify-content: center;
-    flex-wrap:   wrap;
-}
 
 /* ---------------------------------------------------------
    Categories Grid
@@ -620,7 +592,9 @@ button     { cursor: pointer; font-family: inherit; }
     border-bottom:  1px solid var(--clr-border);
     margin-bottom:  .25rem;
 }
-.thread-list-header__col--main { /* main column takes remaining space */ }
+.thread-list-header__col--main { /* main column takes remaining space */
+    min-width: 0;
+}
 
 .thread-list {
     display:        flex;
@@ -1384,7 +1358,7 @@ select.form-control {
         flex-direction: column;
     }
 
-    .forum-hero__title { font-size: 1.75rem; }
+    /* legacy: forum-hero title size adjusted for small screens (removed) */
 }
 
 @media (max-width: 640px) {
