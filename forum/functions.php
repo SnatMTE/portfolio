@@ -304,7 +304,23 @@ function getCategories(): array
         "SELECT c.*,
                 COUNT(DISTINCT t.id) AS thread_count,
                 COUNT(DISTINCT p.id) AS post_count,
-                MAX(p.created_at)    AS last_post_at
+                MAX(p.created_at)    AS last_post_at,
+                (SELECT t2.title
+                 FROM threads t2
+                 JOIN posts p2 ON p2.thread_id = t2.id AND p2.is_deleted = 0
+                 WHERE t2.category_id = c.id
+                 ORDER BY p2.created_at DESC LIMIT 1) AS last_thread_title,
+                (SELECT t2.slug
+                 FROM threads t2
+                 JOIN posts p2 ON p2.thread_id = t2.id AND p2.is_deleted = 0
+                 WHERE t2.category_id = c.id
+                 ORDER BY p2.created_at DESC LIMIT 1) AS last_thread_slug,
+                (SELECT u2.username
+                 FROM users u2
+                 JOIN posts p2 ON p2.user_id = u2.id AND p2.is_deleted = 0
+                 JOIN threads t2 ON t2.id = p2.thread_id
+                 WHERE t2.category_id = c.id
+                 ORDER BY p2.created_at DESC LIMIT 1) AS last_poster
          FROM categories c
          LEFT JOIN threads t ON t.category_id = c.id
          LEFT JOIN posts   p ON p.thread_id   = t.id AND p.is_deleted = 0
