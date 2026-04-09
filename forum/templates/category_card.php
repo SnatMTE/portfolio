@@ -2,40 +2,50 @@
 /**
  * templates/category_card.php
  *
- * Renders a single category card for the forum homepage.
+ * Renders a single forum category row in the forum-index table.
  * Expects $cat (array) with keys from getCategories():
- *   id, name, slug, description, thread_count, post_count, last_post_at
+ *   id, name, slug, description, thread_count, post_count, last_post_at,
+ *   last_thread_title, last_thread_slug, last_poster
  *
  * @author  Snat
  * @link    https://terra.me.uk
  */
 ?>
-<article class="category-card">
-    <a href="<?= SITE_URL ?>/category.php?slug=<?= e($cat['slug']) ?>" class="category-card__inner">
-        <div class="category-card__icon" aria-hidden="true">
+<div class="fi-table__row fi-row" role="row">
+    <div class="fi-col-forum" role="cell">
+        <div class="fi-row__icon" aria-hidden="true">
             <?= strtoupper(mb_substr($cat['name'], 0, 1)) ?>
         </div>
-        <div class="category-card__body">
-            <h2 class="category-card__title"><?= e($cat['name']) ?></h2>
+        <div class="fi-row__info">
+            <a href="<?= SITE_URL ?>/category.php?slug=<?= e($cat['slug']) ?>" class="fi-row__name">
+                <?= e($cat['name']) ?>
+            </a>
             <?php if ($cat['description']): ?>
-                <p class="category-card__desc"><?= e($cat['description']) ?></p>
+                <p class="fi-row__desc"><?= e($cat['description']) ?></p>
             <?php endif; ?>
-            <div class="category-card__stats">
-                <span class="category-card__stat">
-                    <strong><?= number_format((int) $cat['thread_count']) ?></strong> threads
-                </span>
-                <span class="category-card__stat">
-                    <strong><?= number_format((int) $cat['post_count']) ?></strong> posts
-                </span>
-                <?php if (!empty($cat['last_post_at'])): ?>
-                    <span class="category-card__stat category-card__stat--last">
-                        Last activity <?= e(formatDate($cat['last_post_at'])) ?>
-                    </span>
-                <?php else: ?>
-                    <span class="category-card__stat category-card__stat--last">No posts yet</span>
-                <?php endif; ?>
-            </div>
         </div>
-        <div class="category-card__arrow" aria-hidden="true">&rsaquo;</div>
-    </a>
-</article>
+    </div>
+    <div class="fi-col-topics" role="cell">
+        <span class="fi-stat__value"><?= number_format((int) $cat['thread_count']) ?></span>
+        <span class="fi-stat__label">Topics</span>
+    </div>
+    <div class="fi-col-posts" role="cell">
+        <span class="fi-stat__value"><?= number_format((int) $cat['post_count']) ?></span>
+        <span class="fi-stat__label">Posts</span>
+    </div>
+    <div class="fi-col-last" role="cell">
+        <?php if (!empty($cat['last_thread_title'])): ?>
+            <a href="<?= SITE_URL ?>/thread.php?slug=<?= e($cat['last_thread_slug']) ?>" class="fi-last__thread" title="<?= e($cat['last_thread_title']) ?>">
+                <?= e(truncate($cat['last_thread_title'], 45)) ?>
+            </a>
+            <span class="fi-last__by">
+                by <strong><?= e($cat['last_poster']) ?></strong>
+            </span>
+            <time class="fi-last__time" datetime="<?= e($cat['last_post_at']) ?>">
+                <?= e(formatDateTime($cat['last_post_at'])) ?>
+            </time>
+        <?php else: ?>
+            <span class="fi-last__empty">No posts yet</span>
+        <?php endif; ?>
+    </div>
+</div>

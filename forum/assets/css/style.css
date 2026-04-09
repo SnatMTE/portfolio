@@ -361,7 +361,174 @@ button     { cursor: pointer; font-family: inherit; }
 }
 
 /* ---------------------------------------------------------
-   Category Card
+   Forum Index Table
+   --------------------------------------------------------- */
+.forum-index-section {
+    margin-bottom: 2rem;
+}
+
+.fi-table {
+    width:         100%;
+    border:        1px solid var(--clr-border);
+    border-radius: var(--radius-lg);
+    overflow:      hidden;
+    box-shadow:    var(--shadow-sm);
+    background:    var(--clr-bg);
+}
+
+/* Column widths */
+.fi-col-forum  { flex: 1 1 auto; min-width: 0; }
+.fi-col-topics { flex: 0 0 90px;  text-align: center; }
+.fi-col-posts  { flex: 0 0 90px;  text-align: center; }
+.fi-col-last   { flex: 0 0 220px; min-width: 0; }
+
+/* Header row */
+.fi-table__row--head {
+    display:        flex;
+    align-items:    center;
+    gap:            1rem;
+    padding:        .6rem 1.25rem;
+    background:     var(--clr-surface);
+    border-bottom:  2px solid var(--clr-border);
+    font-size:      .75rem;
+    font-weight:    700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color:          var(--clr-text-muted);
+}
+
+/* Category row */
+.fi-row {
+    display:        flex;
+    align-items:    center;
+    gap:            1rem;
+    padding:        1rem 1.25rem;
+    border-bottom:  1px solid var(--clr-border);
+    transition:     background var(--transition);
+}
+.fi-row:last-child { border-bottom: none; }
+.fi-row:hover      { background: var(--clr-surface); }
+
+/* Forum name + description cell */
+.fi-col-forum {
+    display:     flex;
+    align-items: center;
+    gap:         .875rem;
+}
+
+.fi-row__icon {
+    width:           44px;
+    height:          44px;
+    border-radius:   var(--radius-md);
+    background:      var(--clr-accent-bg);
+    color:           var(--clr-accent);
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    font-size:       1.3rem;
+    font-weight:     700;
+    flex-shrink:     0;
+}
+
+.fi-row__info    { min-width: 0; }
+
+.fi-row__name {
+    display:       block;
+    font-size:     1rem;
+    font-weight:   700;
+    color:         var(--clr-text);
+    margin-bottom: .15rem;
+    white-space:   nowrap;
+    overflow:      hidden;
+    text-overflow: ellipsis;
+}
+.fi-row__name:hover { color: var(--clr-accent); text-decoration: none; }
+
+.fi-row__desc {
+    font-size:     .825rem;
+    color:         var(--clr-text-muted);
+    white-space:   nowrap;
+    overflow:      hidden;
+    text-overflow: ellipsis;
+    margin:        0;
+}
+
+/* Topics / Posts stat cells */
+.fi-col-topics,
+.fi-col-posts {
+    display:        flex;
+    flex-direction: column;
+    align-items:    center;
+    gap:            .1rem;
+}
+
+.fi-stat__value {
+    font-size:   1.05rem;
+    font-weight: 700;
+    color:       var(--clr-text);
+    line-height: 1;
+}
+
+.fi-stat__label {
+    font-size:  .7rem;
+    color:      var(--clr-text-muted);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+/* Last Post cell */
+.fi-col-last {
+    display:        flex;
+    flex-direction: column;
+    gap:            .15rem;
+    min-width:      0;
+}
+
+.fi-last__thread {
+    font-size:     .875rem;
+    font-weight:   600;
+    color:         var(--clr-text);
+    white-space:   nowrap;
+    overflow:      hidden;
+    text-overflow: ellipsis;
+    display:       block;
+}
+.fi-last__thread:hover { color: var(--clr-accent); text-decoration: none; }
+
+.fi-last__by {
+    font-size: .78rem;
+    color:     var(--clr-text-muted);
+}
+.fi-last__by strong { color: var(--clr-text); font-weight: 600; }
+
+.fi-last__time {
+    font-size: .75rem;
+    color:     var(--clr-text-muted);
+}
+
+.fi-last__empty {
+    font-size:  .8rem;
+    color:      var(--clr-text-muted);
+    font-style: italic;
+}
+
+/* Responsive: collapse stats columns on small screens */
+@media (max-width: 640px) {
+    .fi-table__row--head .fi-col-topics,
+    .fi-table__row--head .fi-col-posts,
+    .fi-col-topics,
+    .fi-col-posts {
+        display: none;
+    }
+    .fi-col-last { flex: 0 0 160px; }
+}
+
+@media (max-width: 480px) {
+    .fi-col-last { display: none; }
+}
+
+/* ---------------------------------------------------------
+   Category Card (legacy — kept for any non-index uses)
    --------------------------------------------------------- */
 .category-card {
     background:    var(--clr-bg);
