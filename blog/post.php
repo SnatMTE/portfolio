@@ -52,8 +52,12 @@ if ($post === null) {
 // ---------------------------------------------------------------------------
 $pageTitle = $post['title'];
 $metaDesc  = !empty($post['excerpt']) ? $post['excerpt'] : makeExcerpt($post['content'], 160);
-$tags      = getTagsForPost((int) $post['id']);
-$postUrl   = SITE_URL . '/post/' . e($post['slug']);
+$tags = getTagsForPost((int) $post['id']);
+
+// Public URL for this post — prefer slug if available and supported
+$postUrl = (!empty($post['slug']) && function_exists('supportsPrettyUrls') && supportsPrettyUrls())
+    ? SITE_URL . '/post/' . e($post['slug'])
+    : SITE_URL . '/post.php?id=' . (int) $post['id'];
 
 require_once __DIR__ . '/templates/header.php';
 ?>

@@ -15,8 +15,10 @@
  * @link    https://terra.me.uk
  */
 
-// Build the post URL using the clean slug if available, otherwise fall back to id
-$postUrl = !empty($post['slug'])
+// Build the post URL using the clean slug when available and supported,
+// otherwise fall back to the numeric ID form (post.php?id=...)
+$useSlug = !empty($post['slug']) && function_exists('supportsPrettyUrls') && supportsPrettyUrls();
+$postUrl = $useSlug
     ? SITE_URL . '/post/' . e($post['slug'])
     : SITE_URL . '/post.php?id=' . (int) $post['id'];
 ?>

@@ -162,19 +162,26 @@ function getDB(): PDO
     static $pdo = null;
 
     if ($pdo === null) {
+        $isDemo = (isset($_GET['demo']) && $_GET['demo'] === '1') || file_exists(ROOT_PATH . '/DEMO');
+
         // Ensure the db/ directory exists before SQLite tries to create the file
         $dbDir = dirname(DB_FILE);
         if (!is_dir($dbDir)) {
             mkdir($dbDir, 0750, true);
         }
 
-        $pdo = new PDO('sqlite:' . DB_FILE);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
-        $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-        $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES,   false);
+        try {
+            $pdo = new PDO('sqlite:' . DB_FILE);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
+            $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES,   false);
 
-        // Enable FK enforcement for this connection
-        $pdo->exec('PRAGMA foreign_keys = ON;');
+            // Enable FK enforcement for this connection
+            $pdo->exec('PRAGMA foreign_keys = ON;');
+        } catch (PDOException $e) {
+            http_response_code(500);
+            exit('Database connection failed.');
+        }
     }
 
     return $pdo;
@@ -184,3 +191,13 @@ function getDB(): PDO
 // Initialise schema on first run
 // ---------------------------------------------------------------------------
 require_once ROOT_PATH . '/db/schema.php';
+
+// Seed demo data when requested via ?demo=1 or by creating a local DEMO file.
+if ((isset($_GET['demo']) && $_GET['demo'] === '1') || file_exists(ROOT_PATH . '/DEMO')) {
+    if (file_exists(ROOT_PATH . '/db/demo_seed.php')) {
+        require_once ROOT_PATH . '/db/demo_seed.php';
+        if (function_exists('seedDemoBlog')) {
+            seedDemoBlog(getDB());
+        }
+    }
+}

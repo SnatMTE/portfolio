@@ -204,3 +204,13 @@ function getDB(): PDO
 // Boot: initialise schema
 // ---------------------------------------------------------------------------
 require_once ROOT_PATH . '/db/schema.php';
+
+// Seed demo data into an in-memory DB when requested via ?demo=1 or a local DEMO file.
+if ((isset($_GET['demo']) && $_GET['demo'] === '1') || file_exists(ROOT_PATH . '/DEMO')) {
+    if (file_exists(ROOT_PATH . '/db/demo_seed.php')) {
+        require_once ROOT_PATH . '/db/demo_seed.php';
+        if (function_exists('seedDemoStore')) {
+            seedDemoStore(getDB());
+        }
+    }
+}

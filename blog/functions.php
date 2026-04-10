@@ -224,6 +224,123 @@ function validateCsrf(string $submittedToken): bool
     return hash_equals($sessionToken, $submittedToken);
 }
 
+/**
+ * Detects whether the server supports the blog's "pretty" URLs
+ * (e.g. `/post/my-slug`). Performs a lightweight HTTP probe once and
+ * caches the result to avoid repeated network calls.
+ *
+ * Returns TRUE when slug-based URLs are routed to `post.php` correctly,
+ * otherwise FALSE so callers can fall back to `post.php?id=...` links.
+ *
+ * @return bool
+ */
+function supportsPrettyUrls(): bool
+{
+    static $cached = null;
+
+    if ($cached !== null) {
+        return $cached;
+    }
+
+    $cacheFile = ROOT_PATH . '/db/pretty_url_cache.json';
+    $ttl = 3600; // 1 hour
+
+    if (file_exists($cacheFile)) {
+        $data = @json_decode(@file_get_contents($cacheFile), true);
+        if (is_array($data) && isset($data['ts']) && isset($data['value']) && (time() - $data['ts'] < $ttl)) {
+            $cached = (bool) $data['value'];
+            return $cached;
+        }
+    }
+
+    // Heuristic: PHP built-in server without a router won't honour .htaccess.
+    if (PHP_SAPI === 'cli-server') {
+        $routerFound = file_exists(ROOT_PATH . '/router.php') || file_exists(dirname(ROOT_PATH) . '/router.php');
+        if ($routerFound && (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'router.php' || basename($_SERVER['SCRIPT_NAME'] ?? '') === 'router.php')) {
+            $detected = true;
+            if (!is_dir(dirname($cacheFile))) {
+                @mkdir(dirname($cacheFile), 0750, true);
+            }
+            @file_put_contents($cacheFile, json_encode(['ts' => time(), 'value' => $detected]));
+            $cached = $detected;
+            return $detected;
+        }
+
+        $detected = false;
+        if (!is_dir(dirname($cacheFile))) {
+            @mkdir(dirname($cacheFile), 0750, true);
+        }
+        @file_put_contents($cacheFile, json_encode(['ts' => time(), 'value' => $detected]));
+        $cached = $detected;
+        return $detected;
+    }
+
+    // Probe a made-up slug and check the response body for the blog's
+    // "Post Not Found" message (which indicates post.php handled the
+    // request even though the slug doesn't exist).
+    try {
+        $testSlug = 'rewrite-detect-' . substr(bin2hex(random_bytes(4)), 0, 8);
+    } catch (Exception $e) {
+        $testSlug = 'rewrite-detect';
+    }
+    $testUrl = SITE_URL . '/post/' . $testSlug;
+
+    $body = false;
+    $httpCode = 0;
+
+    if (function_exists('curl_init')) {
+        $ch = @curl_init();
+        @curl_setopt($ch, CURLOPT_URL, $testUrl);
+        @curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        @curl_setopt($ch, CURLOPT_HEADER, false);
+        @curl_setopt($ch, CURLOPT_TIMEOUT, 2);
+        @curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        @curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        @curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        $body = @curl_exec($ch);
+        $httpCode = @curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        @curl_close($ch);
+    } elseif (ini_get('allow_url_fopen')) {
+        $ctx = stream_context_create(['http' => ['timeout' => 2, 'ignore_errors' => true]]);
+        $body = @file_get_contents($testUrl, false, $ctx);
+        if (isset($http_response_header) && is_array($http_response_header)) {
+            foreach ($http_response_header as $hdr) {
+                if (preg_match('#^HTTP/[\d.]+\s+(\d{3})#i', $hdr, $m)) {
+                    $httpCode = (int) $m[1];
+                    break;
+                }
+            }
+        }
+    } else {
+        // Can't probe this environment — assume pretty URLs are available.
+        $detected = true;
+        if (!is_dir(dirname($cacheFile))) {
+            @mkdir(dirname($cacheFile), 0750, true);
+        }
+        @file_put_contents($cacheFile, json_encode(['ts' => time(), 'value' => $detected]));
+        $cached = $detected;
+        return $detected;
+    }
+
+    $detected = false;
+    if ($body !== false && $body !== null) {
+        if (strpos($body, '404 – Post Not Found') !== false || strpos($body, '404 - Post Not Found') !== false || strpos($body, 'The post you are looking for does not exist') !== false) {
+            $detected = true;
+        }
+    } else {
+        if ($httpCode === 404) {
+            $detected = true;
+        }
+    }
+
+    if (!is_dir(dirname($cacheFile))) {
+        @mkdir(dirname($cacheFile), 0750, true);
+    }
+    @file_put_contents($cacheFile, json_encode(['ts' => time(), 'value' => $detected]));
+    $cached = $detected;
+    return $detected;
+}
+
 // ===========================================================================
 // Post queries
 // ===========================================================================

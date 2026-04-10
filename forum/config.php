@@ -115,8 +115,9 @@ if (session_status() === PHP_SESSION_NONE) {
 function getDB(): PDO
 {
     static $pdo = null;
-
     if ($pdo === null) {
+        $isDemo = (isset($_GET['demo']) && $_GET['demo'] === '1') || file_exists(ROOT_PATH . '/DEMO');
+
         $dbDir = ROOT_PATH . '/db';
         if (!is_dir($dbDir)) {
             mkdir($dbDir, 0755, true);
@@ -136,6 +137,13 @@ function getDB(): PDO
         }
 
         require_once ROOT_PATH . '/db/schema.php';
+
+        if ($isDemo && file_exists(ROOT_PATH . '/db/demo_seed.php')) {
+            require_once ROOT_PATH . '/db/demo_seed.php';
+            if (function_exists('seedDemoForum')) {
+                seedDemoForum($pdo);
+            }
+        }
     }
 
     return $pdo;

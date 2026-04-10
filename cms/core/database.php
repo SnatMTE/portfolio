@@ -23,6 +23,8 @@ function getCMSDB(): PDO
     static $pdo = null;
 
     if ($pdo === null) {
+        $isDemo = (isset($_GET['demo']) && $_GET['demo'] === '1') || file_exists(CMS_ROOT . '/DEMO');
+
         $dbDir = CMS_ROOT . '/db';
         if (!is_dir($dbDir)) {
             mkdir($dbDir, 0755, true);
@@ -43,6 +45,13 @@ function getCMSDB(): PDO
 
         require_once CMS_ROOT . '/db/schema.php';
         initCMSSchema($pdo);
+
+        if ($isDemo && file_exists(CMS_ROOT . '/db/demo_seed.php')) {
+            require_once CMS_ROOT . '/db/demo_seed.php';
+            if (function_exists('seedDemoCMS')) {
+                seedDemoCMS($pdo);
+            }
+        }
     }
 
     return $pdo;
