@@ -967,6 +967,89 @@ ul, ol { list-style: none; }
 }
 
 /* ---------------------------------------------------------
+   Admin layout (use same layout as blog/forum admin)
+   --------------------------------------------------------- */
+.admin-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: calc(100vh - 60px);
+    gap: 0;
+}
+
+.admin-nav {
+    background:   var(--clr-surface);
+    border-right: 1px solid var(--clr-border);
+    display:      flex;
+    flex-direction: column;
+    padding:      1.5rem 0;
+    position:     sticky;
+    top:          0;
+    height:       100vh;
+    overflow-y:   auto;
+}
+
+.admin-nav__brand {
+    padding:       0 1.25rem 1.25rem;
+    border-bottom: 1px solid var(--clr-border);
+    margin-bottom: 1rem;
+}
+.admin-nav__brand a {
+    font-size:   1.1rem;
+    font-weight: 700;
+    color:       var(--clr-text);
+}
+.admin-nav__brand a:hover { color: var(--clr-accent); text-decoration: none; }
+
+.admin-nav__list { flex: 1; }
+
+.admin-nav__item a {
+    display:     block;
+    padding:     .6rem 1.25rem;
+    color:       var(--clr-text-muted);
+    font-weight: 500;
+    font-size:   .9rem;
+    border-left: 3px solid transparent;
+    transition:  background var(--transition), color var(--transition), border-color var(--transition);
+}
+.admin-nav__item a:hover,
+.admin-nav__item.is-active a {
+    background:   var(--clr-accent-bg);
+    color:        var(--clr-accent-dark);
+    border-color: var(--clr-accent);
+    text-decoration: none;
+}
+
+.admin-nav__footer {
+    padding:       1rem 1.25rem 0;
+    border-top:    1px solid var(--clr-border);
+    margin-top:    1rem;
+    display:       flex;
+    flex-direction: column;
+    gap:           .5rem;
+}
+.admin-nav__view-site,
+.admin-nav__logout {
+    font-size:   .85rem;
+    color:       var(--clr-text-muted);
+}
+.admin-nav__logout:hover { color: #ef4444; text-decoration: none; }
+
+/* Admin main content */
+.admin-content {
+    padding: 2rem 2.5rem;
+    flex: 1;
+}
+
+.admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+/* ---------------------------------------------------------
    Print
    --------------------------------------------------------- */
 @media print {

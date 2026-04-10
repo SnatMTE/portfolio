@@ -2,50 +2,38 @@
 /**
  * templates/admin_nav.php
  *
- * Renders the left-hand sidebar navigation for every admin panel page.
- * Expects $currentAdminPage (string) to be set by the including file to
- * highlight the active menu item.
+ * Renders the admin panel's sidebar navigation using the shared
+ * `admin-nav` markup used by other modules (blog/forum) so the
+ * layout is consistent across admin areas.
  *
- * @author  Snat
- * @link    https://terra.me.uk
+ * Expects $currentAdminPage (string) to be set by the including file.
  */
 
 $currentAdminPage ??= '';
 
 $navItems = [
-    'dashboard' => ['label' => 'Dashboard',    'href' => SITE_URL . '/admin/'],
-    'products'  => ['label' => 'Products',     'href' => SITE_URL . '/admin/products.php'],
-    'orders'    => ['label' => 'Orders',       'href' => SITE_URL . '/admin/orders.php'],
-    'settings'  => ['label' => 'Settings',     'href' => SITE_URL . '/admin/settings.php'],
+    'dashboard'      => ['label' => 'Dashboard',     'href' => '/admin/'],
+    'products'       => ['label' => 'Products',      'href' => '/admin/products.php'],
+    'create_product' => ['label' => 'New Product',   'href' => '/admin/create_product.php'],
+    'orders'         => ['label' => 'Orders',        'href' => '/admin/orders.php'],
+    'settings'       => ['label' => 'Settings',      'href' => '/admin/settings.php'],
 ];
 ?>
-<aside class="admin-sidebar">
-    <div class="admin-sidebar__logo">
-        <a href="<?= SITE_URL ?>/admin/"><?= e(SITE_NAME) ?></a>
-        <span>Admin</span>
+<nav class="admin-nav" aria-label="Admin navigation">
+    <div class="admin-nav__brand">
+        <a href="<?= SITE_URL ?>/admin/">&#9881; <?= e(SITE_NAME) ?></a>
     </div>
 
-    <nav class="admin-sidebar__nav" aria-label="Admin navigation">
-        <ul>
-            <?php foreach ($navItems as $key => $item): ?>
-                <li>
-                    <a
-                        href="<?= $item['href'] ?>"
-                        class="admin-nav-link <?= $currentAdminPage === $key ? 'is-active' : '' ?>"
-                    >
-                        <?= e($item['label']) ?>
-                    </a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    </nav>
+    <ul class="admin-nav__list">
+        <?php foreach ($navItems as $key => $item): ?>
+            <li class="admin-nav__item <?= $currentAdminPage === $key ? 'is-active' : '' ?>">
+                <a href="<?= SITE_URL . $item['href'] ?>"><?= e($item['label']) ?></a>
+            </li>
+        <?php endforeach; ?>
+    </ul>
 
-    <div class="admin-sidebar__footer">
-        <a href="<?= SITE_URL ?>" class="admin-nav-link" target="_blank" rel="noopener">
-            &larr; View Store
-        </a>
-        <a href="<?= SITE_URL ?>/logout.php" class="admin-nav-link admin-nav-link--logout">
-            Log out
-        </a>
+    <div class="admin-nav__footer">
+        <a href="<?= SITE_URL ?>" class="admin-nav__view-site">&#8617; View Store</a>
+        <a href="<?= SITE_URL ?>/logout.php" class="admin-nav__logout">Log out</a>
     </div>
-</aside>
+</nav>

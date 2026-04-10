@@ -13,17 +13,23 @@
 ?>
 <tr class="cart-item">
     <td class="cart-item__image">
-        <?php if (!empty($item['image'])): ?>
-            <img
-                src="<?= SITE_URL ?>/assets/images/<?= e($item['image']) ?>"
-                alt="<?= e($item['name']) ?>"
-                width="80"
-                height="60"
-                loading="lazy"
-            >
-        <?php else: ?>
-            <div class="cart-item__image-placeholder" aria-hidden="true"></div>
-        <?php endif; ?>
+        <?php
+            $imgFile = 'placeholder.svg';
+            if (!empty($item['image'])) {
+                $candidate = ROOT_PATH . '/assets/images/' . basename($item['image']);
+                if (file_exists($candidate)) {
+                    $imgFile = basename($item['image']);
+                }
+            }
+            $imgUrl = SITE_URL . '/assets/images/' . $imgFile;
+        ?>
+        <img
+            src="<?= e($imgUrl) ?>"
+            alt="<?= e($item['name']) ?>"
+            width="80"
+            height="60"
+            loading="lazy"
+        >
     </td>
 
     <td class="cart-item__name">

@@ -80,19 +80,23 @@ require_once __DIR__ . '/templates/header.php';
 <div class="product-detail">
     <!-- Image -->
     <div class="product-detail__gallery">
-        <?php if (!empty($product['image'])): ?>
-            <img
-                src="<?= SITE_URL ?>/assets/images/<?= e($product['image']) ?>"
-                alt="<?= e($product['name']) ?>"
-                class="product-detail__main-image"
-                width="600"
-                height="450"
-            >
-        <?php else: ?>
-            <div class="product-detail__main-image product-detail__image--placeholder" aria-hidden="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            </div>
-        <?php endif; ?>
+        <?php
+            $imgFile = 'placeholder.svg';
+            if (!empty($product['image'])) {
+                $candidate = ROOT_PATH . '/assets/images/' . basename($product['image']);
+                if (file_exists($candidate)) {
+                    $imgFile = basename($product['image']);
+                }
+            }
+            $imgUrl = SITE_URL . '/assets/images/' . $imgFile;
+        ?>
+        <img
+            src="<?= e($imgUrl) ?>"
+            alt="<?= e($product['name']) ?>"
+            class="product-detail__main-image"
+            width="600"
+            height="450"
+        >
     </div>
 
     <!-- Info -->

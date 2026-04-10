@@ -13,20 +13,24 @@
 ?>
 <article class="product-card">
     <a href="<?= SITE_URL ?>/product.php?id=<?= (int) $product['id'] ?>" class="product-card__image-link">
-        <?php if (!empty($product['image'])): ?>
-            <img
-                src="<?= SITE_URL ?>/assets/images/<?= e($product['image']) ?>"
-                alt="<?= e($product['name']) ?>"
-                class="product-card__image"
-                loading="lazy"
-                width="400"
-                height="300"
-            >
-        <?php else: ?>
-            <div class="product-card__image product-card__image--placeholder" aria-hidden="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            </div>
-        <?php endif; ?>
+        <?php
+            $imgFile = 'placeholder.svg';
+            if (!empty($product['image'])) {
+                $candidate = ROOT_PATH . '/assets/images/' . basename($product['image']);
+                if (file_exists($candidate)) {
+                    $imgFile = basename($product['image']);
+                }
+            }
+            $imgUrl = SITE_URL . '/assets/images/' . $imgFile;
+        ?>
+        <img
+            src="<?= e($imgUrl) ?>"
+            alt="<?= e($product['name']) ?>"
+            class="product-card__image"
+            loading="lazy"
+            width="400"
+            height="300"
+        >
     </a>
 
     <div class="product-card__body">
