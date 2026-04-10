@@ -97,8 +97,9 @@ require_once CMS_ROOT . '/templates/admin_header.php';
 
         <div class="form-group">
             <label for="slug">Slug</label>
-            <input type="text" id="slug" name="slug"
-                   value="<?= e($formSlug) ?>" maxlength="255">
+             <input type="text" id="slug" name="slug"
+                 value="<?= e($formSlug) ?>" maxlength="255">
+             <div id="slug-status" class="hint" aria-live="polite" style="margin-top:.35rem"></div>
         </div>
 
         <div class="form-group">
@@ -127,5 +128,58 @@ require_once CMS_ROOT . '/templates/admin_header.php';
         </div>
     </form>
 </div>
+
+<script>
+// Pretty URL slug helper + availability checker (edit mode)
+(function(){
+    const slugInput = document.getElementById('slug');
+    const titleInput = document.getElementById('title');
+    const statusEl = document.getElementById('slug-status');
+    const checkUrl = '<?= SITE_URL ?>/admin/check_slug.php';
+    const excludeId = <?= (int) $editPage['id'] ?>;
+
+    function slugifyJS(s){
+        return s.toString().toLowerCase().trim()
+            .replace(/[^a-z0-9\s\-]/g, '')
+            .replace(/[\s\-]+/g, '-')
+            .replace(/^\-+|\-+$/g, '');
+    }
+
+    let timer = null;
+    function check(slug){
+        if (!slug) { statusEl.textContent = ''; return; }
+        statusEl.textContent = 'Checking...';
+        fetch(checkUrl + '?slug=' + encodeURIComponent(slug) + '&exclude_id=' + excludeId, { credentials: 'same-origin' })
+            .then(r => r.json())
+            .then(data => {
+                if (!data) { statusEl.textContent = ''; return; }
+                if (data.slug !== slug) {
+                    statusEl.innerHTML = 'Suggested: <strong>' + data.slug + '</strong>' + (data.available ? ' — available' : ' — taken');
+                    statusEl.style.color = data.available ? '' : 'var(--color-danger)';
+                } else {
+                    statusEl.textContent = data.available ? 'Available' : 'Already taken';
+                    statusEl.style.color = data.available ? '' : 'var(--color-danger)';
+                }
+            })
+            .catch(() => { statusEl.textContent = ''; });
+    }
+
+    titleInput.addEventListener('input', function(){
+        const auto = slugifyJS(this.value);
+        if (!slugInput.value || slugInput.value === '<?= e($editPage['slug']) ?>') {
+            slugInput.value = auto;
+            clearTimeout(timer);
+            timer = setTimeout(()=>check(auto), 400);
+        }
+    });
+
+    slugInput.addEventListener('input', function(){
+        const s = slugifyJS(this.value);
+        this.value = s;
+        clearTimeout(timer);
+        timer = setTimeout(()=>check(s), 400);
+    });
+})();
+</script>
 
 <?php require_once CMS_ROOT . '/templates/admin_footer.php'; ?>

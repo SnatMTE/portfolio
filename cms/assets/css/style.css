@@ -284,6 +284,19 @@ h3 { font-size: 1.1rem;  font-weight: 600; }
     font-weight: 400;
 }
 
+/* Page content layout: two-column with image on the right */
+.page-content {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 2rem;
+    align-items: start;
+}
+.page-content img { border-radius: 8px; border: 1px solid var(--color-border); display:block; }
+
+@media (max-width: 800px) {
+    .page-content { grid-template-columns: 1fr; }
+}
+
 /* ============================================================
    7. Components
    ============================================================ */
