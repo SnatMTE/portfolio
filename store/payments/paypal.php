@@ -1,5 +1,13 @@
 <?php
 /**
+ * File: paypal.php
+ * What it does: Short description of the file's purpose.
+ *
+ * @author  Snat
+ * @link    https://terra.me.uk
+ */
+
+/**
  * payments/paypal.php
  *
  * PayPal REST API v2 integration for the portfolio store.

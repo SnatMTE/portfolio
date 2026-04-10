@@ -21,6 +21,14 @@ require_once __DIR__ . '/config.php';
 // `mbstring` extension is still recommended for production.
 if (!extension_loaded('mbstring')) {
     if (!function_exists('mb_strlen')) {
+        
+        /**
+         * mb_strlen — Short description of the function's behaviour.
+         *
+         * @param string $s
+         * @param string $encoding
+         * @return int
+         */
         function mb_strlen(string $s, string $encoding = 'UTF-8'): int
         {
             if ($encoding === '8bit') {
@@ -35,6 +43,16 @@ if (!extension_loaded('mbstring')) {
     }
 
     if (!function_exists('mb_substr')) {
+        
+        /**
+         * mb_substr — Short description of the function's behaviour.
+         *
+         * @param string $s
+         * @param int $start
+         * @param ?int $length
+         * @param string $encoding
+         * @return string
+         */
         function mb_substr(string $s, int $start, ?int $length = null, string $encoding = 'UTF-8'): string
         {
             if ($encoding === '8bit') {
@@ -56,6 +74,14 @@ if (!extension_loaded('mbstring')) {
     }
 
     if (!function_exists('mb_strtolower')) {
+        
+        /**
+         * mb_strtolower — Short description of the function's behaviour.
+         *
+         * @param string $s
+         * @param string $encoding
+         * @return string
+         */
         function mb_strtolower(string $s, string $encoding = 'UTF-8'): string
         {
             // Best-effort fallback; for full Unicode casing enable mbstring.
@@ -64,6 +90,14 @@ if (!extension_loaded('mbstring')) {
     }
 
     if (!function_exists('mb_strtoupper')) {
+        
+        /**
+         * mb_strtoupper — Short description of the function's behaviour.
+         *
+         * @param string $s
+         * @param string $encoding
+         * @return string
+         */
         function mb_strtoupper(string $s, string $encoding = 'UTF-8'): string
         {
             return strtoupper($s);

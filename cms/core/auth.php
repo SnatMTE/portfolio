@@ -1,5 +1,13 @@
 <?php
 /**
+ * File: auth.php
+ * What it does: Short description of the file's purpose.
+ *
+ * @author  Snat
+ * @link    https://terra.me.uk
+ */
+
+/**
  * cms/core/auth.php
  *
  * CMS authentication helpers.
@@ -30,16 +38,34 @@ if (!defined('CMS_ROOT')) {
 // Session checks
 // ---------------------------------------------------------------------------
 
+
+/**
+ * cmsIsLoggedIn — Short description of the function's behaviour.
+ *
+ * @return bool
+ */
 function cmsIsLoggedIn(): bool
 {
     return !empty($_SESSION['user_id']);
 }
 
+
+/**
+ * cmsIsAdmin — Short description of the function's behaviour.
+ *
+ * @return bool
+ */
 function cmsIsAdmin(): bool
 {
     return !empty($_SESSION['role']) && $_SESSION['role'] === 'admin';
 }
 
+
+/**
+ * cmsIsEditor — Short description of the function's behaviour.
+ *
+ * @return bool
+ */
 function cmsIsEditor(): bool
 {
     return !empty($_SESSION['role']) && in_array($_SESSION['role'], ['admin', 'editor'], true);
@@ -77,6 +103,12 @@ function currentCMSUser(): ?array
 // Access guards
 // ---------------------------------------------------------------------------
 
+
+/**
+ * requireCMSAuth — Short description of the function's behaviour.
+ *
+ * @return void
+ */
 function requireCMSAuth(): void
 {
     if (!cmsIsLoggedIn()) {
@@ -85,6 +117,12 @@ function requireCMSAuth(): void
     }
 }
 
+
+/**
+ * requireCMSAdmin — Short description of the function's behaviour.
+ *
+ * @return void
+ */
 function requireCMSAdmin(): void
 {
     if (!cmsIsLoggedIn()) {
@@ -97,6 +135,12 @@ function requireCMSAdmin(): void
     }
 }
 
+
+/**
+ * requireCMSEditor — Short description of the function's behaviour.
+ *
+ * @return void
+ */
 function requireCMSEditor(): void
 {
     if (!cmsIsLoggedIn()) {
@@ -113,6 +157,12 @@ function requireCMSEditor(): void
 // CSRF
 // ---------------------------------------------------------------------------
 
+
+/**
+ * cmsCsrfToken — Short description of the function's behaviour.
+ *
+ * @return string
+ */
 function cmsCsrfToken(): string
 {
     if (empty($_SESSION['csrf_token'])) {
@@ -121,6 +171,13 @@ function cmsCsrfToken(): string
     return $_SESSION['csrf_token'];
 }
 
+
+/**
+ * cmsValidateCsrf — Short description of the function's behaviour.
+ *
+ * @param string $token
+ * @return bool
+ */
 function cmsValidateCsrf(string $token): bool
 {
     return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
@@ -130,11 +187,25 @@ function cmsValidateCsrf(string $token): bool
 // Flash messages
 // ---------------------------------------------------------------------------
 
+
+/**
+ * cmsFlashMessage — Short description of the function's behaviour.
+ *
+ * @param string $message
+ * @param string $type
+ * @return void
+ */
 function cmsFlashMessage(string $message, string $type = 'success'): void
 {
     $_SESSION['flash'] = ['message' => $message, 'type' => $type];
 }
 
+
+/**
+ * cmsGetFlash — Short description of the function's behaviour.
+ *
+ * @return ?array
+ */
 function cmsGetFlash(): ?array
 {
     if (!isset($_SESSION['flash'])) {
@@ -149,6 +220,13 @@ function cmsGetFlash(): ?array
 // Shared redirect helper (available to modules that don't load functions.php)
 // ---------------------------------------------------------------------------
 if (!function_exists('redirect')) {
+    
+    /**
+     * redirect — Short description of the function's behaviour.
+     *
+     * @param string $url
+     * @return never
+     */
     function redirect(string $url): never
     {
         header('Location: ' . $url);
@@ -160,6 +238,13 @@ if (!function_exists('redirect')) {
 // HTML escape helper (available to CMS pages)
 // ---------------------------------------------------------------------------
 if (!function_exists('e')) {
+    
+    /**
+     * e — Short description of the function's behaviour.
+     *
+     * @param string $string
+     * @return string
+     */
     function e(string $string): string
     {
         return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');

@@ -39,6 +39,12 @@ define('DB_FILE', ROOT_PATH . '/db/store.sqlite');
  * subdirectory or different host without needing a hard-coded value.
  */
 if (!defined('SITE_URL')) {
+    
+    /**
+     * detectSiteUrl — Short description of the function's behaviour.
+     *
+     * @return string
+     */
     function detectSiteUrl(): string
     {
         $proto = 'http';

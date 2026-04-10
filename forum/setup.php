@@ -1,5 +1,13 @@
 <?php
 /**
+ * File: setup.php
+ * What it does: Short description of the file's purpose.
+ *
+ * @author  Snat
+ * @link    https://terra.me.uk
+ */
+
+/**
  * setup.php
  *
  * First-run setup script for the Forum. Creates the initial admin user account.
@@ -24,6 +32,12 @@ if (php_sapi_name() !== 'cli') {
 // ---------------------------------------------------------------------------
 // Prevent reuse after initial setup
 // ---------------------------------------------------------------------------
+
+/**
+ * adminExists — Short description of the function's behaviour.
+ *
+ * @return bool
+ */
 function adminExists(): bool
 {
     return (int) getDB()->query("SELECT COUNT(*) FROM users")->fetchColumn() > 0;

@@ -1,3 +1,12 @@
+<?php
+/**
+ * File: footer.php
+ * What it does: Short description of the file's purpose.
+ *
+ * @author  Snat
+ * @link    https://terra.me.uk
+ */
+
     </div><!-- /.container -->
 </main><!-- /.site-main -->
 

@@ -1,5 +1,13 @@
 <?php
 /**
+ * File: functions.php
+ * What it does: Short description of the file's purpose.
+ *
+ * @author  Snat
+ * @link    https://terra.me.uk
+ */
+
+/**
  * functions.php
  *
  * Global helper functions used across the portfolio store.
@@ -30,6 +38,14 @@ require_once __DIR__ . '/config.php';
 // ---------------------------------------------------------------------------
 if (!extension_loaded('mbstring')) {
     if (!function_exists('mb_strlen')) {
+        
+        /**
+         * mb_strlen — Short description of the function's behaviour.
+         *
+         * @param string $s
+         * @param string $encoding
+         * @return int
+         */
         function mb_strlen(string $s, string $encoding = 'UTF-8'): int
         {
             if ($s === '') return 0;
@@ -38,6 +54,16 @@ if (!extension_loaded('mbstring')) {
         }
     }
     if (!function_exists('mb_substr')) {
+        
+        /**
+         * mb_substr — Short description of the function's behaviour.
+         *
+         * @param string $s
+         * @param int $start
+         * @param ?int $length
+         * @param string $encoding
+         * @return string
+         */
         function mb_substr(string $s, int $start, ?int $length = null, string $encoding = 'UTF-8'): string
         {
             if ($s === '') return '';
@@ -50,6 +76,14 @@ if (!extension_loaded('mbstring')) {
         }
     }
     if (!function_exists('mb_strtolower')) {
+        
+        /**
+         * mb_strtolower — Short description of the function's behaviour.
+         *
+         * @param string $s
+         * @param string $encoding
+         * @return string
+         */
         function mb_strtolower(string $s, string $encoding = 'UTF-8'): string
         { return strtolower($s); }
     }
