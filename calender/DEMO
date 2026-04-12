@@ -1,0 +1,4 @@
+DEMO MODE ACTIVE
+
+This file triggers demo data seeding on first request.
+Remove this file before launching in production.
