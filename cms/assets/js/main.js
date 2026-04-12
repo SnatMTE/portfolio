@@ -6,6 +6,9 @@
  * Features:
  *   - Auto-generate slug from title field
  *   - Mobile sidebar toggle
+ *
+ * @author  M. Terra Ellis
+ * @link    https://terra.me.uk
  */
 
 (function () {

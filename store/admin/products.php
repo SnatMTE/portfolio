@@ -9,7 +9,7 @@
  * ------------
  *   delete  – Deletes the product with the given product_id.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

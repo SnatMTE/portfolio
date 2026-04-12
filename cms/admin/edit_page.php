@@ -2,7 +2,7 @@
 /**
  * cms/admin/edit_page.php  —  Edit a static page
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

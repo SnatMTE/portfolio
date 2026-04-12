@@ -15,7 +15,7 @@
  *
  *   IMPORTANT: Delete or rename this file after first use.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

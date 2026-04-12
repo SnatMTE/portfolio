@@ -12,7 +12,7 @@
  *   $_SESSION['admin_username']– same (blog compat)
  *   $_SESSION['role']          – role name: 'admin'|'editor'|'user'
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

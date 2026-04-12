@@ -6,7 +6,7 @@
  *
  * Route: event.php?id=<int>
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

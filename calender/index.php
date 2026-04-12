@@ -8,7 +8,7 @@
  *   ?year=2026&month=4   – Navigate to a specific month/year.
  *                          Defaults to the current month.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

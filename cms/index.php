@@ -5,7 +5,7 @@
  * CMS public homepage.
  * Displays the published "home" page (slug = 'home').
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

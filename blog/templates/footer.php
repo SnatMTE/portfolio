@@ -5,7 +5,7 @@
  * Renders the shared site footer, closing HTML tags, and loads the
  * main JavaScript file. Included at the bottom of every public page.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 ?>

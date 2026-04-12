@@ -7,7 +7,7 @@
  * Actions (POST):
  *   delete - Permanently delete a post (hard delete from DB)
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

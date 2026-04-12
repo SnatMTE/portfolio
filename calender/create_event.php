@@ -8,7 +8,7 @@
  * Query string:
  *   ?date=YYYY-MM-DD  – Pre-fills the start date (clicked from grid).
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

@@ -6,7 +6,7 @@
  * Any CMS page that needs auth + helpers can just do:
  *   require_once __DIR__ . '/functions.php';
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

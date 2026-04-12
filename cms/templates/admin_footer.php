@@ -1,9 +1,10 @@
 <?php
 /**
- * File: admin_footer.php
- * What it does: Short description of the file's purpose.
+ * templates/admin_footer.php
  *
- * @author  Snat
+ * Admin footer template used on CMS admin pages.
+ *
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

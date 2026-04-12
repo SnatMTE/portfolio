@@ -5,7 +5,7 @@
  * Renders the sticky admin sidebar navigation.
  * Expects $activeAdminPage (string) matching a nav item key, e.g. 'dashboard'.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

@@ -12,7 +12,7 @@
  *   - Session regeneration on successful login to prevent session fixation.
  *   - Redirects to admin dashboard on success.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

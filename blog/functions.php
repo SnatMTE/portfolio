@@ -1,11 +1,11 @@
-<?php
+﻿<?php
 /**
  * functions.php
  *
  * Global helper functions used across the portfolio blog.
  * All database queries use PDO prepared statements to prevent SQL injection.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 
@@ -14,16 +14,13 @@ require_once __DIR__ . '/config.php';
 // --------------------------------------------------------------------------
 // mbstring compatibility shim
 // --------------------------------------------------------------------------
-// Some environments (minimal PHP builds) may not have the mbstring
-// extension enabled which results in fatal "undefined function" errors
-// for `mb_strlen`, `mb_substr`, etc. Provide tiny UTF-8-aware fallbacks
-// so the app still runs in development. Installing/enabling the PHP
-// `mbstring` extension is still recommended for production.
+// Provide tiny UTF-8-safe fallbacks when `mbstring` is absent.
+// Enable the `mbstring` extension for reliable internationalisation.
 if (!extension_loaded('mbstring')) {
     if (!function_exists('mb_strlen')) {
         
         /**
-         * mb_strlen — Short description of the function's behaviour.
+         * UTF-8-aware strlen fallback (mbstring not available).
          *
          * @param string $s
          * @param string $encoding
@@ -45,7 +42,7 @@ if (!extension_loaded('mbstring')) {
     if (!function_exists('mb_substr')) {
         
         /**
-         * mb_substr — Short description of the function's behaviour.
+         * UTF-8-aware substr fallback (mbstring not available).
          *
          * @param string $s
          * @param int $start
@@ -76,7 +73,7 @@ if (!extension_loaded('mbstring')) {
     if (!function_exists('mb_strtolower')) {
         
         /**
-         * mb_strtolower — Short description of the function's behaviour.
+         * Best-effort strtolower fallback for UTF-8 strings.
          *
          * @param string $s
          * @param string $encoding
@@ -92,7 +89,7 @@ if (!extension_loaded('mbstring')) {
     if (!function_exists('mb_strtoupper')) {
         
         /**
-         * mb_strtoupper — Short description of the function's behaviour.
+         * Best-effort strtoupper fallback for UTF-8 strings.
          *
          * @param string $s
          * @param string $encoding
@@ -253,7 +250,7 @@ function supportsPrettyUrls(): bool
         }
     }
 
-    // Heuristic: PHP built-in server without a router won't honour .htaccess.
+    // Built-in PHP server: look for `router.php` to detect rewrite routing.
     if (PHP_SAPI === 'cli-server') {
         $routerFound = file_exists(ROOT_PATH . '/router.php') || file_exists(dirname(ROOT_PATH) . '/router.php');
         if ($routerFound && (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'router.php' || basename($_SERVER['SCRIPT_NAME'] ?? '') === 'router.php')) {
@@ -275,9 +272,8 @@ function supportsPrettyUrls(): bool
         return $detected;
     }
 
-    // Probe a made-up slug and check the response body for the blog's
-    // "Post Not Found" message (which indicates post.php handled the
-    // request even though the slug doesn't exist).
+    // Probe a fake slug and look for the public "Post Not Found" text
+    // — indicates rewrites route to `post.php` correctly.
     try {
         $testSlug = 'rewrite-detect-' . substr(bin2hex(random_bytes(4)), 0, 8);
     } catch (Exception $e) {

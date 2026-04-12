@@ -11,7 +11,7 @@
  *                                author_name, category_name, category_slug,
  *                                created_at.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

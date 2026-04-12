@@ -7,7 +7,7 @@
  *
  * This file should be deleted or protected after setup is complete.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

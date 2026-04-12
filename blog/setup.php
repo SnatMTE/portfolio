@@ -13,7 +13,7 @@
  *   3. Submit the form.
  *   4. DELETE this file from your server.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

@@ -7,7 +7,7 @@
  * Handles image upload (stores file in assets/images/),
  * validates all fields, and inserts the product into the database.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

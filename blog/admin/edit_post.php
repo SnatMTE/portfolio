@@ -12,7 +12,7 @@
  * Redirects to posts.php with a flash message after a successful update.
  * Returns a 404 notice if the requested post ID does not exist.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

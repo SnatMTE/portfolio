@@ -1,11 +1,11 @@
-<?php
+﻿<?php
 /**
  * calendar/functions.php
  *
  * Global helper functions for the Calendar module.
  * All database queries use PDO prepared statements.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 
@@ -16,6 +16,13 @@ require_once __DIR__ . '/config.php';
 // ---------------------------------------------------------------------------
 if (!extension_loaded('mbstring')) {
     if (!function_exists('mb_strlen')) {
+        /**
+         * UTF-8-aware strlen fallback for environments without mbstring.
+         *
+         * @param string $s        Input string.
+         * @param string $enc      Character encoding (ignored; UTF-8 assumed).
+         * @return int  Character count.
+         */
         function mb_strlen(string $s, string $enc = 'UTF-8'): int
         {
             if ($s === '') return 0;
@@ -24,6 +31,15 @@ if (!extension_loaded('mbstring')) {
         }
     }
     if (!function_exists('mb_substr')) {
+        /**
+         * UTF-8-aware substr fallback for environments without mbstring.
+         *
+         * @param string   $s      Input string.
+         * @param int      $start  Start position (negative counts from end).
+         * @param int|null $len    Maximum number of characters; null returns the rest.
+         * @param string   $enc    Character encoding (ignored; UTF-8 assumed).
+         * @return string  Extracted substring.
+         */
         function mb_substr(string $s, int $start, ?int $len = null, string $enc = 'UTF-8'): string
         {
             if ($s === '') return '';
@@ -49,6 +65,7 @@ function e(mixed $val): string
 {
     return htmlspecialchars((string) $val, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
+
 
 /**
  * Redirects the browser and halts execution.
@@ -411,7 +428,7 @@ function revokeSyncToken(int $id): void
 
 /**
  * Returns the currently logged-in admin user, or null.
- * Works in both standalone (admin_id) and CMS (user_id) modes.
+ * Supports both CMS (`user_id`) and standalone admin (`admin_id`) sessions.
  *
  * @return array<string, mixed>|null
  */

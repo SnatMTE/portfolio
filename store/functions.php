@@ -1,12 +1,4 @@
-<?php
-/**
- * File: functions.php
- * What it does: Short description of the file's purpose.
- *
- * @author  Snat
- * @link    https://terra.me.uk
- */
-
+﻿<?php
 /**
  * functions.php
  *
@@ -27,7 +19,7 @@
  *  10. User / auth queries
  *  11. Currency helpers
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 
@@ -40,7 +32,7 @@ if (!extension_loaded('mbstring')) {
     if (!function_exists('mb_strlen')) {
         
         /**
-         * mb_strlen — Short description of the function's behaviour.
+         * UTF-8-aware strlen fallback (mbstring not available).
          *
          * @param string $s
          * @param string $encoding
@@ -56,7 +48,7 @@ if (!extension_loaded('mbstring')) {
     if (!function_exists('mb_substr')) {
         
         /**
-         * mb_substr — Short description of the function's behaviour.
+         * UTF-8-aware substr fallback (mbstring not available).
          *
          * @param string $s
          * @param int $start
@@ -78,7 +70,7 @@ if (!extension_loaded('mbstring')) {
     if (!function_exists('mb_strtolower')) {
         
         /**
-         * mb_strtolower — Short description of the function's behaviour.
+         * Best-effort strtolower fallback for UTF-8 strings.
          *
          * @param string $s
          * @param string $encoding

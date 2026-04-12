@@ -2,7 +2,7 @@
 /**
  * cms/admin/index.php  —  CMS Dashboard
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

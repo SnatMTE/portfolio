@@ -2,7 +2,7 @@
 /**
  * cms/admin/modules.php  —  Installed module overview
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

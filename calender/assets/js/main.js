@@ -9,7 +9,7 @@
  *   - Event modal (populated entirely server-side via data attributes
  *     or a lightweight fetch to event.php?id=X&json=1)
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

@@ -4,7 +4,7 @@
  *
  * Admin dashboard - shows summary statistics and recent activity.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

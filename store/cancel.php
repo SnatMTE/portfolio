@@ -8,7 +8,7 @@
  * or when a payment fails to complete. Marks the local order as
  * 'cancelled' (if still pending) and informs the customer.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

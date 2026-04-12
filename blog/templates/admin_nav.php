@@ -10,7 +10,7 @@
  *                                  (e.g. 'dashboard', 'posts', 'create_post',
  *                                   'categories', 'tags').
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

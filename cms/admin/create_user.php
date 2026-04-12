@@ -2,7 +2,7 @@
 /**
  * cms/admin/create_user.php  —  Create a new CMS user
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

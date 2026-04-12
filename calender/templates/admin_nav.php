@@ -7,7 +7,7 @@
  * Expects:
  *   $currentAdminPage  (string)  – Key identifying the active nav item.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

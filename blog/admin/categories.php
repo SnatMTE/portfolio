@@ -11,7 +11,7 @@
  * Adding a category is handled via POST to the same page.
  * Category names are unique; slug is auto-generated from the name.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

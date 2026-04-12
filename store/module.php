@@ -4,7 +4,7 @@
  *
  * Module manifest read by the CMS module loader.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

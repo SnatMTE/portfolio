@@ -7,7 +7,7 @@
  *
  * Required keys: id, name, slug, price, short_desc, image, stock, status
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 ?>

@@ -8,7 +8,7 @@
  * Usage:
  *   <a href="<?= SITE_URL ?>/logout.php?csrf=<?= cmsCsrfToken() ?>">Log out</a>
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

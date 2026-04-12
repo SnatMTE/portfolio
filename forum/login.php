@@ -1,11 +1,11 @@
-<?php
+﻿<?php
 /**
  * login.php
  *
  * Handles user login via a username/email and password form.
  * On success, stores the user ID in the session and redirects.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

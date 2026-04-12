@@ -5,7 +5,7 @@
  * Form for creating a new thread in a category.
  * URL: create_thread.php?category_id={id}
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

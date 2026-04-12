@@ -5,7 +5,7 @@
  * Calendar admin dashboard. Shows at-a-glance statistics and
  * the most recently updated events.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

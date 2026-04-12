@@ -13,7 +13,7 @@
  * The session is shared; the module's own getDB() still connects to the
  * module's own SQLite file for content tables.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

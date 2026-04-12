@@ -1,9 +1,10 @@
 <?php
 /**
- * File: footer.php
- * What it does: Short description of the file's purpose.
+ * templates/footer.php
  *
- * @author  Snat
+ * Site footer template used on public CMS pages.
+ *
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

@@ -1,10 +1,10 @@
-<?php
+﻿<?php
 /**
  * core/calendar_helper.php
  *
  * Utility functions for building the monthly calendar grid.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 
@@ -25,8 +25,6 @@
  * @param int                              $month   1–12
  * @param array<int, array<string, mixed>> $events  Rows from cal_events (for this month)
  * @return array<int, array<int, array<string, mixed>>>>
- * @author Snat
- * @link https://terra.me.uk
  */
 function buildMonthGrid(int $year, int $month, array $events): array
 {
@@ -84,8 +82,6 @@ function buildMonthGrid(int $year, int $month, array $events): array
  * Returns an empty (padding) cell for the grid.
  *
  * @return array<string, mixed>
- * @author Snat
- * @link https://terra.me.uk
  */
 function makeEmptyCell(): array
 {
@@ -103,8 +99,6 @@ function makeEmptyCell(): array
  *
  * @param int $month  1–12
  * @return string  e.g. "April"
- * @author Snat
- * @link https://terra.me.uk
  */
 function monthName(int $month): string
 {
@@ -117,8 +111,6 @@ function monthName(int $month): string
  * @param int $year
  * @param int $month
  * @return array{year:int, month:int}
- * @author Snat
- * @link https://terra.me.uk
  */
 function prevMonth(int $year, int $month): array
 {
@@ -136,8 +128,6 @@ function prevMonth(int $year, int $month): array
  * @param int $year
  * @param int $month
  * @return array{year:int, month:int}
- * @author Snat
- * @link https://terra.me.uk
  */
 function nextMonth(int $year, int $month): array
 {

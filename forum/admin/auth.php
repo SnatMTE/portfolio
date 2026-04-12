@@ -5,7 +5,7 @@
  * Authentication and session helpers for the admin panel.
  * Every admin page must include this file before producing any output.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

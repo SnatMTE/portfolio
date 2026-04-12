@@ -1,12 +1,4 @@
-<?php
-/**
- * File: auth.php
- * What it does: Short description of the file's purpose.
- *
- * @author  Snat
- * @link    https://terra.me.uk
- */
-
+﻿<?php
 /**
  * cms/core/auth.php
  *
@@ -26,7 +18,7 @@
  *   cmsFlashMessage()   – Stores a one-time flash message.
  *   cmsGetFlash()       – Retrieves and clears the flash message.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 
@@ -40,7 +32,7 @@ if (!defined('CMS_ROOT')) {
 
 
 /**
- * cmsIsLoggedIn — Short description of the function's behaviour.
+ * Returns true when a CMS user session is active.
  *
  * @return bool
  */
@@ -51,7 +43,7 @@ function cmsIsLoggedIn(): bool
 
 
 /**
- * cmsIsAdmin — Short description of the function's behaviour.
+ * Returns true if the current CMS user has the admin role.
  *
  * @return bool
  */
@@ -62,7 +54,7 @@ function cmsIsAdmin(): bool
 
 
 /**
- * cmsIsEditor — Short description of the function's behaviour.
+ * Returns true if the current CMS user is an admin or editor.
  *
  * @return bool
  */
@@ -105,7 +97,7 @@ function currentCMSUser(): ?array
 
 
 /**
- * requireCMSAuth — Short description of the function's behaviour.
+ * Redirects to the CMS login page when no user is authenticated.
  *
  * @return void
  */
@@ -119,7 +111,7 @@ function requireCMSAuth(): void
 
 
 /**
- * requireCMSAdmin — Short description of the function's behaviour.
+ * Ensures the current user is an administrator, otherwise redirects or 403s.
  *
  * @return void
  */
@@ -137,7 +129,7 @@ function requireCMSAdmin(): void
 
 
 /**
- * requireCMSEditor — Short description of the function's behaviour.
+ * Ensures the current user has editor privileges, otherwise redirects or 403s.
  *
  * @return void
  */
@@ -159,7 +151,7 @@ function requireCMSEditor(): void
 
 
 /**
- * cmsCsrfToken — Short description of the function's behaviour.
+ * Returns the CMS session CSRF token, generating one if missing.
  *
  * @return string
  */
@@ -173,7 +165,7 @@ function cmsCsrfToken(): string
 
 
 /**
- * cmsValidateCsrf — Short description of the function's behaviour.
+ * Validates a submitted CMS CSRF token against the session token.
  *
  * @param string $token
  * @return bool
@@ -189,7 +181,7 @@ function cmsValidateCsrf(string $token): bool
 
 
 /**
- * cmsFlashMessage — Short description of the function's behaviour.
+ * Stores a one-time CMS flash message in the session.
  *
  * @param string $message
  * @param string $type
@@ -202,7 +194,7 @@ function cmsFlashMessage(string $message, string $type = 'success'): void
 
 
 /**
- * cmsGetFlash — Short description of the function's behaviour.
+ * Retrieves and clears the stored CMS flash message, or null if none.
  *
  * @return ?array
  */
@@ -222,7 +214,7 @@ function cmsGetFlash(): ?array
 if (!function_exists('redirect')) {
     
     /**
-     * redirect — Short description of the function's behaviour.
+     * Redirects to a given URL and terminates execution.
      *
      * @param string $url
      * @return never
@@ -240,7 +232,7 @@ if (!function_exists('redirect')) {
 if (!function_exists('e')) {
     
     /**
-     * e — Short description of the function's behaviour.
+     * HTML-encodes a string for safe output in CMS pages.
      *
      * @param string $string
      * @return string

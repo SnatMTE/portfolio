@@ -10,7 +10,7 @@
  *   demote   - Set user role to user
  *   delete   - Delete user account (cascades to threads and posts)
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

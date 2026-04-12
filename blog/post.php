@@ -11,7 +11,7 @@
  *
  * Sends a 404 header and terminates if the post is not found or is a draft.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 
@@ -54,7 +54,7 @@ $pageTitle = $post['title'];
 $metaDesc  = !empty($post['excerpt']) ? $post['excerpt'] : makeExcerpt($post['content'], 160);
 $tags = getTagsForPost((int) $post['id']);
 
-// Public URL for this post — prefer slug if available and supported
+// Prefer slug URLs when rewrites are supported; fallback to id query.
 $postUrl = (!empty($post['slug']) && function_exists('supportsPrettyUrls') && supportsPrettyUrls())
     ? SITE_URL . '/post/' . e($post['slug'])
     : SITE_URL . '/post.php?id=' . (int) $post['id'];

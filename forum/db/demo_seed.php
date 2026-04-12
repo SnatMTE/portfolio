@@ -3,6 +3,9 @@
  * forum/db/demo_seed.php
  *
  * Seeds demo content into an in-memory forum database for screenshots.
+ *
+ * @author  M. Terra Ellis
+ * @link    https://terra.me.uk
  */
 
 function seedDemoForum(PDO $pdo): void

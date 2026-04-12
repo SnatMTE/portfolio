@@ -8,7 +8,8 @@
  *   4. Delete confirmation (secondary guard for no-JS-disabled forms)
  *   5. Flash message auto-dismiss
  *
- * Author: Snat · https://terra.me.uk
+ * @author  M. Terra Ellis
+ * @link    https://terra.me.uk
  */
 
 (function () {

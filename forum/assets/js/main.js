@@ -8,7 +8,8 @@
  *   - Smooth scroll to post anchors
  *   - Character counter for reply/post textareas
  *
- * Author: Snat - https://terra.me.uk
+ * @author  M. Terra Ellis
+ * @link    https://terra.me.uk
  */
 
 (function () {

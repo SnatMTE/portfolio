@@ -5,7 +5,7 @@
  * Searches thread titles and displays paginated results.
  * URL: search.php?q={query}&page={n}
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

@@ -5,7 +5,7 @@
  * Manages calendar sync tokens.
  * Allows authenticated users to create and revoke token-based feed URLs.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

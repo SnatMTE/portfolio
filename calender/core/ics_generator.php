@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * core/ics_generator.php
  *
@@ -14,7 +14,7 @@
  *   $gen     = new IcsGenerator();
  *   $icsText = $gen->generate($events, 'My Calendar');
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 
@@ -34,7 +34,7 @@ class IcsGenerator
 
         $lines[] = 'BEGIN:VCALENDAR';
         $lines[] = 'VERSION:2.0';
-        $lines[] = 'PRODID:-//Snat Portfolio//Calendar//EN';
+        $lines[] = 'PRODID:-//M. Terra Ellis Portfolio//Calendar//EN';
         $lines[] = 'CALSCALE:GREGORIAN';
         $lines[] = 'METHOD:PUBLISH';
         $lines[] = 'X-WR-CALNAME:' . $this->escapeText($calName);
@@ -96,7 +96,7 @@ class IcsGenerator
      * iCalendar UTC datetime ("YYYYMMDDTHHmmssZ").
      *
      * @param string $dt
-     * @return string
+    * @return string
      */
     private function formatDatetime(string $dt): string
     {
@@ -112,7 +112,7 @@ class IcsGenerator
      * Escapes special characters in iCalendar text values.
      *
      * @param string $text
-     * @return string
+    * @return string
      */
     private function escapeText(string $text): string
     {
@@ -127,7 +127,7 @@ class IcsGenerator
      * Folds a long content line per RFC 5545 §3.1 (max 75 octets).
      *
      * @param string $line
-     * @return string  Line with CRLF+SPACE fold insertions.
+    * @return string  Line with CRLF+SPACE fold insertions.
      */
     private function foldLine(string $line): string
     {

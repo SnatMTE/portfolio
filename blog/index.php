@@ -10,7 +10,7 @@
  *
  * Pagination is applied to all modes.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

@@ -11,7 +11,7 @@
  * shares the CMS session and SQLite database. Calendar tables are added to
  * the shared CMS database; no separate DB file is created.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

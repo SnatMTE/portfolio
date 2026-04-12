@@ -8,7 +8,7 @@
  * Handles both standalone (admin_id session) and CMS-integrated
  * (user_id + role session) modes.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

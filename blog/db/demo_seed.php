@@ -4,6 +4,9 @@
  *
  * Seeds demo categories, users, tags and posts into an in-memory blog database
  * for screenshot/demo purposes.
+ *
+ * @author  M. Terra Ellis
+ * @link    https://terra.me.uk
  */
 
 function seedDemoBlog(PDO $pdo): void

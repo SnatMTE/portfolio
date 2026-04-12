@@ -10,7 +10,7 @@
  *   Validates the CSRF token, then permanently removes the post and its
  *   associated post_tags rows (handled by ON DELETE CASCADE in the schema).
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

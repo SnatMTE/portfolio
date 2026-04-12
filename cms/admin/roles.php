@@ -2,7 +2,7 @@
 /**
  * cms/admin/roles.php  —  View CMS roles
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

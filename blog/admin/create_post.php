@@ -15,7 +15,7 @@
  *   - Slug:    Auto-generated from title if omitted; must be unique.
  *   - Status:  Must be 'published' or 'draft'.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

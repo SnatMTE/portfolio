@@ -5,7 +5,7 @@
  * Authentication helper for the store admin panel.
  * Every admin page must include this file before any output.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

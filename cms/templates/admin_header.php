@@ -7,7 +7,7 @@
  *
  * Expects: $pageTitle (string)
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 
@@ -63,7 +63,7 @@ $_currentScript = basename($_SERVER['SCRIPT_NAME'], '.php');
 
         <?php if ($_modules): ?>
             <?php
-            // Render each module as its own section with the module's admin menu
+            // Show module sections so modules can inject admin links
             $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? ($_SERVER['SCRIPT_NAME'] ?? ''), PHP_URL_PATH);
             foreach ($_modules as $mod):
                 // If the module provides an `admin_menu` array in its manifest, render it

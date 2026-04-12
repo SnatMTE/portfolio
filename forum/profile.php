@@ -5,7 +5,7 @@
  * Displays a user's public profile: bio, join date, post count, and recent threads.
  * URL: profile.php?id={userId}
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

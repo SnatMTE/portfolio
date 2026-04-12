@@ -8,7 +8,7 @@
  * IMPORTANT: Delete this file immediately after running it.
  * Leaving setup.php accessible is a security risk.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

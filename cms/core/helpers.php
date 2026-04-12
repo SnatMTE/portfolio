@@ -1,10 +1,10 @@
-<?php
+﻿<?php
 /**
  * cms/core/helpers.php
  *
  * Shared utility functions for CMS pages (settings, slugify, pagination).
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

@@ -16,7 +16,7 @@
  *  5. Clears the cart and session payment keys.
  *  6. Displays a confirmation to the customer.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

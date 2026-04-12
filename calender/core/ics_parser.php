@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * core/ics_parser.php
  *
@@ -14,7 +14,7 @@
  * ---------------------------
  *   SUMMARY, DTSTART, DTEND, DESCRIPTION, LOCATION
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 
@@ -31,7 +31,7 @@ class IcsParser
      */
     public function parse(string $icsContent): array
     {
-        // Unfold long lines (RFC 5545 §3.1: CRLF + whitespace = continuation)
+        // Unfold folded lines per RFC 5545 (CRLF + whitespace continuation)
         $content = preg_replace("/\r\n[ \t]/", '', $icsContent);
         $content = preg_replace("/\r/", '', $content);
 
@@ -80,14 +80,14 @@ class IcsParser
         return $events;
     }
 
-    /**
-     * Converts a raw VEVENT property array into a normalised event array.
-     *
-     * Returns null if mandatory fields (SUMMARY or DTSTART) are missing.
-     *
-     * @param array<string, string> $raw
-     * @return array<string, string>|null
-     */
+     /**
+      * Converts a raw VEVENT property array into a normalised event array.
+      *
+      * Returns null if mandatory fields (SUMMARY or DTSTART) are missing.
+      *
+      * @param array<string, string> $raw
+      * @return array<string, string>|null
+      */
     private function buildEvent(array $raw): ?array
     {
         $title = trim($raw['SUMMARY'] ?? '');
@@ -138,16 +138,16 @@ class IcsParser
                  . ' ' . substr($time, 0, 2) . ':' . substr($time, 2, 2) . ':' . substr($time, 4, 2);
         }
 
-        // Fallback: return as-is and hope the DB handles it
+        // Fallback: return original string for DB to handle if possible
         return $icsDate;
     }
 
-    /**
-     * Unescapes iCalendar text value escapes.
-     *
-     * @param string $text
-     * @return string
-     */
+     /**
+      * Unescapes iCalendar text value escapes.
+      *
+      * @param string $text
+      * @return string
+      */
     private function unescapeText(string $text): string
     {
         $text = str_replace(['\\,', '\\;', '\\n', '\\N', '\\\\'],

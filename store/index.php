@@ -12,7 +12,7 @@
  *   category  – Category slug to filter by
  *   page      – Page number (default 1)
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

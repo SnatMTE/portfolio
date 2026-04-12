@@ -5,7 +5,7 @@
  * Renders the shared store footer, closing HTML tags, and loads JS.
  * Included at the bottom of every public page.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 ?>

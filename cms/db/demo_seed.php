@@ -3,6 +3,9 @@
  * cms/db/demo_seed.php
  *
  * Seeds demo CMS pages and users into an in-memory CMS database for screenshots.
+ *
+ * @author  M. Terra Ellis
+ * @link    https://terra.me.uk
  */
 
 function seedDemoCMS(PDO $pdo): void

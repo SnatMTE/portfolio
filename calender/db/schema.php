@@ -11,7 +11,7 @@
  *   cal_events   – Calendar events (title, times, location, visibility)
  *   cal_tokens   – Sync feed tokens for Google Calendar / Apple / Outlook
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

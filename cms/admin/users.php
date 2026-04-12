@@ -2,7 +2,7 @@
 /**
  * cms/admin/users.php  —  User Management
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

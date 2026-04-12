@@ -2,7 +2,7 @@
 /**
  * cms/admin/settings.php  —  Site settings
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

@@ -1,11 +1,11 @@
-<?php
+﻿<?php
 /**
  * category.php
  *
  * Lists all threads within a forum category, with pagination.
  * URL: category.php?slug={slug}
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

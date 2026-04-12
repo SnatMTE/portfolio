@@ -5,7 +5,7 @@
  * Module manifest read by the CMS module loader.
  * Return an array of metadata; the CMS will merge this with defaults.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

@@ -5,7 +5,7 @@
  * Displays a single published static CMS page by slug.
  * Route: /cms/page/{slug}  (or accessed directly as page.php?slug=...)
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

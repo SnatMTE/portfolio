@@ -1,12 +1,4 @@
-<?php
-/**
- * File: paypal.php
- * What it does: Short description of the file's purpose.
- *
- * @author  Snat
- * @link    https://terra.me.uk
- */
-
+﻿<?php
 /**
  * payments/paypal.php
  *
@@ -39,7 +31,7 @@
  * second payment provider (e.g. Stripe), create payments/stripe.php with the
  * same public contract and add a routing switch in checkout.php.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

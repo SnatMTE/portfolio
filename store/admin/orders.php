@@ -9,7 +9,7 @@
  * ----------------
  *   id  – If provided, shows detail view for that order ID.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

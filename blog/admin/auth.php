@@ -12,7 +12,7 @@
  *   flashMessage()     – Stores a one-time status message in the session.
  *   getFlash()         – Retrieves and clears the stored flash message.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

@@ -7,7 +7,7 @@
  *
  * Required keys: id, name, image, price, qty, line_total
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 ?>

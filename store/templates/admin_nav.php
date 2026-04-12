@@ -7,6 +7,9 @@
  * layout is consistent across admin areas.
  *
  * Expects $currentAdminPage (string) to be set by the including file.
+ *
+ * @author  M. Terra Ellis
+ * @link    https://terra.me.uk
  */
 
 $currentAdminPage ??= '';

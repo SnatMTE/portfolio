@@ -3,6 +3,9 @@
  * store/db/demo_seed.php
  *
  * Seeds demo categories and products into an in-memory store database for screenshots.
+ *
+ * @author  M. Terra Ellis
+ * @link    https://terra.me.uk
  */
 
 function seedDemoStore(PDO $pdo): void

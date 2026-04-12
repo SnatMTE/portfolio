@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * cms/core/module_loader.php
  *
@@ -6,7 +6,7 @@
  * A module is detected by the presence of its subdirectory inside CMS_ROOT.
  * Each module may optionally include a module.php that returns metadata.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

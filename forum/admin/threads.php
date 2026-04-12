@@ -10,7 +10,7 @@
  *   toggle_lock    - Toggle locked status
  *   delete         - Delete thread (cascades to posts)
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

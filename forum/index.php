@@ -5,7 +5,7 @@
  * Forum homepage - displays all categories with thread/post counts and
  * last activity timestamps.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

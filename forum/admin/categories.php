@@ -9,7 +9,7 @@
  *   edit    - Update an existing category
  *   delete  - Delete a category (cascades to threads and posts)
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

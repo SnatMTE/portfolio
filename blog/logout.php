@@ -10,7 +10,7 @@
  * Usage:
  *   <a href="/logout.php?csrf=<?= csrfToken() ?>">Log out</a>
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

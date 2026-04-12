@@ -8,7 +8,7 @@
  *   $threadOwnerId (int)    - User ID of the thread's original author.
  *   $postNumber    (int)    - 1-based position of this post in the full thread.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

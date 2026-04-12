@@ -5,7 +5,7 @@
  * Accessible modal overlay for quick event preview.
  * Populated via JavaScript when a calendar day cell is clicked.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 ?>

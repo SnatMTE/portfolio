@@ -1,25 +1,20 @@
-<?php
-/**
- * File: mb_polyfill.php
- * What it does: Short description of the file's purpose.
- *
- * @author  Snat
- * @link    https://terra.me.uk
- */
-
+﻿<?php
 /**
  * cms/core/mb_polyfill.php
  *
  * Lightweight polyfills for common mb_ functions when the mbstring
  * extension isn't available. These provide basic UTF-8-safe fallbacks
  * sufficient for ASCII and many UTF-8 payloads; install the mbstring
- * PHP extension for full internationalization support.
+ * PHP extension for full internationalisation support.
+ *
+ * @author  M. Terra Ellis
+ * @link    https://terra.me.uk
  */
 
 if (!function_exists('mb_strlen')) {
     
     /**
-     * mb_strlen — Short description of the function's behaviour.
+     * UTF-8-aware strlen fallback for environments without mbstring.
      *
      * @param string $str
      * @param string $encoding
@@ -38,7 +33,7 @@ if (!function_exists('mb_strlen')) {
 if (!function_exists('mb_substr')) {
     
     /**
-     * mb_substr — Short description of the function's behaviour.
+     * UTF-8-safe substr fallback for environments without mbstring.
      *
      * @param string $str
      * @param int $start
@@ -58,7 +53,7 @@ if (!function_exists('mb_substr')) {
 if (!function_exists('mb_strtolower')) {
     
     /**
-     * mb_strtolower — Short description of the function's behaviour.
+     * Best-effort strtolower fallback for UTF-8 strings.
      *
      * @param string $str
      * @param string $encoding
@@ -73,7 +68,7 @@ if (!function_exists('mb_strtolower')) {
 if (!function_exists('mb_strtoupper')) {
     
     /**
-     * mb_strtoupper — Short description of the function's behaviour.
+     * Best-effort strtoupper fallback for UTF-8 strings.
      *
      * @param string $str
      * @param string $encoding
@@ -88,7 +83,7 @@ if (!function_exists('mb_strtoupper')) {
 if (!function_exists('mb_strpos')) {
     
     /**
-     * mb_strpos — Short description of the function's behaviour.
+     * strpos fallback for environments lacking mbstring.
      *
      * @param string $haystack
      * @param string $needle

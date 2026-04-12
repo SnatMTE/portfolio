@@ -12,7 +12,7 @@
  * Sends the correct Content-Type header (`application/rss+xml`) so feed
  * readers can parse it without configuration.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

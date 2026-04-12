@@ -4,7 +4,7 @@
  *
  * Destroys the admin session and redirects to the login page.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

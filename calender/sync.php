@@ -15,7 +15,7 @@
  *                  Returns all events for that token's owner.
  *                  Token is generated in the admin panel.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

@@ -12,7 +12,7 @@
  * Deleting a tag also removes its entries from the post_tags join table
  * (handled by ON DELETE CASCADE in the schema).
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

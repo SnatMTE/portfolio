@@ -6,7 +6,7 @@
  *
  * Expects: $pageTitle (string)
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

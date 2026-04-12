@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * cms/core/database.php
  *
@@ -8,7 +8,7 @@
  * Modules that run inside the CMS keep their own getDB() for content tables
  * and call getCMSDB() only when they need CMS user/settings data.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

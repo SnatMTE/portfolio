@@ -6,7 +6,7 @@
  * Defines CMS_ROOT, CMS_DB_FILE, site constants, and starts the session.
  * Loads the core database provider (getCMSDB) and module loader.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

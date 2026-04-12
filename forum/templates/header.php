@@ -9,7 +9,7 @@
  *   $pageTitle  (string)  - Text appended to the <title> tag.
  *   $metaDesc   (string)  - Meta description.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

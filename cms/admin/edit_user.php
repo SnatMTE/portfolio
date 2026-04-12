@@ -2,7 +2,7 @@
 /**
  * cms/admin/edit_user.php  —  Edit an existing CMS user
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

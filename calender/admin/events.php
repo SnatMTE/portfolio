@@ -5,7 +5,7 @@
  * Manages all calendar events: lists, deletes, links to edit.
  * Handles POST deletion with CSRF protection.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

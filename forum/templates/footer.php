@@ -5,7 +5,7 @@
  * Renders the site footer, closes the main content wrapper, and loads JS.
  * Included at the bottom of every public page.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 ?>

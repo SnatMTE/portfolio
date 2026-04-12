@@ -10,7 +10,7 @@
  *   - Content sanitised through IcsParser before DB insertion
  *   - PDO prepared statements in createEvent()
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

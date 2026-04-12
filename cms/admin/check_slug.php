@@ -5,6 +5,9 @@
  * AJAX endpoint to validate and suggest a CMS page slug (pretty URL).
  * Expects query parameter `slug` and optional `exclude_id` to ignore
  * an existing page when editing.
+ *
+ * @author  M. Terra Ellis
+ * @link    https://terra.me.uk
  */
 
 require_once __DIR__ . '/auth.php';

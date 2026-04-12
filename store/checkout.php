@@ -13,7 +13,7 @@
  * The total is always recalculated server-side from database prices.
  * Client-submitted totals are never trusted.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

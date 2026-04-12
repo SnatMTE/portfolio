@@ -1,18 +1,13 @@
-<?php
-/**
- * File: setup.php
- * What it does: Short description of the file's purpose.
- *
- * @author  Snat
- * @link    https://terra.me.uk
- */
-
+﻿<?php
 /**
  * setup.php
  *
  * First-run setup script for the Forum. Creates the initial admin user account.
  * IMPORTANT: Delete or rename this file immediately after running it.
- * Leaving this file accessible in production is a security risk.
+ * Leaving this file accessible in production is a serious security risk.
+ *
+ * @author  M. Terra Ellis
+ * @link    https://terra.me.uk
  */
 
 require_once __DIR__ . '/functions.php';
@@ -34,7 +29,7 @@ if (php_sapi_name() !== 'cli') {
 // ---------------------------------------------------------------------------
 
 /**
- * adminExists — Short description of the function's behaviour.
+ * Returns true when an administrator user already exists in the forum.
  *
  * @return bool
  */

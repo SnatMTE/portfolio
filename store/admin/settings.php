@@ -5,6 +5,9 @@
  * Basic settings editor for the store module. Edits a small set of
  * configuration values in `config.php` and creates a timestamped backup
  * before saving.
+ *
+ * @author  M. Terra Ellis
+ * @link    https://terra.me.uk
  */
 
 require_once __DIR__ . '/auth.php';

@@ -12,7 +12,7 @@
  *   update  – Set new qty for product_id (0 = remove).
  *   remove  – Remove product_id from cart.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

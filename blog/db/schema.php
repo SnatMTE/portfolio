@@ -14,7 +14,7 @@
  *   posts       – Blog posts, linked to a user and optional category
  *   post_tags   – Many-to-many join between posts and tags
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

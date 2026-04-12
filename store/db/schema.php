@@ -14,7 +14,7 @@
  *   orders       – Customer orders with payment status
  *   order_items  – Line items belonging to an order
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

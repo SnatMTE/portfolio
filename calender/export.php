@@ -9,7 +9,7 @@
  *   ?to=YYYY-MM-DD    – Include events on or before this date.
  *   ?public=1         – Export public events only (default: all for logged-in users).
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

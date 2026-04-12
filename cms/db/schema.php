@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * cms/db/schema.php
  *
@@ -12,7 +12,7 @@
  *   settings – Key/value site settings
  *   pages    – Static content pages
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

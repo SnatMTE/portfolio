@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * config.php
  *
@@ -11,7 +11,7 @@
  * When placed inside a CMS (detected by ../core/database.php), defines CMS_ROOT
  * and CMS_URL so that login/logout redirect to the shared CMS auth pages.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 
@@ -41,7 +41,9 @@ define('DB_FILE', ROOT_PATH . '/db/store.sqlite');
 if (!defined('SITE_URL')) {
     
     /**
-     * detectSiteUrl — Short description of the function's behaviour.
+     * Detects and returns the site's base URL (protocol, host and base path).
+     *
+     * Auto-detects HTTPS, forwarded protocol headers, and non-standard ports.
      *
      * @return string
      */

@@ -11,7 +11,7 @@
  *   - Generic error message
  *   - Session regeneration on successful login
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

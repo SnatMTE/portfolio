@@ -5,7 +5,7 @@
  * Destroys the admin session (standalone mode only).
  * In CMS mode, redirects to the shared CMS logout.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

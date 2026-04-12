@@ -5,13 +5,13 @@
  * Handles new user registration.
  * Validates input, hashes the password with password_hash(), and inserts the user.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 
 require_once __DIR__ . '/functions.php';
 
-// When inside CMS, user accounts are managed centrally — no self-registration here.
+// Disable registration in CMS mode; accounts are managed centrally.
 if (defined('CMS_ROOT')) {
     flashMessage('User registration is managed by the CMS admin panel.', 'info');
     redirect(SITE_URL . '/');

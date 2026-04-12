@@ -10,7 +10,7 @@
  *
  * Also lists the five most recently updated posts for quick access.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

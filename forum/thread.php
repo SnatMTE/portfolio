@@ -7,7 +7,7 @@
  *
  * URL: thread.php?id={threadId}
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

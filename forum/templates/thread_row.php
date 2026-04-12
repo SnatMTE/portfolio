@@ -7,7 +7,7 @@
  *   id, title, author_name, user_id, created_at, post_count, last_post_at,
  *   last_poster, is_sticky, is_locked, view_count
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 ?>

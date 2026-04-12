@@ -5,7 +5,7 @@
  * Module manifest read by the CMS module loader.
  * Return value is an associative array of metadata.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

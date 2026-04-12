@@ -4,7 +4,7 @@
  *
  * Admin dashboard. Shows at-a-glance statistics and recent orders.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

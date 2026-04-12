@@ -13,7 +13,7 @@
  *   threads     - Discussion threads, each belonging to a category
  *   posts       - Individual posts/replies within a thread
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 

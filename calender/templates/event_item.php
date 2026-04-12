@@ -7,7 +7,7 @@
  * Expects:
  *   $event  (array)  – Row from cal_events.
  *
- * @author  Snat
+ * @author  M. Terra Ellis
  * @link    https://terra.me.uk
  */
 ?>
