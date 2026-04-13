@@ -23,12 +23,12 @@
             </a>
         </h3>
         <p class="event-item__meta">
-            &#128336; <?= e(formatDatetime($event['start_datetime'])) ?>
+            <?= e(formatDatetime($event['start_datetime'])) ?>
             &ndash; <?= e(formatDatetime($event['end_datetime'])) ?>
-            <?php if (!empty($event['location'])): ?>
-                &nbsp;&#128205; <?= e($event['location']) ?>
-            <?php endif; ?>
         </p>
+        <?php if (!empty($event['location'])): ?>
+            <p class="event-item__location"><?= e($event['location']) ?></p>
+        <?php endif; ?>
         <?php if (!empty($event['description'])): ?>
             <p class="event-item__desc">
                 <?= e(mb_substr($event['description'], 0, 140)) ?>

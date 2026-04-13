@@ -703,6 +703,12 @@ button  { cursor: pointer; font-family: inherit; }
     color:     var(--clr-text-muted);
     line-height: 1.4;
 }
+.event-item__location {
+    font-size: .85rem;
+    color: var(--clr-text-muted);
+    margin-top: .25rem;
+    word-break: break-word;
+}
 .event-item__desc {
     font-size:  .85rem;
     color:      var(--clr-text-muted);

@@ -57,7 +57,7 @@ renderFlash();
 
         <!-- Today button -->
         <a href="<?= SITE_URL ?>" class="btn btn--primary btn--full" style="margin-bottom:1rem;">
-            &#128197; Today
+            Today
         </a>
 
         <!-- Add event -->
