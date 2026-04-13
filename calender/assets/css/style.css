@@ -533,12 +533,17 @@ button  { cursor: pointer; font-family: inherit; }
 
 /* Individual day cell */
 .cal-cell {
-    min-height:    100px;
     padding:       .5rem;
     border-right:  1px solid var(--clr-border);
     position:      relative;
     transition:    background var(--transition);
     vertical-align: top;
+    display:       flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    aspect-ratio:  1 / 1;
+    min-height:    0;
+    overflow:      hidden;
 }
 .cal-cell:last-child { border-right: none; }
 
@@ -591,7 +596,7 @@ button  { cursor: pointer; font-family: inherit; }
 .cal-cell:hover .cal-cell__add { opacity: 1; }
 
 /* Event chips on grid */
-.cal-cell__events { display: flex; flex-direction: column; gap: .2rem; }
+.cal-cell__events { display: flex; flex-direction: column; gap: .2rem; flex: 1 1 auto; overflow: auto; min-width: 0; }
 
 .cal-event-chip {
     display:         block;
@@ -864,8 +869,8 @@ button  { cursor: pointer; font-family: inherit; }
 
 @media (max-width: 768px) {
     .cal-cell {
-        min-height: 64px;
         padding:    .3rem;
+        aspect-ratio: 1 / 1;
     }
     .cal-event-chip { font-size: .65rem; }
     .cal-toolbar__title { font-size: 1.1rem; }
