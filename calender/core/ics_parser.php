@@ -14,7 +14,7 @@
  * ---------------------------
  *   SUMMARY, DTSTART, DTEND, DESCRIPTION, LOCATION
  *
- * @author  M. Terra Ellis
+ * @author  Snat
  * @link    https://terra.me.uk
  */
 
@@ -28,10 +28,12 @@ class IcsParser
      *
      * @param string $icsContent  Raw .ics file content.
      * @return array<int, array<string, string>>
+     * @author Snat
+     * @link https://terra.me.uk
      */
     public function parse(string $icsContent): array
     {
-        // Unfold folded lines per RFC 5545 (CRLF + whitespace continuation)
+        // Unfold long lines (RFC 5545 §3.1: CRLF + whitespace = continuation)
         $content = preg_replace("/\r\n[ \t]/", '', $icsContent);
         $content = preg_replace("/\r/", '', $content);
 
@@ -87,6 +89,8 @@ class IcsParser
       *
       * @param array<string, string> $raw
       * @return array<string, string>|null
+      * @author Snat
+      * @link https://terra.me.uk
       */
     private function buildEvent(array $raw): ?array
     {
@@ -119,6 +123,8 @@ class IcsParser
      *
      * @param string $icsDate
      * @return string  "YYYY-MM-DD HH:MM:SS"
+     * @author Snat
+     * @link https://terra.me.uk
      */
     private function parseIcsDatetime(string $icsDate): string
     {
@@ -138,7 +144,7 @@ class IcsParser
                  . ' ' . substr($time, 0, 2) . ':' . substr($time, 2, 2) . ':' . substr($time, 4, 2);
         }
 
-        // Fallback: return original string for DB to handle if possible
+        // Fallback: return as-is and hope the DB handles it
         return $icsDate;
     }
 
@@ -147,6 +153,8 @@ class IcsParser
       *
       * @param string $text
       * @return string
+      * @author Snat
+      * @link https://terra.me.uk
       */
     private function unescapeText(string $text): string
     {

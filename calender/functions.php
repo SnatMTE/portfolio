@@ -5,7 +5,7 @@
  * Global helper functions for the Calendar module.
  * All database queries use PDO prepared statements.
  *
- * @author  M. Terra Ellis
+ * @author  Snat
  * @link    https://terra.me.uk
  */
 
@@ -16,13 +16,6 @@ require_once __DIR__ . '/config.php';
 // ---------------------------------------------------------------------------
 if (!extension_loaded('mbstring')) {
     if (!function_exists('mb_strlen')) {
-        /**
-         * UTF-8-aware strlen fallback for environments without mbstring.
-         *
-         * @param string $s        Input string.
-         * @param string $enc      Character encoding (ignored; UTF-8 assumed).
-         * @return int  Character count.
-         */
         function mb_strlen(string $s, string $enc = 'UTF-8'): int
         {
             if ($s === '') return 0;
@@ -31,15 +24,6 @@ if (!extension_loaded('mbstring')) {
         }
     }
     if (!function_exists('mb_substr')) {
-        /**
-         * UTF-8-aware substr fallback for environments without mbstring.
-         *
-         * @param string   $s      Input string.
-         * @param int      $start  Start position (negative counts from end).
-         * @param int|null $len    Maximum number of characters; null returns the rest.
-         * @param string   $enc    Character encoding (ignored; UTF-8 assumed).
-         * @return string  Extracted substring.
-         */
         function mb_substr(string $s, int $start, ?int $len = null, string $enc = 'UTF-8'): string
         {
             if ($s === '') return '';
@@ -60,6 +44,8 @@ if (!extension_loaded('mbstring')) {
  *
  * @param mixed $val  Value to encode.
  * @return string
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function e(mixed $val): string
 {
@@ -72,6 +58,8 @@ function e(mixed $val): string
  *
  * @param string $url
  * @return never
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function redirect(string $url): never
 {
@@ -83,6 +71,8 @@ function redirect(string $url): never
  * Generates (or returns) the CSRF token stored in the session.
  *
  * @return string  64-char hex token.
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function csrfToken(): string
 {
@@ -97,6 +87,8 @@ function csrfToken(): string
  *
  * @param string $submitted
  * @return bool
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function validateCsrf(string $submitted): bool
 {
@@ -113,6 +105,8 @@ function validateCsrf(string $submitted): bool
  *
  * @param string $msg
  * @param string $type  'success' | 'error'
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function flashMessage(string $msg, string $type = 'success'): void
 {
@@ -123,6 +117,8 @@ function flashMessage(string $msg, string $type = 'success'): void
  * Retrieves and clears the stored flash message.
  *
  * @return array{message:string, type:string}|null
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function getFlash(): ?array
 {
@@ -136,6 +132,8 @@ function getFlash(): ?array
 
 /**
  * Renders the flash message HTML if one is present.
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function renderFlash(): void
 {
@@ -156,6 +154,8 @@ function renderFlash(): void
  * @param string $dt      SQLite datetime string.
  * @param string $format  PHP date() format.
  * @return string
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function formatDate(string $dt, string $format = 'j F Y'): string
 {
@@ -167,6 +167,8 @@ function formatDate(string $dt, string $format = 'j F Y'): string
  *
  * @param string $dt
  * @return string  e.g. "2026-04-15T10:00"
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function toInputDatetime(string $dt): string
 {
@@ -178,6 +180,8 @@ function toInputDatetime(string $dt): string
  *
  * @param string $dt
  * @return string  e.g. "15 Apr 2026, 10:00"
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function formatDatetime(string $dt): string
 {
@@ -194,6 +198,8 @@ function formatDatetime(string $dt): string
  * @param int $page
  * @param int $perPage
  * @return array<int, array<string, mixed>>
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function getEvents(int $page = 1, int $perPage = EVENTS_PER_PAGE): array
 {
@@ -211,6 +217,8 @@ function getEvents(int $page = 1, int $perPage = EVENTS_PER_PAGE): array
  * Returns the total number of events.
  *
  * @return int
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function countEvents(): int
 {
@@ -222,6 +230,8 @@ function countEvents(): int
  *
  * @param int $id
  * @return array<string, mixed>|null
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function getEvent(int $id): ?array
 {
@@ -237,6 +247,8 @@ function getEvent(int $id): ?array
  * @param int $year   e.g. 2026
  * @param int $month  1–12
  * @return array<int, array<string, mixed>>
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function getEventsByMonth(int $year, int $month): array
 {
@@ -258,6 +270,8 @@ function getEventsByMonth(int $year, int $month): array
  * Returns all public events ordered by start time (used for sync feed).
  *
  * @return array<int, array<string, mixed>>
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function getPublicEvents(): array
 {
@@ -270,6 +284,8 @@ function getPublicEvents(): array
  * Returns all events (for admin export).
  *
  * @return array<int, array<string, mixed>>
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function getAllEvents(): array
 {
@@ -283,6 +299,8 @@ function getAllEvents(): array
  *
  * @param int $limit
  * @return array<int, array<string, mixed>>
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function getUpcomingEvents(int $limit = 5): array
 {
@@ -301,6 +319,8 @@ function getUpcomingEvents(int $limit = 5): array
  *
  * @param array<string, mixed> $data
  * @return int  New event ID.
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function createEvent(array $data): int
 {
@@ -327,6 +347,8 @@ function createEvent(array $data): int
  *
  * @param int                  $id
  * @param array<string, mixed> $data
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function updateEvent(int $id, array $data): void
 {
@@ -356,6 +378,8 @@ function updateEvent(int $id, array $data): void
  * Deletes an event by ID.
  *
  * @param int $id
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function deleteEvent(int $id): void
 {
@@ -373,6 +397,8 @@ function deleteEvent(int $id): void
  * @param int|null $userId
  * @param string   $label
  * @return string  48-char hex token.
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function createSyncToken(?int $userId, string $label = 'My Calendar'): string
 {
@@ -389,6 +415,8 @@ function createSyncToken(?int $userId, string $label = 'My Calendar'): string
  *
  * @param string $token
  * @return bool
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function validateSyncToken(string $token): bool
 {
@@ -403,6 +431,8 @@ function validateSyncToken(string $token): bool
  * Returns all active sync tokens.
  *
  * @return array<int, array<string, mixed>>
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function getSyncTokens(): array
 {
@@ -415,6 +445,8 @@ function getSyncTokens(): array
  * Deactivates a sync token by ID.
  *
  * @param int $id
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function revokeSyncToken(int $id): void
 {
@@ -428,9 +460,11 @@ function revokeSyncToken(int $id): void
 
 /**
  * Returns the currently logged-in admin user, or null.
- * Supports both CMS (`user_id`) and standalone admin (`admin_id`) sessions.
+ * Works in both standalone (admin_id) and CMS (user_id) modes.
  *
  * @return array<string, mixed>|null
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function currentUser(): ?array
 {
@@ -460,6 +494,8 @@ function currentUser(): ?array
  * Returns true when an admin session is active.
  *
  * @return bool
+ * @author Snat
+ * @link https://terra.me.uk
  */
 function isLoggedIn(): bool
 {

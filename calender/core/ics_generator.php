@@ -14,7 +14,7 @@
  *   $gen     = new IcsGenerator();
  *   $icsText = $gen->generate($events, 'My Calendar');
  *
- * @author  M. Terra Ellis
+ * @author  Snat
  * @link    https://terra.me.uk
  */
 
@@ -26,7 +26,9 @@ class IcsGenerator
      * @param array<int, array<string, mixed>> $events     Rows from cal_events.
      * @param string                           $calName    Calendar display name.
      * @param string                           $calDesc    Calendar description.
-     * @return string  Complete .ics content.
+    * @return string  Complete .ics content.
+    * @author Snat
+    * @link https://terra.me.uk
      */
     public function generate(array $events, string $calName = 'Calendar', string $calDesc = ''): string
     {
@@ -34,7 +36,7 @@ class IcsGenerator
 
         $lines[] = 'BEGIN:VCALENDAR';
         $lines[] = 'VERSION:2.0';
-        $lines[] = 'PRODID:-//M. Terra Ellis Portfolio//Calendar//EN';
+        $lines[] = 'PRODID:-//Snat Portfolio//Calendar//EN';
         $lines[] = 'CALSCALE:GREGORIAN';
         $lines[] = 'METHOD:PUBLISH';
         $lines[] = 'X-WR-CALNAME:' . $this->escapeText($calName);
@@ -97,6 +99,8 @@ class IcsGenerator
      *
      * @param string $dt
     * @return string
+    * @author Snat
+    * @link https://terra.me.uk
      */
     private function formatDatetime(string $dt): string
     {
@@ -113,6 +117,8 @@ class IcsGenerator
      *
      * @param string $text
     * @return string
+    * @author Snat
+    * @link https://terra.me.uk
      */
     private function escapeText(string $text): string
     {
@@ -128,6 +134,8 @@ class IcsGenerator
      *
      * @param string $line
     * @return string  Line with CRLF+SPACE fold insertions.
+    * @author Snat
+    * @link https://terra.me.uk
      */
     private function foldLine(string $line): string
     {
