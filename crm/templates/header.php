@@ -40,7 +40,10 @@ $_navItems = [
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <?php if (!defined('CRM_STANDALONE')): ?>
+    <?php if (defined('CRM_STANDALONE')): ?>
+    <!-- Standalone mode: use CRM's own base stylesheet -->
+    <link rel="stylesheet" href="<?= CRM_URL ?>/assets/css/style.css">
+    <?php else: ?>
     <!-- CMS-integrated: inherit the shared site stylesheet -->
     <link rel="stylesheet" href="<?= SITE_URL ?>/assets/css/style.css">
     <?php endif; ?>

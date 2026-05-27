@@ -55,7 +55,7 @@ if (!$alreadySetup && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $stmt = getDB()->prepare("
 INSERT INTO users (username, password_hash, email) VALUES (:username, :password_hash, :email)
-            );
+            ");
             $stmt->execute([
                 ':username' => $username,
                 ':password_hash' => $hash,

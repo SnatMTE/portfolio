@@ -77,3 +77,21 @@ function initBlogSchema(PDO $pdo): void
 
 // Run schema initialisation immediately when this file is included
 initBlogSchema(getDB());
+
+// ---------------------------------------------------------------------------
+// Migration: handle legacy schema where `users.password` was named `password`
+// instead of `password_hash`.  SQLite's CREATE TABLE IF NOT EXISTS won't
+// alter an existing table, so we patch it up here if needed.
+// ---------------------------------------------------------------------------
+try {
+    $pdo = getDB();
+    // Check if the old `password` column still exists (no `password_hash`)
+    $cols = $pdo->query("PRAGMA table_info(users)")->fetchAll(PDO::FETCH_COLUMN, 1);
+    if (in_array('password', $cols, true) && !in_array('password_hash', $cols, true)) {
+        // SQLite 3.25.0+ supports ALTER TABLE RENAME COLUMN
+        $pdo->exec("ALTER TABLE users RENAME COLUMN password TO password_hash");
+    }
+} catch (PDOException $e) {
+    // If the rename fails (older SQLite), the demo seed will hit a readable
+    // error and the admin can delete the old .sqlite file to regenerate it.
+}
