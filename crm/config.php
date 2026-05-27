@@ -22,26 +22,38 @@ define('CRM_VERSION', '1.0.0');
 define('CRM_NAME', 'CRM');
 
 // ---------------------------------------------------------------------------
-// Bootstrap the parent CMS so we inherit SITE_URL, session handling,
-// CSRF helpers, and the CMS user/auth functions.
+// Detect whether the CRM is running inside a CMS installation.
+//
+// "Inside CMS" means our parent directory IS the CMS root, identifiable by
+// the presence of core/auth.php there.  This is true at cms/crm/ but NOT
+// when CRM is a sibling of the CMS at portfolio/crm/.
 // ---------------------------------------------------------------------------
-$_cmsConfig = dirname(__DIR__) . '/cms/config.php';
-if (!defined('CMS_ROOT') && file_exists($_cmsConfig)) {
-    require_once $_cmsConfig;
-} elseif (!defined('CMS_ROOT')) {
-    // Running standalone — provide a minimal stub so the CRM doesn't explode
-    // if the CMS hasn't been deployed yet.
-    http_response_code(503);
-    exit('CRM requires the CMS module. Ensure cms/config.php is present.');
-}
+$_crmParentDir = dirname(CRM_ROOT);
 
-// Load CMS auth and helpers if not already loaded (config.php pulls them in,
-// but guard against double-include just in case).
-if (!function_exists('cmsIsLoggedIn')) {
-    require_once CMS_ROOT . '/core/auth.php';
-}
-if (!function_exists('getSetting')) {
-    require_once CMS_ROOT . '/core/helpers.php';
+if (file_exists($_crmParentDir . '/core/auth.php')) {
+    // -----------------------------------------------------------------------
+    // CMS-INTEGRATED MODE: the CRM lives inside the CMS directory.
+    // Bootstrap the CMS so we inherit SITE_URL, the session, and auth.
+    // -----------------------------------------------------------------------
+    if (!defined('CMS_ROOT')) {
+        require_once $_crmParentDir . '/config.php';
+    }
+    if (!function_exists('cmsIsLoggedIn')) {
+        require_once CMS_ROOT . '/core/auth.php';
+    }
+    if (!function_exists('getSetting')) {
+        require_once CMS_ROOT . '/core/helpers.php';
+    }
+    // CRM_URL = CMS base URL + /crm path segment.
+    if (!defined('CRM_URL')) {
+        define('CRM_URL', rtrim(SITE_URL, '/') . '/crm');
+    }
+} else {
+    // -----------------------------------------------------------------------
+    // STANDALONE MODE: no parent CMS.
+    // Provide our own SITE_URL, session, and CMS-compatible function stubs.
+    // -----------------------------------------------------------------------
+    require_once CRM_ROOT . '/core/standalone_boot.php';
 }
 
 // ---------------------------------------------------------------------------

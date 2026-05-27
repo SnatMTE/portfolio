@@ -14,7 +14,7 @@ $db    = getCRMDB();
 $id    = (int) ($_GET['id'] ?? 0);
 $flash = crmGetFlash();
 
-if ($id <= 0) { crmRedirect(SITE_URL . '/crm/companies/'); }
+if ($id <= 0) { crmRedirect(CRM_URL . '/companies/'); }
 
 $stmt = $db->prepare(
     "SELECT co.*, u.username AS assignee_name, cb.username AS created_by_name
@@ -75,9 +75,9 @@ require_once CRM_ROOT . '/templates/header.php';
     </div>
     <div class="admin-header__actions">
         <?php if (crmCanEdit()): ?>
-            <a href="<?= SITE_URL ?>/crm/companies/edit.php?id=<?= $id ?>" class="btn btn--primary btn--sm">Edit</a>
+            <a href="<?= CRM_URL ?>/companies/edit.php?id=<?= $id ?>" class="btn btn--primary btn--sm">Edit</a>
         <?php endif; ?>
-        <a href="<?= SITE_URL ?>/crm/companies/" class="btn btn--outline btn--sm">&#8592; Back</a>
+        <a href="<?= CRM_URL ?>/companies/" class="btn btn--outline btn--sm">&#8592; Back</a>
     </div>
 </div>
 
@@ -116,14 +116,14 @@ require_once CRM_ROOT . '/templates/header.php';
             <div class="crm-panel__header">
                 <h2>&#128100; Contacts (<?= count($customers) ?>)</h2>
                 <?php if (crmCanEdit()): ?>
-                    <a href="<?= SITE_URL ?>/crm/customers/create.php?company_id=<?= $id ?>" class="btn btn--primary btn--sm">+ Add</a>
+                    <a href="<?= CRM_URL ?>/customers/create.php?company_id=<?= $id ?>" class="btn btn--primary btn--sm">+ Add</a>
                 <?php endif; ?>
             </div>
             <?php if ($customers): ?>
                 <ul class="crm-recent-list">
                     <?php foreach ($customers as $c): ?>
                         <li class="crm-recent-list__item">
-                            <a href="<?= SITE_URL ?>/crm/customers/view.php?id=<?= $c['id'] ?>">
+                            <a href="<?= CRM_URL ?>/customers/view.php?id=<?= $c['id'] ?>">
                                 <?= htmlspecialchars($c['name'], ENT_QUOTES) ?>
                             </a>
                             <?php if ($c['job_title']): ?><span class="text-muted">— <?= htmlspecialchars($c['job_title'], ENT_QUOTES) ?></span><?php endif; ?>
@@ -141,14 +141,14 @@ require_once CRM_ROOT . '/templates/header.php';
             <div class="crm-panel__header">
                 <h2>&#127919; Leads (<?= count($leads) ?>)</h2>
                 <?php if (crmCanEdit()): ?>
-                    <a href="<?= SITE_URL ?>/crm/leads/create.php?company_id=<?= $id ?>" class="btn btn--primary btn--sm">+ Add</a>
+                    <a href="<?= CRM_URL ?>/leads/create.php?company_id=<?= $id ?>" class="btn btn--primary btn--sm">+ Add</a>
                 <?php endif; ?>
             </div>
             <?php if ($leads): ?>
                 <ul class="crm-recent-list">
                     <?php foreach ($leads as $l): ?>
                         <li class="crm-recent-list__item">
-                            <a href="<?= SITE_URL ?>/crm/leads/view.php?id=<?= $l['id'] ?>"><?= htmlspecialchars($l['title'], ENT_QUOTES) ?></a>
+                            <a href="<?= CRM_URL ?>/leads/view.php?id=<?= $l['id'] ?>"><?= htmlspecialchars($l['title'], ENT_QUOTES) ?></a>
                             <span class="badge <?= crmLeadStageBadge($l['stage']) ?>"><?= htmlspecialchars(crmLeadStageLabel($l['stage']), ENT_QUOTES) ?></span>
                             <?php if ($l['value'] > 0): ?>
                                 <span class="text-muted"><?= htmlspecialchars($l['currency'], ENT_QUOTES) ?> <?= number_format((float)$l['value'], 0) ?></span>
@@ -166,7 +166,7 @@ require_once CRM_ROOT . '/templates/header.php';
             <div class="crm-panel__header">
                 <h2>&#128203; Notes</h2>
                 <?php if (crmCanEdit()): ?>
-                    <a href="<?= SITE_URL ?>/crm/notes/create.php?type=company&id=<?= $id ?>" class="btn btn--primary btn--sm">+ Add Note</a>
+                    <a href="<?= CRM_URL ?>/notes/create.php?type=company&id=<?= $id ?>" class="btn btn--primary btn--sm">+ Add Note</a>
                 <?php endif; ?>
             </div>
             <?php if ($notes): ?>
@@ -177,7 +177,7 @@ require_once CRM_ROOT . '/templates/header.php';
                                 <strong><?= htmlspecialchars($note['author'] ?? 'Unknown', ENT_QUOTES) ?></strong>
                                 <time class="text-muted"><?= crmTimeAgo($note['created_at']) ?></time>
                                 <?php if (crmCanEdit()): ?>
-                                    <a href="<?= SITE_URL ?>/crm/notes/delete.php?id=<?= $note['id'] ?>&csrf=<?= crmCsrfToken() ?>"
+                                    <a href="<?= CRM_URL ?>/notes/delete.php?id=<?= $note['id'] ?>&csrf=<?= crmCsrfToken() ?>"
                                        class="crm-notes-list__delete text-muted"
                                        onclick="return confirm('Delete this note?')">&#10005;</a>
                                 <?php endif; ?>

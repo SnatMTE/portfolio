@@ -14,7 +14,7 @@ $db     = getCRMDB();
 $id     = (int) ($_GET['id'] ?? 0);
 $errors = [];
 
-if ($id <= 0) { crmRedirect(SITE_URL . '/crm/companies/'); }
+if ($id <= 0) { crmRedirect(CRM_URL . '/companies/'); }
 
 $stmt = $db->prepare("SELECT * FROM crm_companies WHERE id = :id");
 $stmt->execute([':id' => $id]);
@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
             crmLogActivity('updated', 'company', $id, $formData['name']);
             crmFlash('Company updated.', 'success');
-            crmRedirect(SITE_URL . '/crm/companies/view.php?id=' . $id);
+            crmRedirect(CRM_URL . '/companies/view.php?id=' . $id);
         }
     }
 }
@@ -93,7 +93,7 @@ require_once CRM_ROOT . '/templates/header.php';
 <div class="admin-header">
     <div>
         <h1>&#127970; Edit Company</h1>
-        <p><a href="<?= SITE_URL ?>/crm/companies/view.php?id=<?= $id ?>">&#8592; Back</a></p>
+        <p><a href="<?= CRM_URL ?>/companies/view.php?id=<?= $id ?>">&#8592; Back</a></p>
     </div>
 </div>
 
@@ -178,9 +178,9 @@ require_once CRM_ROOT . '/templates/header.php';
 
         <div class="form-actions">
             <button type="submit" class="btn btn--primary">Save Changes</button>
-            <a href="<?= SITE_URL ?>/crm/companies/view.php?id=<?= $id ?>" class="btn btn--outline">Cancel</a>
+            <a href="<?= CRM_URL ?>/companies/view.php?id=<?= $id ?>" class="btn btn--outline">Cancel</a>
             <?php if (crmCanDelete()): ?>
-                <a href="<?= SITE_URL ?>/crm/companies/delete.php?id=<?= $id ?>&csrf=<?= crmCsrfToken() ?>"
+                <a href="<?= CRM_URL ?>/companies/delete.php?id=<?= $id ?>&csrf=<?= crmCsrfToken() ?>"
                    class="btn btn--danger" style="margin-left:auto"
                    onclick="return confirm('Delete this company?')">Delete</a>
             <?php endif; ?>

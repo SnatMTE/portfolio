@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * cms/core/module_loader.php
  *

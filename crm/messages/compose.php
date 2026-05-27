@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':body'      => $formData['body'],
             ]);
             crmFlash('Message sent.', 'success');
-            crmRedirect(SITE_URL . '/crm/messages/?tab=sent');
+            crmRedirect(CRM_URL . '/messages/?tab=sent');
         }
     }
 }
@@ -70,7 +70,7 @@ require_once CRM_ROOT . '/templates/header.php';
 <div class="admin-header">
     <div>
         <h1>&#9998; Compose Message</h1>
-        <p><a href="<?= SITE_URL ?>/crm/messages/">&#8592; Back to Messages</a></p>
+        <p><a href="<?= CRM_URL ?>/messages/">&#8592; Back to Messages</a></p>
     </div>
 </div>
 
@@ -109,7 +109,7 @@ require_once CRM_ROOT . '/templates/header.php';
 
         <div class="form-actions">
             <button type="submit" class="btn btn--primary">Send Message</button>
-            <a href="<?= SITE_URL ?>/crm/messages/" class="btn btn--outline">Cancel</a>
+            <a href="<?= CRM_URL ?>/messages/" class="btn btn--outline">Cancel</a>
         </div>
     </form>
 </div>

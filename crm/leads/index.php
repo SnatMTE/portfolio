@@ -86,8 +86,8 @@ require_once CRM_ROOT . '/templates/header.php';
     </div>
     <?php if (crmCanEdit()): ?>
         <div class="admin-header__actions">
-            <a href="<?= SITE_URL ?>/crm/leads/create.php" class="btn btn--primary btn--sm">+ New Lead</a>
-            <a href="<?= SITE_URL ?>/crm/leads/export.php" class="btn btn--outline btn--sm">&#8659; Export CSV</a>
+            <a href="<?= CRM_URL ?>/leads/create.php" class="btn btn--primary btn--sm">+ New Lead</a>
+            <a href="<?= CRM_URL ?>/leads/export.php" class="btn btn--outline btn--sm">&#8659; Export CSV</a>
         </div>
     <?php endif; ?>
 </div>
@@ -136,7 +136,7 @@ require_once CRM_ROOT . '/templates/header.php';
                 <?php foreach ($leads as $l): ?>
                     <tr>
                         <td>
-                            <a href="<?= SITE_URL ?>/crm/leads/view.php?id=<?= $l['id'] ?>">
+                            <a href="<?= CRM_URL ?>/leads/view.php?id=<?= $l['id'] ?>">
                                 <?= htmlspecialchars($l['title'], ENT_QUOTES) ?>
                             </a>
                         </td>
@@ -166,12 +166,12 @@ require_once CRM_ROOT . '/templates/header.php';
                         <td class="text-muted"><?= $l['close_date'] ? crmFormatDate($l['close_date']) : '—' ?></td>
                         <td>
                             <div class="crm-table-actions">
-                                <a href="<?= SITE_URL ?>/crm/leads/view.php?id=<?= $l['id'] ?>" class="btn btn--outline btn--sm">View</a>
+                                <a href="<?= CRM_URL ?>/leads/view.php?id=<?= $l['id'] ?>" class="btn btn--outline btn--sm">View</a>
                                 <?php if (crmCanEdit()): ?>
-                                    <a href="<?= SITE_URL ?>/crm/leads/edit.php?id=<?= $l['id'] ?>" class="btn btn--outline btn--sm">Edit</a>
+                                    <a href="<?= CRM_URL ?>/leads/edit.php?id=<?= $l['id'] ?>" class="btn btn--outline btn--sm">Edit</a>
                                 <?php endif; ?>
                                 <?php if (crmCanDelete()): ?>
-                                    <a href="<?= SITE_URL ?>/crm/leads/delete.php?id=<?= $l['id'] ?>&csrf=<?= crmCsrfToken() ?>"
+                                    <a href="<?= CRM_URL ?>/leads/delete.php?id=<?= $l['id'] ?>&csrf=<?= crmCsrfToken() ?>"
                                        class="btn btn--danger btn--sm"
                                        onclick="return confirm('Delete this lead?')">Del</a>
                                 <?php endif; ?>
@@ -189,7 +189,7 @@ require_once CRM_ROOT . '/templates/header.php';
         <?php if ($search || $stage): ?>
             <p><a href="?">Clear filters</a></p>
         <?php else: ?>
-            <p><a href="<?= SITE_URL ?>/crm/leads/create.php" class="btn btn--primary">Add your first lead</a></p>
+            <p><a href="<?= CRM_URL ?>/leads/create.php" class="btn btn--primary">Add your first lead</a></p>
         <?php endif; ?>
     </div>
 <?php endif; ?>

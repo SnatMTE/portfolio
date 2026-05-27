@@ -75,9 +75,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Return to the parent entity if one was linked.
             if ($formData['related_type'] && $formData['related_id']) {
-                crmRedirect(SITE_URL . '/crm/' . $formData['related_type'] . 's/view.php?id=' . $formData['related_id']);
+                crmRedirect(CRM_URL . '/' . $formData['related_type'] . 's/view.php?id=' . $formData['related_id']);
             }
-            crmRedirect(SITE_URL . '/crm/tasks/');
+            crmRedirect(CRM_URL . '/tasks/');
         }
     }
 }
@@ -95,7 +95,7 @@ require_once CRM_ROOT . '/templates/header.php';
 <div class="admin-header">
     <div>
         <h1>&#9989; New Task</h1>
-        <p><a href="<?= SITE_URL ?>/crm/tasks/">&#8592; Back to Tasks</a></p>
+        <p><a href="<?= CRM_URL ?>/tasks/">&#8592; Back to Tasks</a></p>
     </div>
 </div>
 
@@ -193,7 +193,7 @@ require_once CRM_ROOT . '/templates/header.php';
 
         <div class="form-actions">
             <button type="submit" class="btn btn--primary">Save Task</button>
-            <a href="<?= SITE_URL ?>/crm/tasks/" class="btn btn--outline">Cancel</a>
+            <a href="<?= CRM_URL ?>/tasks/" class="btn btn--outline">Cancel</a>
         </div>
     </form>
 </div>

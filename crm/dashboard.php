@@ -124,9 +124,9 @@ require_once CRM_ROOT . '/templates/header.php';
         <p class="text-muted">Welcome back, <strong><?= htmlspecialchars($_SESSION['username'] ?? 'User', ENT_QUOTES) ?></strong></p>
     </div>
     <div class="admin-header__actions">
-        <a href="<?= SITE_URL ?>/crm/customers/create.php" class="btn btn--primary btn--sm">+ New Customer</a>
-        <a href="<?= SITE_URL ?>/crm/leads/create.php"     class="btn btn--outline btn--sm">+ New Lead</a>
-        <a href="<?= SITE_URL ?>/crm/tasks/create.php"     class="btn btn--outline btn--sm">+ New Task</a>
+        <a href="<?= CRM_URL ?>/customers/create.php" class="btn btn--primary btn--sm">+ New Customer</a>
+        <a href="<?= CRM_URL ?>/leads/create.php"     class="btn btn--outline btn--sm">+ New Lead</a>
+        <a href="<?= CRM_URL ?>/tasks/create.php"     class="btn btn--outline btn--sm">+ New Task</a>
     </div>
 </div>
 
@@ -135,32 +135,32 @@ require_once CRM_ROOT . '/templates/header.php';
     <div class="stat-card">
         <span class="stat-card__number"><?= $stats['total_customers'] ?></span>
         <span class="stat-card__label">Total Customers</span>
-        <a href="<?= SITE_URL ?>/crm/customers/" class="stat-card__link">View all</a>
+        <a href="<?= CRM_URL ?>/customers/" class="stat-card__link">View all</a>
     </div>
     <div class="stat-card">
         <span class="stat-card__number"><?= $stats['open_leads'] ?></span>
         <span class="stat-card__label">Open Leads</span>
-        <a href="<?= SITE_URL ?>/crm/leads/" class="stat-card__link">View pipeline</a>
+        <a href="<?= CRM_URL ?>/leads/" class="stat-card__link">View pipeline</a>
     </div>
     <div class="stat-card stat-card--<?= $stats['tasks_today'] > 0 ? 'warning' : 'ok' ?>">
         <span class="stat-card__number"><?= $stats['tasks_today'] ?></span>
         <span class="stat-card__label">Tasks Due Today</span>
-        <a href="<?= SITE_URL ?>/crm/tasks/" class="stat-card__link">View tasks</a>
+        <a href="<?= CRM_URL ?>/tasks/" class="stat-card__link">View tasks</a>
     </div>
     <div class="stat-card stat-card--<?= $stats['tasks_overdue'] > 0 ? 'danger' : 'ok' ?>">
         <span class="stat-card__number"><?= $stats['tasks_overdue'] ?></span>
         <span class="stat-card__label">Overdue Tasks</span>
-        <a href="<?= SITE_URL ?>/crm/tasks/?filter=overdue" class="stat-card__link">View overdue</a>
+        <a href="<?= CRM_URL ?>/tasks/?filter=overdue" class="stat-card__link">View overdue</a>
     </div>
     <div class="stat-card">
         <span class="stat-card__number"><?= $stats['total_companies'] ?></span>
         <span class="stat-card__label">Companies</span>
-        <a href="<?= SITE_URL ?>/crm/companies/" class="stat-card__link">View all</a>
+        <a href="<?= CRM_URL ?>/companies/" class="stat-card__link">View all</a>
     </div>
     <div class="stat-card <?= $stats['unread_messages'] > 0 ? 'stat-card--info' : '' ?>">
         <span class="stat-card__number"><?= $stats['unread_messages'] ?></span>
         <span class="stat-card__label">Unread Messages</span>
-        <a href="<?= SITE_URL ?>/crm/messages/" class="stat-card__link">View inbox</a>
+        <a href="<?= CRM_URL ?>/messages/" class="stat-card__link">View inbox</a>
     </div>
 </div>
 
@@ -174,13 +174,13 @@ require_once CRM_ROOT . '/templates/header.php';
         <section class="crm-panel">
             <div class="crm-panel__header">
                 <h2>&#9989; Tasks Due Today</h2>
-                <a href="<?= SITE_URL ?>/crm/tasks/create.php" class="btn btn--primary btn--sm">+ Add Task</a>
+                <a href="<?= CRM_URL ?>/tasks/create.php" class="btn btn--primary btn--sm">+ Add Task</a>
             </div>
             <?php if ($tasksDueToday): ?>
                 <ul class="crm-task-list">
                     <?php foreach ($tasksDueToday as $t): ?>
                         <li class="crm-task-list__item crm-task-list__item--<?= htmlspecialchars($t['priority'], ENT_QUOTES) ?>">
-                            <a href="<?= SITE_URL ?>/crm/tasks/edit.php?id=<?= $t['id'] ?>" class="crm-task-list__title">
+                            <a href="<?= CRM_URL ?>/tasks/edit.php?id=<?= $t['id'] ?>" class="crm-task-list__title">
                                 <?= htmlspecialchars($t['title'], ENT_QUOTES) ?>
                             </a>
                             <span class="badge <?= crmStatusBadge($t['status']) ?>">
@@ -203,7 +203,7 @@ require_once CRM_ROOT . '/templates/header.php';
         <section class="crm-panel">
             <div class="crm-panel__header">
                 <h2>&#127919; Lead Pipeline</h2>
-                <a href="<?= SITE_URL ?>/crm/leads/" class="btn btn--outline btn--sm">View all</a>
+                <a href="<?= CRM_URL ?>/leads/" class="btn btn--outline btn--sm">View all</a>
             </div>
             <?php if ($leadsByStage): ?>
                 <div class="crm-pipeline-bars">
@@ -261,7 +261,7 @@ require_once CRM_ROOT . '/templates/header.php';
         <section class="crm-panel">
             <div class="crm-panel__header">
                 <h2>&#128100; Recent Customers</h2>
-                <a href="<?= SITE_URL ?>/crm/customers/" class="btn btn--outline btn--sm">View all</a>
+                <a href="<?= CRM_URL ?>/customers/" class="btn btn--outline btn--sm">View all</a>
             </div>
             <?php if ($recentCustomers): ?>
                 <ul class="crm-recent-list">
@@ -271,7 +271,7 @@ require_once CRM_ROOT . '/templates/header.php';
                                 <?= strtoupper(substr($c['first_name'], 0, 1) . substr($c['last_name'], 0, 1)) ?>
                             </div>
                             <div class="crm-recent-list__body">
-                                <a href="<?= SITE_URL ?>/crm/customers/view.php?id=<?= $c['id'] ?>" class="crm-recent-list__name">
+                                <a href="<?= CRM_URL ?>/customers/view.php?id=<?= $c['id'] ?>" class="crm-recent-list__name">
                                     <?= htmlspecialchars($c['first_name'] . ' ' . $c['last_name'], ENT_QUOTES) ?>
                                 </a>
                                 <span class="text-muted"><?= htmlspecialchars($c['email'], ENT_QUOTES) ?></span>
@@ -291,7 +291,7 @@ require_once CRM_ROOT . '/templates/header.php';
         <section class="crm-panel">
             <div class="crm-panel__header">
                 <h2>&#128203; Recent Activity</h2>
-                <a href="<?= SITE_URL ?>/crm/activity.php" class="btn btn--outline btn--sm">Full log</a>
+                <a href="<?= CRM_URL ?>/activity.php" class="btn btn--outline btn--sm">Full log</a>
             </div>
             <?php if ($recentActivity): ?>
                 <ol class="crm-activity-feed">

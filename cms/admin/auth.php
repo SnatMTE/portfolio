@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * cms/admin/auth.php
  *

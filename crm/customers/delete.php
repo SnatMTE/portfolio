@@ -17,7 +17,7 @@ $csrf  = trim($_GET['csrf'] ?? '');
 
 if ($id <= 0 || !crmValidateCsrf($csrf)) {
     crmFlash('Invalid request.', 'error');
-    crmRedirect(SITE_URL . '/crm/customers/');
+    crmRedirect(CRM_URL . '/customers/');
 }
 
 $db   = getCRMDB();
@@ -27,7 +27,7 @@ $row  = $stmt->fetch();
 
 if (!$row) {
     crmFlash('Customer not found.', 'error');
-    crmRedirect(SITE_URL . '/crm/customers/');
+    crmRedirect(CRM_URL . '/customers/');
 }
 
 // Cascade-delete linked records that SQLite foreign key rules won't handle automatically
@@ -43,4 +43,4 @@ $name = trim($row['first_name'] . ' ' . $row['last_name']);
 crmLogActivity('deleted', 'customer', $id, $name);
 
 crmFlash('Customer "' . $name . '" deleted.', 'success');
-crmRedirect(SITE_URL . '/crm/customers/');
+crmRedirect(CRM_URL . '/customers/');

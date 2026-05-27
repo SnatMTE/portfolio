@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $formData['first_name'] . ' ' . $formData['last_name']);
 
             crmFlash('Customer created successfully.', 'success');
-            crmRedirect(SITE_URL . '/crm/customers/view.php?id=' . $newId);
+            crmRedirect(CRM_URL . '/customers/view.php?id=' . $newId);
         }
     }
 }
@@ -102,7 +102,7 @@ require_once CRM_ROOT . '/templates/header.php';
 <div class="admin-header">
     <div>
         <h1>&#128100; New Customer</h1>
-        <p><a href="<?= SITE_URL ?>/crm/customers/">&#8592; Back to Customers</a></p>
+        <p><a href="<?= CRM_URL ?>/customers/">&#8592; Back to Customers</a></p>
     </div>
 </div>
 
@@ -229,7 +229,7 @@ require_once CRM_ROOT . '/templates/header.php';
 
         <div class="form-actions">
             <button type="submit" class="btn btn--primary">Save Customer</button>
-            <a href="<?= SITE_URL ?>/crm/customers/" class="btn btn--outline">Cancel</a>
+            <a href="<?= CRM_URL ?>/customers/" class="btn btn--outline">Cancel</a>
         </div>
     </form>
 </div>

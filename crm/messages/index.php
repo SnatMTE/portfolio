@@ -49,7 +49,7 @@ require_once CRM_ROOT . '/templates/header.php';
 
 <div class="admin-header">
     <div><h1>&#128140; Messages</h1></div>
-    <a href="<?= SITE_URL ?>/crm/messages/compose.php" class="btn btn--primary btn--sm">&#9998; Compose</a>
+    <a href="<?= CRM_URL ?>/messages/compose.php" class="btn btn--primary btn--sm">&#9998; Compose</a>
 </div>
 
 <div class="crm-stage-bar">
@@ -79,7 +79,7 @@ require_once CRM_ROOT . '/templates/header.php';
                             <?php endif; ?>
                         </td>
                         <td>
-                            <a href="<?= SITE_URL ?>/crm/messages/view.php?id=<?= $m['id'] ?>">
+                            <a href="<?= CRM_URL ?>/messages/view.php?id=<?= $m['id'] ?>">
                                 <?= htmlspecialchars($m['subject'], ENT_QUOTES) ?>
                             </a>
                             <?php if ($tab === 'inbox' && !$m['is_read']): ?>
@@ -89,7 +89,7 @@ require_once CRM_ROOT . '/templates/header.php';
                         <td class="text-muted"><?= crmTimeAgo($m['created_at']) ?></td>
                         <td>
                             <?php if ($tab === 'inbox' && crmCanDelete()): ?>
-                                <a href="<?= SITE_URL ?>/crm/messages/delete.php?id=<?= $m['id'] ?>&csrf=<?= crmCsrfToken() ?>"
+                                <a href="<?= CRM_URL ?>/messages/delete.php?id=<?= $m['id'] ?>&csrf=<?= crmCsrfToken() ?>"
                                    class="btn btn--danger btn--sm"
                                    onclick="return confirm('Delete this message?')">Del</a>
                             <?php endif; ?>
@@ -102,7 +102,7 @@ require_once CRM_ROOT . '/templates/header.php';
 <?php else: ?>
     <div class="empty-state">
         <h2><?= $tab === 'inbox' ? 'Your inbox is empty' : 'No sent messages' ?></h2>
-        <p><a href="<?= SITE_URL ?>/crm/messages/compose.php" class="btn btn--primary">Compose a message</a></p>
+        <p><a href="<?= CRM_URL ?>/messages/compose.php" class="btn btn--primary">Compose a message</a></p>
     </div>
 <?php endif; ?>
 

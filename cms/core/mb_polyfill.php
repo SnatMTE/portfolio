@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * cms/core/mb_polyfill.php
  *
@@ -20,7 +20,7 @@ if (!function_exists('mb_strlen')) {
      * @param string $encoding
      * @return int
      */
-    function mb_strlen(string $str, string $encoding = null): int
+    function mb_strlen(string $str, ?string $encoding = null): int
     {
         // Prefer utf8 decoding to count characters for common UTF-8
         if (function_exists('utf8_decode')) {
@@ -41,7 +41,7 @@ if (!function_exists('mb_substr')) {
      * @param string $encoding
      * @return string
      */
-    function mb_substr(string $str, int $start, ?int $length = null, string $encoding = null): string
+    function mb_substr(string $str, int $start, ?int $length = null, ?string $encoding = null): string
     {
         if ($length === null) {
             return substr($str, $start);
@@ -59,7 +59,7 @@ if (!function_exists('mb_strtolower')) {
      * @param string $encoding
      * @return string
      */
-    function mb_strtolower(string $str, string $encoding = null): string
+    function mb_strtolower(string $str, ?string $encoding = null): string
     {
         return strtolower($str);
     }
@@ -74,7 +74,7 @@ if (!function_exists('mb_strtoupper')) {
      * @param string $encoding
      * @return string
      */
-    function mb_strtoupper(string $str, string $encoding = null): string
+    function mb_strtoupper(string $str, ?string $encoding = null): string
     {
         return strtoupper($str);
     }
@@ -91,7 +91,7 @@ if (!function_exists('mb_strpos')) {
      * @param string $encoding
      * @return mixed
      */
-    function mb_strpos(string $haystack, string $needle, int $offset = 0, string $encoding = null)
+    function mb_strpos(string $haystack, string $needle, int $offset = 0, ?string $encoding = null)
     {
         return strpos($haystack, $needle, $offset);
     }

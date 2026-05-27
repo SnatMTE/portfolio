@@ -14,7 +14,7 @@ $db     = getCRMDB();
 $id     = (int) ($_GET['id'] ?? 0);
 $errors = [];
 
-if ($id <= 0) { crmRedirect(SITE_URL . '/crm/tasks/'); }
+if ($id <= 0) { crmRedirect(CRM_URL . '/tasks/'); }
 
 $stmt = $db->prepare("SELECT * FROM crm_tasks WHERE id = :id");
 $stmt->execute([':id' => $id]);
@@ -79,9 +79,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             crmFlash('Task updated.', 'success');
 
             if ($formData['related_type'] && $formData['related_id']) {
-                crmRedirect(SITE_URL . '/crm/' . $formData['related_type'] . 's/view.php?id=' . $formData['related_id']);
+                crmRedirect(CRM_URL . '/' . $formData['related_type'] . 's/view.php?id=' . $formData['related_id']);
             }
-            crmRedirect(SITE_URL . '/crm/tasks/');
+            crmRedirect(CRM_URL . '/tasks/');
         }
     }
 }
@@ -106,7 +106,7 @@ require_once CRM_ROOT . '/templates/header.php';
 <div class="admin-header">
     <div>
         <h1>&#9989; Edit Task</h1>
-        <p><a href="<?= SITE_URL ?>/crm/tasks/">&#8592; Back to Tasks</a></p>
+        <p><a href="<?= CRM_URL ?>/tasks/">&#8592; Back to Tasks</a></p>
     </div>
 </div>
 
@@ -175,9 +175,9 @@ require_once CRM_ROOT . '/templates/header.php';
 
         <div class="form-actions">
             <button type="submit" class="btn btn--primary">Save Changes</button>
-            <a href="<?= SITE_URL ?>/crm/tasks/" class="btn btn--outline">Cancel</a>
+            <a href="<?= CRM_URL ?>/tasks/" class="btn btn--outline">Cancel</a>
             <?php if (crmCanDelete()): ?>
-                <a href="<?= SITE_URL ?>/crm/tasks/delete.php?id=<?= $id ?>&csrf=<?= crmCsrfToken() ?>"
+                <a href="<?= CRM_URL ?>/tasks/delete.php?id=<?= $id ?>&csrf=<?= crmCsrfToken() ?>"
                    class="btn btn--danger" style="margin-left:auto"
                    onclick="return confirm('Delete this task?')">Delete</a>
             <?php endif; ?>

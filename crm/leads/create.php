@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             crmLogActivity('created', 'lead', $newId, $formData['title']);
             crmFlash('Lead created successfully.', 'success');
-            crmRedirect(SITE_URL . '/crm/leads/view.php?id=' . $newId);
+            crmRedirect(CRM_URL . '/leads/view.php?id=' . $newId);
         }
     }
 }
@@ -108,7 +108,7 @@ require_once CRM_ROOT . '/templates/header.php';
 <div class="admin-header">
     <div>
         <h1>&#127919; New Lead</h1>
-        <p><a href="<?= SITE_URL ?>/crm/leads/">&#8592; Back to Leads</a></p>
+        <p><a href="<?= CRM_URL ?>/leads/">&#8592; Back to Leads</a></p>
     </div>
 </div>
 
@@ -240,7 +240,7 @@ require_once CRM_ROOT . '/templates/header.php';
 
         <div class="form-actions">
             <button type="submit" class="btn btn--primary">Save Lead</button>
-            <a href="<?= SITE_URL ?>/crm/leads/" class="btn btn--outline">Cancel</a>
+            <a href="<?= CRM_URL ?>/leads/" class="btn btn--outline">Cancel</a>
         </div>
     </form>
 </div>

@@ -15,7 +15,7 @@ $csrf = trim($_GET['csrf']   ?? '');
 
 if ($id <= 0 || !crmValidateCsrf($csrf)) {
     crmFlash('Invalid request.', 'error');
-    crmRedirect(SITE_URL . '/crm/');
+    crmRedirect(CRM_URL . '/');
 }
 
 $db   = getCRMDB();
@@ -25,16 +25,16 @@ $note = $stmt->fetch();
 
 if (!$note) {
     crmFlash('Note not found.', 'error');
-    crmRedirect(SITE_URL . '/crm/');
+    crmRedirect(CRM_URL . '/');
 }
 
 // Editors may only delete their own notes; admins may delete any.
 if (!cmsIsAdmin() && (int) $note['created_by'] !== (int) ($_SESSION['user_id'] ?? 0)) {
     crmFlash('You may not delete another user\'s note.', 'error');
-    crmRedirect(SITE_URL . '/crm/' . $note['related_type'] . 's/view.php?id=' . $note['related_id']);
+    crmRedirect(CRM_URL . '/' . $note['related_type'] . 's/view.php?id=' . $note['related_id']);
 }
 
 $db->prepare("DELETE FROM crm_notes WHERE id = :id")->execute([':id' => $id]);
 crmLogActivity('deleted note', $note['related_type'], $note['related_id']);
 crmFlash('Note deleted.', 'success');
-crmRedirect(SITE_URL . '/crm/' . $note['related_type'] . 's/view.php?id=' . $note['related_id']);
+crmRedirect(CRM_URL . '/' . $note['related_type'] . 's/view.php?id=' . $note['related_id']);

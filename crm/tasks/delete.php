@@ -15,7 +15,7 @@ $csrf = trim($_GET['csrf'] ?? '');
 
 if ($id <= 0 || !crmValidateCsrf($csrf)) {
     crmFlash('Invalid request.', 'error');
-    crmRedirect(SITE_URL . '/crm/tasks/');
+    crmRedirect(CRM_URL . '/tasks/');
 }
 
 $db   = getCRMDB();
@@ -25,7 +25,7 @@ $row  = $stmt->fetch();
 
 if (!$row) {
     crmFlash('Task not found.', 'error');
-    crmRedirect(SITE_URL . '/crm/tasks/');
+    crmRedirect(CRM_URL . '/tasks/');
 }
 
 $db->prepare("DELETE FROM crm_tasks WHERE id = :id")->execute([':id' => $id]);
@@ -34,6 +34,6 @@ crmFlash('Task deleted.', 'success');
 
 // Bounce back to parent entity if one was linked.
 if ($row['related_type'] && $row['related_id']) {
-    crmRedirect(SITE_URL . '/crm/' . $row['related_type'] . 's/view.php?id=' . $row['related_id']);
+    crmRedirect(CRM_URL . '/' . $row['related_type'] . 's/view.php?id=' . $row['related_id']);
 }
-crmRedirect(SITE_URL . '/crm/tasks/');
+crmRedirect(CRM_URL . '/tasks/');

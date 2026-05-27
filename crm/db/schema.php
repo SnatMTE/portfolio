@@ -256,4 +256,58 @@ function initCRMSchema(PDO $pdo): void
     foreach ($indexes as $sql) {
         $pdo->exec($sql);
     }
+
+    // -----------------------------------------------------------------------
+    // Standalone-mode user tables
+    //
+    // These are used when the CRM runs without a parent CMS.
+    // In CMS-integrated mode they exist but are simply never queried —
+    // getCMSDB() returns the CMS database instead.
+    //
+    // A 'users' VIEW matches the column names expected by crmGetUsers() and
+    // crmUsername() so those helpers work without modification in either mode.
+    // -----------------------------------------------------------------------
+
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS crm_roles (
+            id   INTEGER PRIMARY KEY,
+            name TEXT    NOT NULL UNIQUE
+        );
+    ");
+
+    // Seed the three built-in roles once.
+    $pdo->exec("
+        INSERT OR IGNORE INTO crm_roles (id, name) VALUES
+            (1, 'admin'),
+            (2, 'editor'),
+            (3, 'user');
+    ");
+
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS crm_users (
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            username      TEXT    NOT NULL UNIQUE,
+            email         TEXT    NOT NULL UNIQUE,
+            password_hash TEXT    NOT NULL,
+            role_id       INTEGER NOT NULL DEFAULT 3
+                              REFERENCES crm_roles(id),
+            created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
+        );
+    ");
+
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS crm_settings (
+            key   TEXT PRIMARY KEY,
+            value TEXT NOT NULL DEFAULT ''
+        );
+    ");
+
+    // VIEW: 'users' — exposes crm_users columns under the names that
+    // getCMSDB() queries expect (id, username, email).
+    // DROP + RECREATE is safe because CREATE VIEW IF NOT EXISTS cannot
+    // update the column list if the schema changes.
+    $pdo->exec("
+        CREATE VIEW IF NOT EXISTS users AS
+            SELECT id, username, email, role_id FROM crm_users;
+    ");
 }

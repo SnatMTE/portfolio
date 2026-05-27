@@ -72,10 +72,10 @@ require_once CRM_ROOT . '/templates/header.php';
     </div>
     <div class="admin-header__actions">
         <?php if (crmCanEdit()): ?>
-            <a href="<?= SITE_URL ?>/crm/companies/create.php" class="btn btn--primary btn--sm">+ New Company</a>
+            <a href="<?= CRM_URL ?>/companies/create.php" class="btn btn--primary btn--sm">+ New Company</a>
         <?php endif; ?>
         <?php if (crmCanEdit()): ?>
-            <a href="<?= SITE_URL ?>/crm/companies/export.php" class="btn btn--outline btn--sm">Export CSV</a>
+            <a href="<?= CRM_URL ?>/companies/export.php" class="btn btn--outline btn--sm">Export CSV</a>
         <?php endif; ?>
     </div>
 </div>
@@ -114,7 +114,7 @@ require_once CRM_ROOT . '/templates/header.php';
                 <?php foreach ($companies as $co): ?>
                     <tr>
                         <td class="crm-name-cell">
-                            <a href="<?= SITE_URL ?>/crm/companies/view.php?id=<?= $co['id'] ?>">
+                            <a href="<?= CRM_URL ?>/companies/view.php?id=<?= $co['id'] ?>">
                                 <?= htmlspecialchars($co['name'], ENT_QUOTES) ?>
                             </a>
                             <?php if ($co['city'] || $co['country']): ?>
@@ -137,12 +137,12 @@ require_once CRM_ROOT . '/templates/header.php';
                         <td><?= $co['lead_count'] ?></td>
                         <td>
                             <div class="crm-table-actions">
-                                <a href="<?= SITE_URL ?>/crm/companies/view.php?id=<?= $co['id'] ?>" class="btn btn--outline btn--sm">View</a>
+                                <a href="<?= CRM_URL ?>/companies/view.php?id=<?= $co['id'] ?>" class="btn btn--outline btn--sm">View</a>
                                 <?php if (crmCanEdit()): ?>
-                                    <a href="<?= SITE_URL ?>/crm/companies/edit.php?id=<?= $co['id'] ?>" class="btn btn--outline btn--sm">Edit</a>
+                                    <a href="<?= CRM_URL ?>/companies/edit.php?id=<?= $co['id'] ?>" class="btn btn--outline btn--sm">Edit</a>
                                 <?php endif; ?>
                                 <?php if (crmCanDelete()): ?>
-                                    <a href="<?= SITE_URL ?>/crm/companies/delete.php?id=<?= $co['id'] ?>&csrf=<?= crmCsrfToken() ?>"
+                                    <a href="<?= CRM_URL ?>/companies/delete.php?id=<?= $co['id'] ?>&csrf=<?= crmCsrfToken() ?>"
                                        class="btn btn--danger btn--sm"
                                        onclick="return confirm('Delete company and unlink all contacts?')">Del</a>
                                 <?php endif; ?>
@@ -158,7 +158,7 @@ require_once CRM_ROOT . '/templates/header.php';
     <div class="empty-state">
         <h2>No companies found</h2>
         <?php if (crmCanEdit()): ?>
-            <p><a href="<?= SITE_URL ?>/crm/companies/create.php" class="btn btn--primary">Add a company</a></p>
+            <p><a href="<?= CRM_URL ?>/companies/create.php" class="btn btn--primary">Add a company</a></p>
         <?php endif; ?>
     </div>
 <?php endif; ?>

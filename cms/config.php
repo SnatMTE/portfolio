@@ -105,10 +105,10 @@ if (session_status() === PHP_SESSION_NONE) {
 // ---------------------------------------------------------------------------
 // Load core providers
 // ---------------------------------------------------------------------------
-// Load small mbstring polyfills when the ext/mbstring PHP extension
-// is not available. This allows the CMS to run on environments where
-// mbstring isn't installed. For full unicode support install mbstring.
-if (file_exists(CMS_ROOT . '/core/mb_polyfill.php')) {
+// Load small mbstring polyfills only when the mbstring extension is absent.
+// Skipping the file when mbstring is installed avoids nullable-parameter
+// deprecation notices in PHP 8.1+ which would break header() calls.
+if (!extension_loaded('mbstring') && file_exists(CMS_ROOT . '/core/mb_polyfill.php')) {
     require_once CMS_ROOT . '/core/mb_polyfill.php';
 }
 require_once CMS_ROOT . '/core/database.php';

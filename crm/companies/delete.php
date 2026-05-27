@@ -16,7 +16,7 @@ $csrf = trim($_GET['csrf']   ?? '');
 
 if ($id <= 0 || !crmValidateCsrf($csrf)) {
     crmFlash('Invalid request.', 'error');
-    crmRedirect(SITE_URL . '/crm/companies/');
+    crmRedirect(CRM_URL . '/companies/');
 }
 
 $db   = getCRMDB();
@@ -26,7 +26,7 @@ $row  = $stmt->fetch();
 
 if (!$row) {
     crmFlash('Company not found.', 'error');
-    crmRedirect(SITE_URL . '/crm/companies/');
+    crmRedirect(CRM_URL . '/companies/');
 }
 
 // Unlink rather than cascade-delete to preserve customer and lead records.
@@ -38,4 +38,4 @@ $db->prepare("DELETE FROM crm_companies  WHERE id = :id")->execute([':id' => $id
 
 crmLogActivity('deleted', 'company', $id, $row['name']);
 crmFlash('Company "' . $row['name'] . '" deleted.', 'success');
-crmRedirect(SITE_URL . '/crm/companies/');
+crmRedirect(CRM_URL . '/companies/');

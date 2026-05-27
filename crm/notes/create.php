@@ -20,10 +20,10 @@ $relId   = (int) ($_REQUEST['id']   ?? 0);
 $validTypes = ['customer', 'lead', 'company'];
 if (!in_array($relType, $validTypes, true) || $relId <= 0) {
     crmFlash('Invalid request.', 'error');
-    crmRedirect(SITE_URL . '/crm/');
+    crmRedirect(CRM_URL . '/');
 }
 
-$returnUrl = SITE_URL . '/crm/' . $relType . 's/view.php?id=' . $relId;
+$returnUrl = CRM_URL . '/' . $relType . 's/view.php?id=' . $relId;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!crmValidateCsrf($_POST['csrf_token'] ?? '')) {

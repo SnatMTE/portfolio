@@ -99,8 +99,8 @@ require_once CRM_ROOT . '/templates/header.php';
     </div>
     <?php if (crmCanEdit()): ?>
         <div class="admin-header__actions">
-            <a href="<?= SITE_URL ?>/crm/customers/create.php" class="btn btn--primary btn--sm">+ New Customer</a>
-            <a href="<?= SITE_URL ?>/crm/customers/export.php<?= $search ? '?q=' . urlencode($search) : '' ?>"
+            <a href="<?= CRM_URL ?>/customers/create.php" class="btn btn--primary btn--sm">+ New Customer</a>
+            <a href="<?= CRM_URL ?>/customers/export.php<?= $search ? '?q=' . urlencode($search) : '' ?>"
                class="btn btn--outline btn--sm">&#8659; Export CSV</a>
         </div>
     <?php endif; ?>
@@ -157,7 +157,7 @@ require_once CRM_ROOT . '/templates/header.php';
                                 <div class="crm-avatar crm-avatar--sm">
                                     <?= strtoupper(substr($c['first_name'], 0, 1) . substr($c['last_name'], 0, 1)) ?>
                                 </div>
-                                <a href="<?= SITE_URL ?>/crm/customers/view.php?id=<?= $c['id'] ?>">
+                                <a href="<?= CRM_URL ?>/customers/view.php?id=<?= $c['id'] ?>">
                                     <?= htmlspecialchars($c['first_name'] . ' ' . $c['last_name'], ENT_QUOTES) ?>
                                 </a>
                             </div>
@@ -166,7 +166,7 @@ require_once CRM_ROOT . '/templates/header.php';
                         <td><?= htmlspecialchars($c['phone'], ENT_QUOTES) ?></td>
                         <td>
                             <?php if ($c['company_name']): ?>
-                                <a href="<?= SITE_URL ?>/crm/companies/view.php?id=<?= $c['company_id'] ?>">
+                                <a href="<?= CRM_URL ?>/companies/view.php?id=<?= $c['company_id'] ?>">
                                     <?= htmlspecialchars($c['company_name'], ENT_QUOTES) ?>
                                 </a>
                             <?php else: ?>
@@ -182,14 +182,14 @@ require_once CRM_ROOT . '/templates/header.php';
                         <td class="text-muted"><?= crmFormatDate($c['created_at']) ?></td>
                         <td>
                             <div class="crm-table-actions">
-                                <a href="<?= SITE_URL ?>/crm/customers/view.php?id=<?= $c['id'] ?>"
+                                <a href="<?= CRM_URL ?>/customers/view.php?id=<?= $c['id'] ?>"
                                    class="btn btn--outline btn--sm">View</a>
                                 <?php if (crmCanEdit()): ?>
-                                    <a href="<?= SITE_URL ?>/crm/customers/edit.php?id=<?= $c['id'] ?>"
+                                    <a href="<?= CRM_URL ?>/customers/edit.php?id=<?= $c['id'] ?>"
                                        class="btn btn--outline btn--sm">Edit</a>
                                 <?php endif; ?>
                                 <?php if (crmCanDelete()): ?>
-                                    <a href="<?= SITE_URL ?>/crm/customers/delete.php?id=<?= $c['id'] ?>&csrf=<?= crmCsrfToken() ?>"
+                                    <a href="<?= CRM_URL ?>/customers/delete.php?id=<?= $c['id'] ?>&csrf=<?= crmCsrfToken() ?>"
                                        class="btn btn--danger btn--sm"
                                        onclick="return confirm('Delete this customer? This cannot be undone.')">Del</a>
                                 <?php endif; ?>
@@ -210,7 +210,7 @@ require_once CRM_ROOT . '/templates/header.php';
             <?php if ($search || $status): ?>
                 Try adjusting your filters, or <a href="?">clear them</a>.
             <?php else: ?>
-                <a href="<?= SITE_URL ?>/crm/customers/create.php" class="btn btn--primary">Add your first customer</a>
+                <a href="<?= CRM_URL ?>/customers/create.php" class="btn btn--primary">Add your first customer</a>
             <?php endif; ?>
         </p>
     </div>

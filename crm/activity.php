@@ -131,7 +131,7 @@ require_once CRM_ROOT . '/templates/header.php';
                         <td><?= htmlspecialchars($e['entity_type'] ?? '—', ENT_QUOTES) ?></td>
                         <td>
                             <?php if ($e['entity_type'] && $e['entity_id']): ?>
-                                <a href="<?= SITE_URL ?>/crm/<?= htmlspecialchars($e['entity_type'], ENT_QUOTES) ?>s/view.php?id=<?= $e['entity_id'] ?>">
+                                <a href="<?= CRM_URL ?>/<?= htmlspecialchars($e['entity_type'], ENT_QUOTES) ?>s/view.php?id=<?= $e['entity_id'] ?>">
                                     #<?= $e['entity_id'] ?>
                                 </a>
                             <?php else: ?>

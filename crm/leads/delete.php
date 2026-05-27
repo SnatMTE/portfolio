@@ -15,7 +15,7 @@ $csrf = trim($_GET['csrf'] ?? '');
 
 if ($id <= 0 || !crmValidateCsrf($csrf)) {
     crmFlash('Invalid request.', 'error');
-    crmRedirect(SITE_URL . '/crm/leads/');
+    crmRedirect(CRM_URL . '/leads/');
 }
 
 $db   = getCRMDB();
@@ -25,7 +25,7 @@ $row  = $stmt->fetch();
 
 if (!$row) {
     crmFlash('Lead not found.', 'error');
-    crmRedirect(SITE_URL . '/crm/leads/');
+    crmRedirect(CRM_URL . '/leads/');
 }
 
 $db->prepare("DELETE FROM crm_notes      WHERE related_type = 'lead' AND related_id = :id")->execute([':id' => $id]);
@@ -36,4 +36,4 @@ $db->prepare("DELETE FROM crm_leads      WHERE id = :id")->execute([':id' => $id
 
 crmLogActivity('deleted', 'lead', $id, $row['title']);
 crmFlash('Lead "' . $row['title'] . '" deleted.', 'success');
-crmRedirect(SITE_URL . '/crm/leads/');
+crmRedirect(CRM_URL . '/leads/');

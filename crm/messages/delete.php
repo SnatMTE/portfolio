@@ -15,11 +15,11 @@ $csrf = trim($_GET['csrf']   ?? '');
 
 if ($id <= 0 || !crmValidateCsrf($csrf)) {
     crmFlash('Invalid request.', 'error');
-    crmRedirect(SITE_URL . '/crm/messages/');
+    crmRedirect(CRM_URL . '/messages/');
 }
 
 $db = getCRMDB();
 $db->prepare("DELETE FROM crm_messages WHERE id = :id")->execute([':id' => $id]);
 
 crmFlash('Message deleted.', 'success');
-crmRedirect(SITE_URL . '/crm/messages/');
+crmRedirect(CRM_URL . '/messages/');

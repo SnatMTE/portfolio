@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $newId = (int) $db->lastInsertId();
             crmLogActivity('created', 'company', $newId, $formData['name']);
             crmFlash('Company created.', 'success');
-            crmRedirect(SITE_URL . '/crm/companies/view.php?id=' . $newId);
+            crmRedirect(CRM_URL . '/companies/view.php?id=' . $newId);
         }
     }
 }
@@ -77,7 +77,7 @@ require_once CRM_ROOT . '/templates/header.php';
 <div class="admin-header">
     <div>
         <h1>&#127970; New Company</h1>
-        <p><a href="<?= SITE_URL ?>/crm/companies/">&#8592; Back to Companies</a></p>
+        <p><a href="<?= CRM_URL ?>/companies/">&#8592; Back to Companies</a></p>
     </div>
 </div>
 
@@ -162,7 +162,7 @@ require_once CRM_ROOT . '/templates/header.php';
 
         <div class="form-actions">
             <button type="submit" class="btn btn--primary">Save Company</button>
-            <a href="<?= SITE_URL ?>/crm/companies/" class="btn btn--outline">Cancel</a>
+            <a href="<?= CRM_URL ?>/companies/" class="btn btn--outline">Cancel</a>
         </div>
     </form>
 </div>

@@ -98,6 +98,12 @@ $pageTitle = 'Login';
             <?= e(getSetting('site_name', CMS_NAME)) ?>
         </p>
 
+        <?php $flash = cmsGetFlash(); if ($flash): ?>
+            <div class="alert alert--<?= e($flash['type']) ?>" role="alert">
+                <?= e($flash['message']) ?>
+            </div>
+        <?php endif; ?>
+
         <?php if ($errors): ?>
             <div class="alert alert--error">
                 <?php foreach ($errors as $err): ?>

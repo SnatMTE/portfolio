@@ -87,7 +87,7 @@ require_once CRM_ROOT . '/templates/header.php';
         <p class="text-muted"><?= $total ?> task<?= $total !== 1 ? 's' : '' ?></p>
     </div>
     <?php if (crmCanEdit()): ?>
-        <a href="<?= SITE_URL ?>/crm/tasks/create.php" class="btn btn--primary btn--sm">+ New Task</a>
+        <a href="<?= CRM_URL ?>/tasks/create.php" class="btn btn--primary btn--sm">+ New Task</a>
     <?php endif; ?>
 </div>
 
@@ -132,7 +132,7 @@ require_once CRM_ROOT . '/templates/header.php';
                     ?>
                     <tr <?= $isOverdue ? 'class="crm-row--overdue"' : '' ?>>
                         <td>
-                            <a href="<?= SITE_URL ?>/crm/tasks/edit.php?id=<?= $t['id'] ?>">
+                            <a href="<?= CRM_URL ?>/tasks/edit.php?id=<?= $t['id'] ?>">
                                 <?= htmlspecialchars($t['title'], ENT_QUOTES) ?>
                             </a>
                             <?php if ($t['description']): ?>
@@ -157,7 +157,7 @@ require_once CRM_ROOT . '/templates/header.php';
                         </td>
                         <td>
                             <?php if ($t['related_type'] && $t['related_id']): ?>
-                                <a href="<?= SITE_URL ?>/crm/<?= htmlspecialchars($t['related_type'], ENT_QUOTES) ?>s/view.php?id=<?= $t['related_id'] ?>">
+                                <a href="<?= CRM_URL ?>/<?= htmlspecialchars($t['related_type'], ENT_QUOTES) ?>s/view.php?id=<?= $t['related_id'] ?>">
                                     <?= ucfirst(htmlspecialchars($t['related_type'], ENT_QUOTES)) ?> #<?= $t['related_id'] ?>
                                 </a>
                             <?php else: ?>
@@ -168,10 +168,10 @@ require_once CRM_ROOT . '/templates/header.php';
                         <td>
                             <div class="crm-table-actions">
                                 <?php if (crmCanEdit()): ?>
-                                    <a href="<?= SITE_URL ?>/crm/tasks/edit.php?id=<?= $t['id'] ?>" class="btn btn--outline btn--sm">Edit</a>
+                                    <a href="<?= CRM_URL ?>/tasks/edit.php?id=<?= $t['id'] ?>" class="btn btn--outline btn--sm">Edit</a>
                                 <?php endif; ?>
                                 <?php if (crmCanDelete()): ?>
-                                    <a href="<?= SITE_URL ?>/crm/tasks/delete.php?id=<?= $t['id'] ?>&csrf=<?= crmCsrfToken() ?>"
+                                    <a href="<?= CRM_URL ?>/tasks/delete.php?id=<?= $t['id'] ?>&csrf=<?= crmCsrfToken() ?>"
                                        class="btn btn--danger btn--sm"
                                        onclick="return confirm('Delete this task?')">Del</a>
                                 <?php endif; ?>
@@ -187,7 +187,7 @@ require_once CRM_ROOT . '/templates/header.php';
     <div class="empty-state">
         <h2>No tasks found</h2>
         <?php if (crmCanEdit()): ?>
-            <p><a href="<?= SITE_URL ?>/crm/tasks/create.php" class="btn btn--primary">Add a task</a></p>
+            <p><a href="<?= CRM_URL ?>/tasks/create.php" class="btn btn--primary">Add a task</a></p>
         <?php endif; ?>
     </div>
 <?php endif; ?>

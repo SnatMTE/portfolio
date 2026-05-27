@@ -14,7 +14,7 @@ $db  = getCRMDB();
 $uid = (int) ($_SESSION['user_id'] ?? 0);
 $id  = (int) ($_GET['id'] ?? 0);
 
-if ($id <= 0) { crmRedirect(SITE_URL . '/crm/messages/'); }
+if ($id <= 0) { crmRedirect(CRM_URL . '/messages/'); }
 
 $stmt = $db->prepare(
     "SELECT m.*, s.username AS sender_name, r.username AS recipient_name
@@ -50,9 +50,9 @@ require_once CRM_ROOT . '/templates/header.php';
     </div>
     <div class="admin-header__actions">
         <?php if ((int) $msg['recipient_id'] === $uid): ?>
-            <a href="<?= SITE_URL ?>/crm/messages/compose.php?reply_to=<?= $id ?>" class="btn btn--primary btn--sm">&#8629; Reply</a>
+            <a href="<?= CRM_URL ?>/messages/compose.php?reply_to=<?= $id ?>" class="btn btn--primary btn--sm">&#8629; Reply</a>
         <?php endif; ?>
-        <a href="<?= SITE_URL ?>/crm/messages/" class="btn btn--outline btn--sm">&#8592; Back</a>
+        <a href="<?= CRM_URL ?>/messages/" class="btn btn--outline btn--sm">&#8592; Back</a>
     </div>
 </div>
 

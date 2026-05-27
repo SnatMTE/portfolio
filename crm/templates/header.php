@@ -22,13 +22,13 @@ $_crmUser     = currentCMSUser();
 $_unread      = crmUnreadMessageCount();
 
 $_navItems = [
-    ['key' => 'dashboard',  'url' => SITE_URL . '/crm/',                    'icon' => '&#128200;', 'label' => 'Dashboard'],
-    ['key' => 'customers',  'url' => SITE_URL . '/crm/customers/',          'icon' => '&#128100;', 'label' => 'Customers'],
-    ['key' => 'companies',  'url' => SITE_URL . '/crm/companies/',          'icon' => '&#127970;', 'label' => 'Companies'],
-    ['key' => 'leads',      'url' => SITE_URL . '/crm/leads/',              'icon' => '&#127919;', 'label' => 'Leads'],
-    ['key' => 'tasks',      'url' => SITE_URL . '/crm/tasks/',              'icon' => '&#9989;',   'label' => 'Tasks'],
-    ['key' => 'messages',   'url' => SITE_URL . '/crm/messages/',           'icon' => '&#128140;', 'label' => 'Messages' . ($_unread > 0 ? " <span class=\"crm-badge\">{$_unread}</span>" : '')],
-    ['key' => 'activity',   'url' => SITE_URL . '/crm/activity.php',        'icon' => '&#128203;', 'label' => 'Activity Log'],
+    ['key' => 'dashboard',  'url' => CRM_URL . '/',              'icon' => '&#128200;', 'label' => 'Dashboard'],
+    ['key' => 'customers',  'url' => CRM_URL . '/customers/',    'icon' => '&#128100;', 'label' => 'Customers'],
+    ['key' => 'companies',  'url' => CRM_URL . '/companies/',    'icon' => '&#127970;', 'label' => 'Companies'],
+    ['key' => 'leads',      'url' => CRM_URL . '/leads/',        'icon' => '&#127919;', 'label' => 'Leads'],
+    ['key' => 'tasks',      'url' => CRM_URL . '/tasks/',        'icon' => '&#9989;',   'label' => 'Tasks'],
+    ['key' => 'messages',   'url' => CRM_URL . '/messages/',     'icon' => '&#128140;', 'label' => 'Messages' . ($_unread > 0 ? " <span class=\"crm-badge\">{$_unread}</span>" : '')],
+    ['key' => 'activity',   'url' => CRM_URL . '/activity.php', 'icon' => '&#128203;', 'label' => 'Activity Log'],
 ];
 ?>
 <!DOCTYPE html>
@@ -40,16 +40,18 @@ $_navItems = [
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Inherit the site-wide stylesheet so colours, fonts, and components match -->
+    <?php if (!defined('CRM_STANDALONE')): ?>
+    <!-- CMS-integrated: inherit the shared site stylesheet -->
     <link rel="stylesheet" href="<?= SITE_URL ?>/assets/css/style.css">
-    <!-- CRM-specific extensions (layout tweaks, pipeline board, etc.) -->
-    <link rel="stylesheet" href="<?= SITE_URL ?>/crm/assets/css/crm.css">
+    <?php endif; ?>
+    <!-- CRM-specific styles -->
+    <link rel="stylesheet" href="<?= CRM_URL ?>/assets/css/crm.css">
 </head>
 <body class="admin-layout">
 
 <aside class="sidebar" id="crm-sidebar">
     <div class="sidebar__brand">
-        <a href="<?= SITE_URL ?>/crm/" class="sidebar__logo">
+        <a href="<?= CRM_URL ?>/" class="sidebar__logo">
             <span class="sidebar__logo-icon">&#128200;</span>
             <span><?= CRM_NAME ?></span>
         </a>
@@ -69,7 +71,7 @@ $_navItems = [
             <?php endforeach; ?>
         </ul>
 
-        <?php if (cmsIsAdmin()): ?>
+        <?php if (cmsIsAdmin() && !defined('CRM_STANDALONE')): ?>
             <div class="sidebar__section-label">Admin</div>
             <ul>
                 <li>
@@ -84,7 +86,12 @@ $_navItems = [
 
     <div class="sidebar__footer">
         <span class="sidebar__user">&#128100; <?= htmlspecialchars($_crmUser['username'] ?? 'User', ENT_QUOTES) ?></span>
-        <a href="<?= SITE_URL ?>/logout.php?csrf=<?= crmCsrfToken() ?>" class="sidebar__logout">Logout</a>
+        <?php
+        $logoutUrl = defined('CRM_STANDALONE')
+            ? CRM_URL . '/logout.php'
+            : SITE_URL . '/logout.php?csrf=' . crmCsrfToken();
+        ?>
+        <a href="<?= htmlspecialchars($logoutUrl, ENT_QUOTES) ?>" class="sidebar__logout">Logout</a>
     </div>
 </aside>
 
@@ -93,7 +100,7 @@ $_navItems = [
     <div class="crm-topbar">
         <button class="crm-topbar__toggle" id="sidebar-open" aria-label="Open navigation">&#9776;</button>
         <span class="crm-topbar__title"><?= htmlspecialchars($pageTitle, ENT_QUOTES) ?></span>
-        <a href="<?= SITE_URL ?>/crm/messages/" class="crm-topbar__messages">
+        <a href="<?= CRM_URL ?>/messages/" class="crm-topbar__messages">
             &#128140;<?= $_unread > 0 ? " <span class=\"crm-badge\">{$_unread}</span>" : '' ?>
         </a>
     </div>

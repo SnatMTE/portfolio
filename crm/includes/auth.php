@@ -40,7 +40,8 @@ function crmCanAccess(): bool
  */
 function crmCanEdit(): bool
 {
-    return cmsIsLoggedIn() && in_array($_SESSION['role'] ?? '', ['admin', 'editor'], true);
+    // cmsIsEditor() works in both CMS-integrated and standalone modes.
+    return cmsIsEditor();
 }
 
 /**
@@ -68,7 +69,11 @@ function requireCRMAccess(): void
         cmsFlashMessage('Please log in to access the CRM.', 'error');
         // Preserve the intended URL so the login page can redirect back.
         $next = urlencode($_SERVER['REQUEST_URI'] ?? '');
-        crmRedirect(SITE_URL . '/login.php?next=' . $next);
+        // In standalone mode CRM_URL points to the CRM itself, so /login.php is
+        // crm/login.php.  In CMS mode SITE_URL is the CMS root and /login.php is
+        // the CMS login page.
+        $loginBase = defined('CRM_STANDALONE') ? CRM_URL : SITE_URL;
+        crmRedirect($loginBase . '/login.php?next=' . $next);
     }
 }
 
