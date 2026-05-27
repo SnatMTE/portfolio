@@ -23,7 +23,7 @@ if ($query !== '') {
 }
 
 $pageTitle = $query !== '' ? 'Search: ' . $query : 'Search';
-$metaDesc  = 'Search for threads on ' . FORUM_NAME;
+$metaDesc  = 'Search for threads on ' . SITE_NAME;
 
 require_once __DIR__ . '/templates/header.php';
 ?>

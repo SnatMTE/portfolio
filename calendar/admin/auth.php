@@ -39,16 +39,5 @@ function requireLogin(): void
 // Flash message helpers (aliases for admin pages)
 // ---------------------------------------------------------------------------
 
-/**
- * Stores a flash message in the session (admin wrapper).
- *
- * @param string $msg
- * @param string $type  'success' | 'error'
- */
-function setFlash(string $msg, string $type = 'success'): void
-{
-    flashMessage($msg, $type);
-}
-
 // Immediately require a valid login for any file that requires this one.
 requireLogin();

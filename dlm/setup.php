@@ -21,7 +21,7 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/functions.php';
 
 // Setup is only relevant in standalone mode; CMS handles its own users
-if (defined('DM_CMS_MODE') && DM_CMS_MODE) {
+if (defined('CMS_ROOT')) {
     http_response_code(403);
     die('<p style="font-family:sans-serif;padding:2rem;">Setup not required in CMS mode. Use the CMS user management instead.</p>');
 }
@@ -89,11 +89,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($errors)) {
             $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => HASH_COST]);
             $stmt = getDB()->prepare(
-                'INSERT INTO dm_users (username, password, email) VALUES (:username, :password, :email)'
+                'INSERT INTO dm_users (username, password_hash, email) VALUES (:username, :password_hash, :email)'
             );
             $stmt->execute([
                 ':username' => $username,
-                ':password' => $hash,
+                ':password_hash' => $hash,
                 ':email'    => $email,
             ]);
             $success = true;

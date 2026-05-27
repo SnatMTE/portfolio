@@ -24,7 +24,7 @@ function seedDemoBlog(PDO $pdo): void
         (3002, 'howto', 'howto', datetime('now', '-9 days'))");
 
     // Users
-    $pdo->exec("INSERT OR IGNORE INTO users (id, username, password, email, created_at) VALUES
+    $pdo->exec("INSERT OR IGNORE INTO users (id, username, password_hash, email, created_at) VALUES
         (1, 'admin', '', 'admin@example.local', datetime('now', '-30 days')),
         (2000, 'alice', '', 'alice@example.local', datetime('now', '-20 days')),
         (2001, 'bob', '', 'bob@example.local', datetime('now', '-18 days'))");

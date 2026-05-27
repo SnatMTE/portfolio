@@ -33,7 +33,7 @@ if (!defined('SITE_URL')) {
      *
      * @return string  Base URL with no trailing slash, e.g. "https://example.com/forum".
      */
-    function detectSiteUrl(): string
+    function detectForumSiteUrl(): string
     {
         $proto = 'http';
         if (
@@ -76,7 +76,7 @@ if (!defined('SITE_URL')) {
         return $proto . '://' . $host . $basePath;
     }
 
-    define('SITE_URL', detectSiteUrl());
+    define('SITE_URL', detectForumSiteUrl());
 }
 
 // When inside CMS, compute CMS_URL as the parent of this module's SITE_URL.
@@ -90,8 +90,8 @@ if (defined('CMS_ROOT') && !defined('CMS_URL')) {
 // ---------------------------------------------------------------------------
 // Forum constants
 // ---------------------------------------------------------------------------
-define('FORUM_NAME',       'Forum');
-define('FORUM_TAGLINE',    'Community discussions');
+define('SITE_NAME',       'Forum');
+define('SITE_TAGLINE',    'Community discussions');
 define('THREADS_PER_PAGE', 20);
 define('POSTS_PER_PAGE',   20);
 

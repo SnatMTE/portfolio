@@ -22,7 +22,7 @@ A lightweight PHP calendar module for managing events, importing/exporting iCale
 ## Quick Start – Standalone
 
 ```bash
-cd calender
+cd calendar
 php -S localhost:8000
 ```
 
@@ -42,7 +42,7 @@ php -S localhost:8000
 ## Folder Structure
 
 ```
-calender/
+calendar/
 ├── index.php               # Monthly calendar view
 ├── event.php               # Event detail page
 ├── create_event.php        # Create event form
@@ -97,7 +97,7 @@ calender/
 ### Subscribe in Google Calendar
 
 1. In Google Calendar, click **+ Other calendars → From URL**.
-2. Paste: `http://yoursite/calender/sync.php`
+2. Paste: `http://yoursite/calendar/sync.php`
 3. Click **Add Calendar**.
 
 ### Subscribe in Apple Calendar

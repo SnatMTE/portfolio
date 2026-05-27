@@ -194,7 +194,7 @@ function validateCsrf(string $submittedToken): bool
  * @param string $type     'success' | 'error' | 'info'.
  * @return void
  */
-function flashMessage(string $message, string $type = 'info'): void
+function flashMessage(string $message, string $type = 'success'): void
 {
     $_SESSION['flash'] = ['message' => $message, 'type' => $type];
 }

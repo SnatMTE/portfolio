@@ -21,11 +21,11 @@ if (!function_exists('e')) {
     require_once dirname(__DIR__) . '/functions.php';
 }
 
-$pageTitle ??= FORUM_NAME;
-$metaDesc  ??= FORUM_TAGLINE;
-$fullTitle   = ($pageTitle !== FORUM_NAME)
-    ? e($pageTitle) . ' - ' . e(FORUM_NAME)
-    : e(FORUM_NAME);
+$pageTitle ??= SITE_NAME;
+$metaDesc  ??= SITE_TAGLINE;
+$fullTitle   = ($pageTitle !== SITE_NAME)
+    ? e($pageTitle) . ' - ' . e(SITE_NAME)
+    : e(SITE_NAME);
 
 $navCategories = getCategories();
 $currentUser   = currentUser();
@@ -47,8 +47,8 @@ $currentUser   = currentUser();
 <header class="site-header">
     <div class="container header-inner">
         <a href="<?= SITE_URL ?>" class="site-logo">
-            <span class="logo-main"><?= e(FORUM_NAME) ?></span>
-            <span class="logo-tagline"><?= e(FORUM_TAGLINE) ?></span>
+            <span class="logo-main"><?= e(SITE_NAME) ?></span>
+            <span class="logo-tagline"><?= e(SITE_TAGLINE) ?></span>
         </a>
 
         <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">

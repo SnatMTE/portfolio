@@ -44,11 +44,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($username === '' || $password === '') {
             $error = 'Please enter both username and password.';
         } else {
-            $stmt = getDB()->prepare("SELECT id, username, password FROM users WHERE username = :username LIMIT 1");
+            $stmt = getDB()->prepare("SELECT id, username, password_hash FROM users WHERE username = :username LIMIT 1");
             $stmt->execute([':username' => $username]);
             $user = $stmt->fetch();
 
-            if ($user && password_verify($password, $user['password'])) {
+            if ($user && password_verify($password, $user['password_hash'])) {
                 // Regenerate session ID to prevent session fixation
                 session_regenerate_id(true);
                 $_SESSION['admin_id']       = $user['id'];

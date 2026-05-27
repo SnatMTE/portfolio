@@ -38,14 +38,8 @@ $baseParams = array_filter([
 $baseUrl = SITE_URL . '/admin/files.php' . ($baseParams ? '?' . http_build_query($baseParams) : '');
 
 $currentAdminPage = 'files';
-
-echo '<!DOCTYPE html><html lang="en"><head>';
-echo '<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">';
-echo '<title>All Files – ' . e(SITE_NAME) . '</title>';
-echo '<link rel="preconnect" href="https://fonts.googleapis.com">';
-echo '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">';
-echo '<link rel="stylesheet" href="' . SITE_URL . '/assets/css/style.css">';
-echo '</head><body>';
+$pageTitle = 'All Files';
+require_once dirname(__DIR__) . '/templates/header.php';
 ?>
 
 <div class="admin-layout">
@@ -148,6 +142,4 @@ echo '</head><body>';
     </div>
 </div>
 
-<script src="<?= SITE_URL ?>/assets/js/main.js" defer></script>
-</body>
-</html>
+<?php require_once dirname(__DIR__) . '/templates/footer.php'; ?>

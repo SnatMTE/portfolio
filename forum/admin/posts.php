@@ -12,12 +12,15 @@
  */
 
 require_once __DIR__ . '/auth.php';
-requireAdminAuth();
+requireLogin();
 
 $db = getDB();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    verifyCsrf();
+    if (!validateCsrf($_POST['csrf_token'] ?? '')) {
+        flashMessage('Invalid security token. Please try again.', 'error');
+        redirect(SITE_URL . '/admin/posts.php');
+    }
 
     $action = $_POST['action'] ?? '';
     $postId = (int) ($_POST['id'] ?? 0);
@@ -51,7 +54,7 @@ $stmt->execute([':limit' => $perPage, ':offset' => $offset]);
 $posts = $stmt->fetchAll();
 
 $pageTitle       = 'Moderate Posts';
-$activeAdminPage = 'posts';
+$currentAdminPage = 'posts';
 require_once dirname(__DIR__) . '/templates/header.php';
 ?>
 

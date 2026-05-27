@@ -31,7 +31,7 @@ if (ini_get('session.use_cookies')) {
 session_destroy();
 
 // In CMS mode, hand off to CMS logout
-if (defined('DM_CMS_MODE') && DM_CMS_MODE) {
+if (defined('CMS_ROOT')) {
     $cmsLogout = defined('CMS_URL') ? CMS_URL . '/logout.php' : '../logout.php';
     header('Location: ' . $cmsLogout);
     exit;

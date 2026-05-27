@@ -27,7 +27,9 @@ $formUser    = '';
 $formEmail   = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    verifyCsrf();
+    if (!validateCsrf($_POST['csrf_token'] ?? '')) {
+        $errors[] = 'Invalid security token. Please try again.';
+    }
 
     $formUser  = trim($_POST['username'] ?? '');
     $formEmail = trim($_POST['email']    ?? '');
@@ -90,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         session_regenerate_id(true);
         $_SESSION['user_id'] = $newId;
-        flashMessage('Welcome to ' . FORUM_NAME . ', ' . $formUser . '!', 'success');
+        flashMessage('Welcome to ' . SITE_NAME . ', ' . $formUser . '!', 'success');
         redirect(SITE_URL . '/');
     }
 }

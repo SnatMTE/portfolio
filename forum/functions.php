@@ -194,17 +194,15 @@ function csrfToken(): string
 }
 
 /**
- * Verifies the CSRF token from POST data. Terminates with 403 on failure.
+ * Validates the CSRF token from POST data.
  *
- * @return void
+ * @param string $submittedToken  The token value from the POST form field.
+ * @return bool  True if the token is valid, false otherwise.
  */
-function verifyCsrf(): void
+function validateCsrf(string $submittedToken): bool
 {
-    $token = $_POST['csrf_token'] ?? '';
-    if (!isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $token)) {
-        http_response_code(403);
-        exit('Invalid security token. Please go back and try again.');
-    }
+    $sessionToken = $_SESSION['csrf_token'] ?? '';
+    return hash_equals($sessionToken, $submittedToken);
 }
 
 // ===========================================================================

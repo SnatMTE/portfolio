@@ -32,12 +32,12 @@
 function initDownloadSchema(PDO $pdo): void
 {
     // Only create a local users table when running standalone
-    if (!defined('DM_CMS_MODE') || !DM_CMS_MODE) {
+    if (!defined('CMS_ROOT')) {
         $pdo->exec("
             CREATE TABLE IF NOT EXISTS dm_users (
                 id         INTEGER PRIMARY KEY AUTOINCREMENT,
                 username   TEXT    NOT NULL UNIQUE,
-                password   TEXT    NOT NULL,
+                password_hash TEXT    NOT NULL,
                 email      TEXT    NOT NULL UNIQUE,
                 created_at TEXT    NOT NULL DEFAULT (datetime('now'))
             );

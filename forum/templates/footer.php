@@ -16,7 +16,7 @@
 <footer class="site-footer">
     <div class="container footer-inner">
         <p class="footer-copy">
-            &copy; <?= date('Y') ?> <a href="<?= SITE_URL ?>"><?= e(FORUM_NAME) ?></a>.
+            &copy; <?= date('Y') ?> <a href="<?= SITE_URL ?>"><?= e(SITE_NAME) ?></a>.
             Built with PHP &amp; SQLite.
         </p>
         <nav class="footer-nav" aria-label="Footer navigation">

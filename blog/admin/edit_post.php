@@ -135,20 +135,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $currentAdminPage = 'posts';
+$pageTitle = 'Edit Post';
+require_once dirname(__DIR__) . '/templates/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Post – <?= e(SITE_NAME) ?></title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= SITE_URL ?>/assets/css/style.css">
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
-</head>
-<body>
+<!-- Quill editor (no API key required) -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 <div class="admin-layout">
     <?php require_once dirname(__DIR__) . '/templates/admin_nav.php'; ?>
 
@@ -293,6 +285,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-<script src="<?= SITE_URL ?>/assets/js/main.js" defer></script>
-</body>
-</html>
+<?php require_once dirname(__DIR__) . '/templates/footer.php'; ?>

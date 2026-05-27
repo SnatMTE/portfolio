@@ -22,8 +22,6 @@ $_dmCmsDb = __DIR__ . '/../core/database.php';
 if (!defined('CMS_ROOT') && file_exists($_dmCmsDb)) {
     // Pull in CMS config: defines CMS_ROOT, CMS_DB_FILE, getCMSDB(), session, etc.
     require_once __DIR__ . '/../config.php';
-    /** Flag indicating that this module is running inside the CMS. */
-    define('DM_CMS_MODE', true);
 }
 unset($_dmCmsDb);
 
@@ -175,7 +173,7 @@ if (session_status() === PHP_SESSION_NONE) {
 function getDB(): PDO
 {
     // Share the CMS database when running inside the CMS
-    if (defined('DM_CMS_MODE') && DM_CMS_MODE) {
+    if (defined('CMS_ROOT')) {
         return getCMSDB();
     }
 

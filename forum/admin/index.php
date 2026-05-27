@@ -9,7 +9,7 @@
  */
 
 require_once __DIR__ . '/auth.php';
-requireAdminAuth();
+requireLogin();
 
 $stats = getAdminStats();
 
@@ -33,7 +33,7 @@ $recentUsers = getDB()->query(
 )->fetchAll();
 
 $pageTitle       = 'Admin Dashboard';
-$activeAdminPage = 'dashboard';
+$currentAdminPage = 'dashboard';
 require_once dirname(__DIR__) . '/templates/header.php';
 ?>
 

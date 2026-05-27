@@ -15,12 +15,15 @@
  */
 
 require_once __DIR__ . '/auth.php';
-requireAdminAuth();
+requireLogin();
 
 $db = getDB();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    verifyCsrf();
+    if (!validateCsrf($_POST['csrf_token'] ?? '')) {
+        flashMessage('Invalid security token. Please try again.', 'error');
+        redirect(SITE_URL . '/admin/users.php');
+    }
 
     $action = $_POST['action'] ?? '';
     $userId = (int) ($_POST['user_id'] ?? 0);
@@ -50,7 +53,7 @@ $totalUsers  = countUsers();
 $users       = getAllUsers($currentPage, $perPage);
 
 $pageTitle       = 'Manage Users';
-$activeAdminPage = 'users';
+$currentAdminPage = 'users';
 require_once dirname(__DIR__) . '/templates/header.php';
 ?>
 

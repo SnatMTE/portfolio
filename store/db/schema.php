@@ -25,13 +25,13 @@
  *
  * @return void
  */
-function initSchema(PDO $pdo): void
+function initStoreSchema(PDO $pdo): void
 {
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS users (
             id           INTEGER PRIMARY KEY AUTOINCREMENT,
             username     TEXT    NOT NULL UNIQUE,
-            password     TEXT    NOT NULL,
+            password_hash TEXT    NOT NULL,
             email        TEXT    NOT NULL UNIQUE,
             created_at   TEXT    NOT NULL DEFAULT (datetime('now'))
         );
@@ -85,4 +85,4 @@ function initSchema(PDO $pdo): void
 }
 
 // Run schema initialisation immediately when this file is included.
-initSchema(getDB());
+initStoreSchema(getDB());

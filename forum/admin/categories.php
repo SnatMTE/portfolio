@@ -14,7 +14,7 @@
  */
 
 require_once __DIR__ . '/auth.php';
-requireAdminAuth();
+requireLogin();
 
 $db = getDB();
 
@@ -22,7 +22,10 @@ $db = getDB();
 // Handle POST actions
 // ---------------------------------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    verifyCsrf();
+    if (!validateCsrf($_POST['csrf_token'] ?? '')) {
+        flashMessage('Invalid security token. Please try again.', 'error');
+        redirect(SITE_URL . '/admin/categories.php');
+    }
     $action = $_POST['action'] ?? '';
 
     if ($action === 'create') {
@@ -103,7 +106,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) 
 
 $categories      = getCategories();
 $pageTitle       = 'Manage Categories';
-$activeAdminPage = 'categories';
+$currentAdminPage = 'categories';
 require_once dirname(__DIR__) . '/templates/header.php';
 ?>
 

@@ -23,7 +23,9 @@ $formTitle   = '';
 $formContent = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    verifyCsrf();
+    if (!validateCsrf($_POST['csrf_token'] ?? '')) {
+        $errors[] = 'Invalid security token. Please try again.';
+    }
 
     $categoryId  = (int) ($_POST['category_id'] ?? 0);
     $formTitle   = trim($_POST['title']   ?? '');

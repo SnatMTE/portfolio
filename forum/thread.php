@@ -33,7 +33,10 @@ if ($thread === null) {
 // ---------------------------------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     requireLogin();
-    verifyCsrf();
+    if (!validateCsrf($_POST['csrf_token'] ?? '')) {
+        flashMessage('Invalid security token. Please try again.', 'error');
+        redirect(SITE_URL . '/thread.php?id=' . $threadId);
+    }
 
     $action = $_POST['action'] ?? '';
 

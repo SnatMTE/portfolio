@@ -47,7 +47,7 @@ All modules can be integrated into the CMS system to share authentication, sessi
 ## Projects Overview
 
 - **blog** — Secure blogging platform with admin management
-- **calender** — Event scheduling system with import and export features
+- **calendar** — Event scheduling system with import and export features
 - **cms** — Central content management system with shared user base
 - **forum** — Threaded discussion forum with moderation tools
 - **store** — Minimal e‑commerce system with cart and checkout
@@ -81,7 +81,7 @@ cd blog
 php -S localhost:8000
 ```
 
-### calender
+### calendar
 
 A lightweight scheduling and event management system with ICS import/export support.
 
@@ -93,16 +93,16 @@ A lightweight scheduling and event management system with ICS import/export supp
 
 **Core structure**
 
-- `calender/config.php`
-- `calender/functions.php`
-- `calender/db/schema.php`
-- `calender/index.php`, `calender/event.php`
-- `calender/admin/` and `calender/templates/`
+- `calendar/config.php`
+- `calendar/functions.php`
+- `calendar/db/schema.php`
+- `calendar/index.php`, `calendar/event.php`
+- `calendar/admin/` and `calendar/templates/`
 
 **Running locally**
 
 ```bash
-cd calender
+cd calendar
 php -S localhost:8001
 ```
 

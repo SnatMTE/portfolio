@@ -54,11 +54,11 @@ if (!$alreadySetup && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => HASH_COST]);
 
             $stmt = getDB()->prepare("
-                INSERT INTO users (username, password, email) VALUES (:username, :password, :email)
-            ");
+INSERT INTO users (username, password_hash, email) VALUES (:username, :password_hash, :email)
+            );
             $stmt->execute([
                 ':username' => $username,
-                ':password' => $hash,
+                ':password_hash' => $hash,
                 ':email'    => $email,
             ]);
 

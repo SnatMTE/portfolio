@@ -24,7 +24,7 @@
  * @param PDO $pdo  Active PDO/SQLite connection with foreign keys enabled.
  * @return void
  */
-function initSchema(PDO $pdo): void
+function initForumSchema(PDO $pdo): void
 {
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS roles (
@@ -89,4 +89,4 @@ function initSchema(PDO $pdo): void
 }
 
 // Run immediately when included
-initSchema(getDB());
+initForumSchema(getDB());

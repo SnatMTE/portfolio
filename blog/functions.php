@@ -648,6 +648,59 @@ function syncPostTags(int $postId, array $tagIds): void
 }
 
 // ===========================================================================
+// Flash messages
+// ===========================================================================
+
+/**
+ * Stores a one-time "flash" message and its type in the session.
+ *
+ * The message is consumed by getFlash() on the next page load and then
+ * automatically cleared from the session.
+ *
+ * @param string $message  The message text to show.
+ * @param string $type     Alert type: 'success' | 'error' | 'info'.
+ *
+ * @return void
+ */
+function flashMessage(string $message, string $type = 'success'): void
+{
+    $_SESSION['flash'] = ['message' => $message, 'type' => $type];
+}
+
+/**
+ * Retrieves the stored flash message and removes it from the session.
+ *
+ * Returns NULL if no flash message has been set.
+ *
+ * @return array{message: string, type: string}|null  The flash data or NULL.
+ */
+function getFlash(): ?array
+{
+    if (isset($_SESSION['flash'])) {
+        $flash = $_SESSION['flash'];
+        unset($_SESSION['flash']);
+        return $flash;
+    }
+    return null;
+}
+
+/**
+ * Renders a flash message as an HTML alert div if one exists.
+ *
+ * Reads and clears the flash message then outputs the appropriate HTML.
+ * Intended to be called once at the top of each admin page's content area.
+ *
+ * @return void
+ */
+function renderFlash(): void
+{
+    $flash = getFlash();
+    if ($flash) {
+        echo '<div class="alert alert--' . e($flash['type']) . '" role="alert">' . e($flash['message']) . '</div>';
+    }
+}
+
+// ===========================================================================
 // Pagination helpers
 // ===========================================================================
 

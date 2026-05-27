@@ -72,12 +72,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($errors)) {
             $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => HASH_COST]);
             $stmt = getDB()->prepare(
-                "INSERT INTO users (username, email, password) VALUES (:username, :email, :password)"
+                "INSERT INTO users (username, email, password_hash) VALUES (:username, :email, :password_hash)"
             );
             $stmt->execute([
                 ':username' => $username,
                 ':email'    => $email,
-                ':password' => $hash,
+                ':password_hash' => $hash,
             ]);
             $success = true;
         }

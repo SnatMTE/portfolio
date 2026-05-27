@@ -22,7 +22,7 @@ require_once dirname(__DIR__) . '/functions.php';
  *
  * @return void
  */
-function requireAdminAuth(): void
+function requireLogin(): void
 {
     if (!isLoggedIn()) {
         flashMessage('Please log in to access the admin panel.', 'error');

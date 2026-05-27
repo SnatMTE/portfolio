@@ -15,12 +15,15 @@
  */
 
 require_once __DIR__ . '/auth.php';
-requireAdminAuth();
+requireLogin();
 
 $db = getDB();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    verifyCsrf();
+    if (!validateCsrf($_POST['csrf_token'] ?? '')) {
+        flashMessage('Invalid security token. Please try again.', 'error');
+        redirect(SITE_URL . '/admin/threads.php');
+    }
 
     $action   = $_POST['action']    ?? '';
     $threadId = (int) ($_POST['thread_id'] ?? 0);
@@ -70,7 +73,7 @@ $stmt->execute([':limit' => $perPage, ':offset' => $offset]);
 $threads = $stmt->fetchAll();
 
 $pageTitle       = 'Moderate Threads';
-$activeAdminPage = 'threads';
+$currentAdminPage = 'threads';
 require_once dirname(__DIR__) . '/templates/header.php';
 ?>
 

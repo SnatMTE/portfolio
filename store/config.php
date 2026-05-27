@@ -47,7 +47,7 @@ if (!defined('SITE_URL')) {
      *
      * @return string
      */
-    function detectSiteUrl(): string
+    function detectStoreSiteUrl(): string
     {
         $proto = 'http';
         if ((isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off' && $_SERVER['HTTPS'] !== '')
@@ -87,7 +87,7 @@ if (!defined('SITE_URL')) {
         return rtrim($proto . '://' . $host . $basePath, '/');
     }
 
-    define('SITE_URL', detectSiteUrl());
+    define('SITE_URL', detectStoreSiteUrl());
 }
 
 // When inside CMS, compute CMS_URL as the parent of this module's SITE_URL.

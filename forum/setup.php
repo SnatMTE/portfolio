@@ -57,7 +57,9 @@ $success = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        verifyCsrf();
+        if (!validateCsrf($_POST['csrf_token'] ?? '')) {
+            $errors[] = 'Invalid security token. Please try again.';
+        }
 
         $username  = trim($_POST['username'] ?? '');
         $email     = trim($_POST['email'] ?? '');
@@ -121,7 +123,7 @@ require_once __DIR__ . '/templates/header.php';
 
 <div class="auth-wrapper">
     <div class="auth-card auth-card--wide">
-        <h1>&#9881; <?= e(FORUM_NAME) ?> — Initial Setup</h1>
+        <h1>&#9881; <?= e(SITE_NAME) ?> — Initial Setup</h1>
 
         <?php if ($success): ?>
             <div class="alert alert--success">

@@ -18,7 +18,7 @@
 require_once __DIR__ . '/functions.php';
 
 // In CMS mode there is no separate login — hand off to CMS auth
-if (defined('DM_CMS_MODE') && DM_CMS_MODE) {
+if (defined('CMS_ROOT')) {
     $cmsLogin = defined('CMS_URL') ? CMS_URL . '/login.php' : '../login.php';
     header('Location: ' . $cmsLogin);
     exit;
@@ -42,12 +42,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Please enter both username and password.';
         } else {
             $stmt = getDB()->prepare(
-                'SELECT id, username, password FROM dm_users WHERE username = :username LIMIT 1'
+                'SELECT id, username, password_hash FROM dm_users WHERE username = :username LIMIT 1'
             );
             $stmt->execute([':username' => $username]);
             $user = $stmt->fetch();
 
-            if ($user && password_verify($password, $user['password'])) {
+            if ($user && password_verify($password, $user['password_hash'])) {
                 session_regenerate_id(true);
                 $_SESSION['admin_id']       = $user['id'];
                 $_SESSION['admin_username'] = $user['username'];

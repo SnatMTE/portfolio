@@ -11,8 +11,8 @@
 
 require_once __DIR__ . '/functions.php';
 
-$pageTitle = FORUM_NAME . ' - Community Discussions';
-$metaDesc  = 'Browse all discussion categories on ' . FORUM_NAME . '.';
+$pageTitle = SITE_NAME . ' - Community Discussions';
+$metaDesc  = 'Browse all discussion categories on ' . SITE_NAME . '.';
 $categories = getCategories();
 
 require_once __DIR__ . '/templates/header.php';

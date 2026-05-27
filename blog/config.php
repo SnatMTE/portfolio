@@ -55,7 +55,7 @@ if (!defined('SITE_URL')) {
      *
      * @return string
      */
-    function detectSiteUrl(): string
+    function detectBlogSiteUrl(): string
     {
         // Determine protocol
         $proto = 'http';
@@ -102,7 +102,7 @@ if (!defined('SITE_URL')) {
         return rtrim($url, '/');
     }
 
-    define('SITE_URL', detectSiteUrl());
+    define('SITE_URL', detectBlogSiteUrl());
 }
 
 // When inside CMS, compute CMS_URL as the parent of this module's SITE_URL.

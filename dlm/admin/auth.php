@@ -34,7 +34,7 @@ require_once dirname(__DIR__) . '/functions.php';
 function requireLogin(): void
 {
     if (empty($_SESSION['admin_id'])) {
-        $loginUrl = (defined('DM_CMS_MODE') && DM_CMS_MODE && defined('CMS_URL'))
+        $loginUrl = (defined('CMS_ROOT') && defined('CMS_URL'))
             ? CMS_URL . '/login.php'
             : SITE_URL . '/login.php';
         redirect($loginUrl);
@@ -61,7 +61,7 @@ function currentAdminUser(): ?array
     }
 
     // CMS mode: trust the session without a database round-trip
-    if (defined('DM_CMS_MODE') && DM_CMS_MODE) {
+    if (defined('CMS_ROOT')) {
         return [
             'id'       => $id,
             'username' => $_SESSION['admin_username'] ?? ($_SESSION['username'] ?? 'Admin'),

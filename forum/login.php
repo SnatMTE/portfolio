@@ -27,7 +27,9 @@ $errors    = [];
 $formLogin = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    verifyCsrf();
+    if (!validateCsrf($_POST['csrf_token'] ?? '')) {
+        $errors[] = 'Invalid security token. Please try again.';
+    }
 
     $formLogin = trim($_POST['login'] ?? '');
     $password  = $_POST['password'] ?? '';
