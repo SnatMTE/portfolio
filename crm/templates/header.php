@@ -2,14 +2,13 @@
 /**
  * crm/templates/header.php
  *
- * CRM admin layout header.
- * Outputs <head>, the sidebar navigation, and opens the main content wrapper.
- * Uses the same sidebar pattern as the CMS admin_header.php so the two
- * panels feel visually identical.
+ * CRM layout header.
+ * Outputs <head>, the top horizontal navigation bar, and opens the main
+ * content wrapper.
  *
  * Expected variables (set before including this file):
  *   $pageTitle  string  – Page title appended to <title>.
- *   $activeNav  string  – Sidebar nav key to highlight (optional).
+ *   $activeNav  string  – Nav key to highlight (optional).
  */
 
 if (!defined('CRM_ROOT')) {
@@ -20,6 +19,9 @@ $pageTitle  ??= CRM_NAME;
 $activeNav  ??= '';
 $_crmUser     = currentCMSUser();
 $_unread      = crmUnreadMessageCount();
+$logoutUrl    = defined('CRM_STANDALONE')
+    ? CRM_URL . '/logout.php'
+    : SITE_URL . '/logout.php?csrf=' . crmCsrfToken();
 
 $_navItems = [
     ['key' => 'dashboard',  'url' => CRM_URL . '/',              'icon' => '&#128200;', 'label' => 'Dashboard'],
@@ -50,62 +52,46 @@ $_navItems = [
     <!-- CRM-specific styles -->
     <link rel="stylesheet" href="<?= CRM_URL ?>/assets/css/crm.css">
 </head>
-<body class="admin-layout">
+<body>
 
-<aside class="sidebar" id="crm-sidebar">
-    <div class="sidebar__brand">
-        <a href="<?= CRM_URL ?>/" class="sidebar__logo">
-            <span class="sidebar__logo-icon">&#128200;</span>
-            <span><?= CRM_NAME ?></span>
+<!-- Horizontal top navigation bar -->
+<header class="crm-navbar" id="crm-navbar">
+    <div class="crm-navbar__inner">
+        <a href="<?= CRM_URL ?>/" class="crm-navbar__brand">
+            <span class="crm-navbar__logo">&#128200;</span>
+            <span class="crm-navbar__title"><?= CRM_NAME ?></span>
         </a>
-        <button class="sidebar__toggle" id="sidebar-close" aria-label="Close navigation">&#215;</button>
-    </div>
 
-    <nav class="sidebar__nav" aria-label="CRM navigation">
-        <ul>
-            <?php foreach ($_navItems as $item): ?>
-                <li>
-                    <a href="<?= htmlspecialchars($item['url'], ENT_QUOTES) ?>"
-                       class="sidebar__link <?= $activeNav === $item['key'] ? 'sidebar__link--active' : '' ?>">
-                        <span class="sidebar__link-icon"><?= $item['icon'] ?></span>
-                        <span><?= $item['label'] ?></span>
-                    </a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-
-        <?php if (cmsIsAdmin() && !defined('CRM_STANDALONE')): ?>
-            <div class="sidebar__section-label">Admin</div>
+        <nav class="crm-navbar__nav" id="crm-nav" aria-label="CRM navigation">
             <ul>
-                <li>
-                    <a href="<?= SITE_URL ?>/admin/" class="sidebar__link">
-                        <span class="sidebar__link-icon">&#9881;</span>
-                        <span>CMS Admin</span>
-                    </a>
-                </li>
+                <?php foreach ($_navItems as $item): ?>
+                    <li>
+                        <a href="<?= htmlspecialchars($item['url'], ENT_QUOTES) ?>"
+                           class="crm-navbar__link <?= $activeNav === $item['key'] ? 'crm-navbar__link--active' : '' ?>">
+                            <span class="crm-navbar__link-icon"><?= $item['icon'] ?></span>
+                            <span><?= $item['label'] ?></span>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+                <?php if (cmsIsAdmin() && !defined('CRM_STANDALONE')): ?>
+                    <li>
+                        <a href="<?= SITE_URL ?>/admin/" class="crm-navbar__link">
+                            <span class="crm-navbar__link-icon">&#9881;</span>
+                            <span>CMS Admin</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
             </ul>
-        <?php endif; ?>
-    </nav>
+        </nav>
 
-    <div class="sidebar__footer">
-        <span class="sidebar__user">&#128100; <?= htmlspecialchars($_crmUser['username'] ?? 'User', ENT_QUOTES) ?></span>
-        <?php
-        $logoutUrl = defined('CRM_STANDALONE')
-            ? CRM_URL . '/logout.php'
-            : SITE_URL . '/logout.php?csrf=' . crmCsrfToken();
-        ?>
-        <a href="<?= htmlspecialchars($logoutUrl, ENT_QUOTES) ?>" class="sidebar__logout">Logout</a>
+        <div class="crm-navbar__right">
+            <span class="crm-navbar__user">&#128100; <?= htmlspecialchars($_crmUser['username'] ?? 'User', ENT_QUOTES) ?></span>
+            <a href="<?= htmlspecialchars($logoutUrl, ENT_QUOTES) ?>" class="crm-navbar__logout">Logout</a>
+        </div>
+
+        <button class="crm-navbar__toggle" id="crm-nav-toggle" aria-label="Toggle navigation">&#9776;</button>
     </div>
-</aside>
+</header>
 
-<main class="admin-main" id="crm-main">
-    <!-- Mobile top bar -->
-    <div class="crm-topbar">
-        <button class="crm-topbar__toggle" id="sidebar-open" aria-label="Open navigation">&#9776;</button>
-        <span class="crm-topbar__title"><?= htmlspecialchars($pageTitle, ENT_QUOTES) ?></span>
-        <a href="<?= CRM_URL ?>/messages/" class="crm-topbar__messages">
-            &#128140;<?= $_unread > 0 ? " <span class=\"crm-badge\">{$_unread}</span>" : '' ?>
-        </a>
-    </div>
-
+<main class="admin-main">
     <div class="admin-content">

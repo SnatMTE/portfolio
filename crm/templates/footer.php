@@ -2,7 +2,7 @@
 /**
  * crm/templates/footer.php
  *
- * CRM admin layout footer.
+ * CRM layout footer.
  * Closes the admin content wrapper and loads the CRM JavaScript.
  */
 ?>

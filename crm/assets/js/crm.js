@@ -2,12 +2,13 @@
 (function () {
     'use strict';
 
-    /* ── Sidebar mobile toggle ─────────────────────────────── */
-    var toggle = document.querySelector('.crm-topbar__toggle');
-    var sidebar = document.querySelector('.sidebar');
-    if (toggle && sidebar) {
+    /* ── Navbar mobile toggle ──────────────────────────────── */
+    var toggle = document.getElementById('crm-nav-toggle');
+    var nav = document.getElementById('crm-nav');
+    if (toggle && nav) {
         toggle.addEventListener('click', function () {
-            sidebar.classList.toggle('sidebar--open');
+            nav.classList.toggle('crm-navbar__nav--open');
+            toggle.classList.toggle('crm-navbar__toggle--active');
         });
     }
 

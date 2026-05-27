@@ -70,16 +70,16 @@ button     { cursor: pointer; font-family: inherit; }
 }
 
 /* ---------------------------------------------------------
-   Admin layout (shared with CMS admin_header.php)
+   Admin layout
    --------------------------------------------------------- */
 .admin-layout {
     display: flex;
+    flex-direction: column;
     min-height: 100vh;
 }
 
 .admin-main {
     flex: 1;
-    margin-left: 260px;
     display: flex;
     flex-direction: column;
 }
@@ -179,6 +179,38 @@ button     { cursor: pointer; font-family: inherit; }
 }
 .admin-header h1 { font-size: 1.5rem; font-weight: 700; }
 .admin-header__actions { display: flex; gap: 0.5rem; }
+
+/* ---------------------------------------------------------
+   Stat cards & grid
+   --------------------------------------------------------- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-card {
+    background: var(--clr-bg);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.stat-card__number {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--clr-text);
+    line-height: 1.2;
+}
+.stat-card__label {
+    font-size: 0.8rem;
+    color: var(--clr-text-muted);
+}
 
 /* ---------------------------------------------------------
    Form elements
