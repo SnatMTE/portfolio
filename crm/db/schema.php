@@ -42,6 +42,8 @@ function initCRMSchema(PDO $pdo): void
             phone       TEXT    NOT NULL DEFAULT '',
             email       TEXT    NOT NULL DEFAULT '',
             address     TEXT    NOT NULL DEFAULT '',
+            city        TEXT    NOT NULL DEFAULT '',
+            country     TEXT    NOT NULL DEFAULT '',
             industry    TEXT    NOT NULL DEFAULT '',
             notes       TEXT    NOT NULL DEFAULT '',
             status      TEXT    NOT NULL DEFAULT 'active'
@@ -255,6 +257,18 @@ function initCRMSchema(PDO $pdo): void
     ];
     foreach ($indexes as $sql) {
         $pdo->exec($sql);
+    }
+
+    // -----------------------------------------------------------------------
+    // Migrations — add columns that were missing from early schema versions.
+    // SQLite has no IF NOT EXISTS for ALTER TABLE, so we check PRAGMA first.
+    // -----------------------------------------------------------------------
+    $_cols = array_column($pdo->query("PRAGMA table_info(crm_companies)")->fetchAll(), 'name');
+    if (!in_array('city', $_cols, true)) {
+        $pdo->exec("ALTER TABLE crm_companies ADD COLUMN city TEXT NOT NULL DEFAULT ''");
+    }
+    if (!in_array('country', $_cols, true)) {
+        $pdo->exec("ALTER TABLE crm_companies ADD COLUMN country TEXT NOT NULL DEFAULT ''");
     }
 
     // -----------------------------------------------------------------------
