@@ -33,24 +33,28 @@ if (php_sapi_name() !== 'cli') {
 }
 
 // ---------------------------------------------------------------------------
-// Block the page if an admin user already exists
+// Block the page if setup has already been completed
 // ---------------------------------------------------------------------------
 
 /**
- * Checks whether any user rows exist in the database.
+ * Checks whether setup flag file exists or admin user already exists.
  *
  * Used to prevent the setup page from being used to create additional
  * admin accounts after the initial setup has been completed.
  *
- * @return bool  TRUE if at least one user exists in the database.
+ * @return bool  TRUE if setup is already complete.
  */
-function adminExists(): bool
+function isSetupComplete(): bool
 {
+    $flagFile = ROOT_PATH . '/db/.setup_complete';
+    if (file_exists($flagFile)) {
+        return true;
+    }
     return (int) getDB()->query("SELECT COUNT(*) FROM users")->fetchColumn() > 0;
 }
 
 try {
-    if (adminExists()) {
+    if (isSetupComplete()) {
         http_response_code(403);
         die('<p style="font-family:sans-serif;color:#991b1b;padding:2rem;">Setup already complete. Please delete setup.php from your server.</p>');
     }
@@ -97,6 +101,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ':password' => $hash,
                     ':email'    => $email,
                 ]);
+                
+                // Create setup completion flag file
+                $flagFile = ROOT_PATH . '/db/.setup_complete';
+                if (!is_dir(ROOT_PATH . '/db')) {
+                    mkdir(ROOT_PATH . '/db', 0755, true);
+                }
+                file_put_contents($flagFile, date('Y-m-d H:i:s'));
+                
                 $success = true;
             }
         }

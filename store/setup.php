@@ -21,10 +21,10 @@
 
 require_once __DIR__ . '/functions.php';
 
-// Prevent re-running setup if an admin already exists.
-$adminCount = (int) getDB()->query("SELECT COUNT(*) FROM users")->fetchColumn();
+// Check if setup has already been completed (flag file or admin exists)
+$flagFile = ROOT_PATH . '/db/.setup_complete';
+$alreadySetup = file_exists($flagFile) || (int) getDB()->query("SELECT COUNT(*) FROM users")->fetchColumn() > 0;
 
-$alreadySetup = $adminCount > 0;
 $success      = false;
 $errors       = [];
 
@@ -61,6 +61,12 @@ if (!$alreadySetup && $_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':password' => $hash,
                 ':email'    => $email,
             ]);
+
+            // Create setup completion flag file
+            if (!is_dir(ROOT_PATH . '/db')) {
+                mkdir(ROOT_PATH . '/db', 0755, true);
+            }
+            file_put_contents($flagFile, date('Y-m-d H:i:s'));
 
             $success = true;
         }

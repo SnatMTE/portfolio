@@ -1,3 +1,28 @@
+# SQLite databases
 */db/*.sqlite
+
+# Setup completion flags (security)
+*/db/.setup_complete
+
+# Rate limiting data
+cms/db/.rate_limits/
+
+# GitHub configuration
 .github/
-docs/
+
+# Environment files (if added later)
+.env
+.env.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

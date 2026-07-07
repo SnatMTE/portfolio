@@ -1,13 +1,18 @@
-﻿<?php
+<?php
+/**
+ * File: setup.php
+ * What it does: Short description of the file's purpose.
+ *
+ * @author  Snat
+ * @link    https://terra.me.uk
+ */
+
 /**
  * setup.php
  *
  * First-run setup script for the Forum. Creates the initial admin user account.
  * IMPORTANT: Delete or rename this file immediately after running it.
- * Leaving this file accessible in production is a serious security risk.
- *
- * @author  M. Terra Ellis
- * @link    https://terra.me.uk
+ * Leaving this file accessible in production is a security risk.
  */
 
 require_once __DIR__ . '/functions.php';
@@ -29,17 +34,21 @@ if (php_sapi_name() !== 'cli') {
 // ---------------------------------------------------------------------------
 
 /**
- * Returns true when an administrator user already exists in the forum.
+ * Checks whether setup flag file exists or admin user already exists.
  *
- * @return bool
+ * @return bool  TRUE if setup is already complete.
  */
-function adminExists(): bool
+function isSetupComplete(): bool
 {
+    $flagFile = ROOT_PATH . '/db/.setup_complete';
+    if (file_exists($flagFile)) {
+        return true;
+    }
     return (int) getDB()->query("SELECT COUNT(*) FROM users")->fetchColumn() > 0;
 }
 
 try {
-    if (adminExists()) {
+    if (isSetupComplete()) {
         http_response_code(403);
         die('<p style="font-family:Inter,Arial,sans-serif;color:#991b1b;padding:2rem;">Setup already complete. Please delete setup.php from your server.</p>');
     }
@@ -103,6 +112,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':email'    => $email,
                 ':hash'     => $hash,
             ]);
+            
+            // Create setup completion flag file
+            $flagFile = ROOT_PATH . '/db/.setup_complete';
+            if (!is_dir(ROOT_PATH . '/db')) {
+                mkdir(ROOT_PATH . '/db', 0755, true);
+            }
+            file_put_contents($flagFile, date('Y-m-d H:i:s'));
+            
             $success = true;
         }
     } catch (Throwable $e) {

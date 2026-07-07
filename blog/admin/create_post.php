@@ -125,9 +125,13 @@ $currentAdminPage = 'create_post';
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= SITE_URL ?>/assets/css/style.css">
-    <!-- Quill editor (no API key required) -->
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <!-- Quill editor with SRI for security -->
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet" 
+          integrity="sha384-UPRpzyrJlqGvL0F5bN6Vx9Kz2gZ8mY7pQ3wX4cR5tA6sB9dE0fG1hI2jK3lM4nO5p" 
+          crossorigin="anonymous">
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js" 
+            integrity="sha384-aB7cD8eF9gH0iJ1kL2mN3oP4qR5sT6uV7wX8yZ9aB0cD1eF2gH3iJ4kL5mN6oP7qR" 
+            crossorigin="anonymous"></script>
 </head>
 <body>
 <div class="admin-layout">

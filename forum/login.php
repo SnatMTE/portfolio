@@ -13,9 +13,15 @@ require_once __DIR__ . '/functions.php';
 
 // When inside CMS, redirect to the shared CMS login page
 if (defined('CMS_ROOT')) {
+    require_once CMS_ROOT . '/core/rate_limiter.php';
     $cmsLogin = defined('CMS_URL') ? CMS_URL . '/login.php' : '../login.php';
     header('Location: ' . $cmsLogin);
     exit;
+}
+
+// Load rate limiter for standalone mode
+if (!defined('CMS_ROOT') && file_exists(__DIR__ . '/../cms/core/rate_limiter.php')) {
+    require_once __DIR__ . '/../cms/core/rate_limiter.php';
 }
 
 // Already logged in
@@ -27,38 +33,57 @@ $errors    = [];
 $formLogin = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    verifyCsrf();
+    // Get client IP for rate limiting
+    $clientIp = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    
+    // Check rate limit before processing
+    if (function_exists('checkLoginRateLimit') && !checkLoginRateLimit($clientIp)) {
+        $remainingTime = function_exists('getRemainingLockoutTime') ? getRemainingLockoutTime($clientIp) : 0;
+        $minutes = ceil($remainingTime / 60);
+        $errors[] = "Too many failed login attempts. Please try again in {$minutes} minute" . ($minutes > 1 ? 's' : '') . '.';
+    } else {
+        verifyCsrf();
 
-    $formLogin = trim($_POST['login'] ?? '');
-    $password  = $_POST['password'] ?? '';
+        $formLogin = trim($_POST['login'] ?? '');
+        $password  = $_POST['password'] ?? '';
 
-    if ($formLogin === '') {
-        $errors[] = 'Please enter your username or email.';
-    }
-    if ($password === '') {
-        $errors[] = 'Please enter your password.';
-    }
+        if ($formLogin === '') {
+            $errors[] = 'Please enter your username or email.';
+        }
+        if ($password === '') {
+            $errors[] = 'Please enter your password.';
+        }
 
-    if (empty($errors)) {
-        // Look up by username or email
-        $stmt = getDB()->prepare(
-            "SELECT u.id, u.username, u.password_hash, r.name AS role
-             FROM users u
-             JOIN roles r ON r.id = u.role_id
-             WHERE u.username = :login OR u.email = :login"
-        );
-        $stmt->execute([':login' => $formLogin]);
-        $user = $stmt->fetch();
+        if (empty($errors)) {
+            // Look up by username or email
+            $stmt = getDB()->prepare(
+                "SELECT u.id, u.username, u.password_hash, r.name AS role
+                 FROM users u
+                 JOIN roles r ON r.id = u.role_id
+                 WHERE u.username = :login OR u.email = :login"
+            );
+            $stmt->execute([':login' => $formLogin]);
+            $user = $stmt->fetch();
 
-        if ($user && password_verify($password, $user['password_hash'])) {
-            // Regenerate session ID to prevent session fixation
-            session_regenerate_id(true);
-            $_SESSION['user_id'] = $user['id'];
-            flashMessage('Welcome back, ' . $user['username'] . '!', 'success');
-            redirect(SITE_URL . '/');
-        } else {
-            // Generic error to prevent username enumeration
-            $errors[] = 'Invalid username/email or password.';
+            if ($user && password_verify($password, $user['password_hash'])) {
+                // Clear rate limit on successful login
+                if (function_exists('clearLoginAttempts')) {
+                    clearLoginAttempts($clientIp);
+                }
+                
+                // Regenerate session ID to prevent session fixation
+                session_regenerate_id(true);
+                $_SESSION['user_id'] = $user['id'];
+                flashMessage('Welcome back, ' . $user['username'] . '!', 'success');
+                redirect(SITE_URL . '/');
+            } else {
+                // Record failed login attempt
+                if (function_exists('recordFailedLogin')) {
+                    recordFailedLogin($clientIp);
+                }
+                // Generic error to prevent username enumeration
+                $errors[] = 'Invalid username/email or password.';
+            }
         }
     }
 }

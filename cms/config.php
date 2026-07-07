@@ -6,7 +6,7 @@
  * Defines CMS_ROOT, CMS_DB_FILE, site constants, and starts the session.
  * Loads the core database provider (getCMSDB) and module loader.
  *
- * @author  M. Terra Ellis
+ * @author  Snat
  * @link    https://terra.me.uk
  */
 
@@ -92,10 +92,16 @@ define('CMS_TAGLINE', 'Unified Content Management');
 // Session
 // ---------------------------------------------------------------------------
 if (session_status() === PHP_SESSION_NONE) {
+    // Detect if running over HTTPS for secure cookie flag
+    $isHttps = (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off')
+        || (isset($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] === 'https')
+        || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https')
+        || (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443);
+
     session_set_cookie_params([
         'lifetime' => 0,
         'path'     => '/',
-        'secure'   => true,
+        'secure'   => $isHttps,
         'httponly' => true,
         'samesite' => 'Strict',
     ]);
@@ -105,11 +111,9 @@ if (session_status() === PHP_SESSION_NONE) {
 // ---------------------------------------------------------------------------
 // Load core providers
 // ---------------------------------------------------------------------------
-// Load small mbstring polyfills only when the mbstring extension is absent.
-// Skipping the file when mbstring is installed avoids nullable-parameter
-// deprecation notices in PHP 8.1+ which would break header() calls.
-if (!extension_loaded('mbstring') && file_exists(CMS_ROOT . '/core/mb_polyfill.php')) {
-    require_once CMS_ROOT . '/core/mb_polyfill.php';
-}
+// Load UTF-8 polyfills when the ext/mbstring PHP extension is not available.
+require_once CMS_ROOT . '/core/polyfills.php';
+require_once CMS_ROOT . '/core/shared_helpers.php';
+require_once CMS_ROOT . '/core/security_headers.php';
 require_once CMS_ROOT . '/core/database.php';
 require_once CMS_ROOT . '/core/module_loader.php';

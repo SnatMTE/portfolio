@@ -1,157 +1,52 @@
-﻿<?php
+<?php
 /**
  * functions.php
  *
  * Global helper functions for the Forum.
  * All database queries use PDO prepared statements to prevent SQL injection.
  *
- * @author  M. Terra Ellis
+ * @author  Snat
  * @link    https://terra.me.uk
  */
 
 require_once __DIR__ . '/config.php';
 
 // ---------------------------------------------------------------------------
-// mbstring compatibility shim
+// When running inside CMS, use shared helpers from CMS core
 // ---------------------------------------------------------------------------
-if (!extension_loaded('mbstring')) {
-    if (!function_exists('mb_strlen')) {
-        
-        /**
-         * UTF-8-aware strlen fallback (mbstring not available).
-         *
-         * @param string $s
-         * @param string $encoding
-         * @return int
-         */
-        function mb_strlen(string $s, string $encoding = 'UTF-8'): int
-        {
-            if ($s === '') return 0;
-            preg_match_all('/./us', $s, $m);
-            return count($m[0]);
-        }
-    }
-    if (!function_exists('mb_substr')) {
-        
-        /**
-         * UTF-8-aware substr fallback (mbstring not available).
-         *
-         * @param string $s
-         * @param int $start
-         * @param ?int $length
-         * @param string $encoding
-         * @return string
-         */
-        function mb_substr(string $s, int $start, ?int $length = null, string $encoding = 'UTF-8'): string
-        {
-            if ($s === '') return '';
-            preg_match_all('/./us', $s, $m);
-            $arr = $m[0];
-            if ($start < 0) {
-                $start = count($arr) + $start;
-            }
-            return $length === null
-                ? implode('', array_slice($arr, $start))
-                : implode('', array_slice($arr, $start, $length));
-        }
-    }
-    if (!function_exists('mb_strtolower')) {
-        
-        /**
-         * Best-effort strtolower fallback for UTF-8 strings.
-         *
-         * @param string $s
-         * @param string $encoding
-         * @return string
-         */
-        function mb_strtolower(string $s, string $encoding = 'UTF-8'): string
-        {
-            return strtolower($s);
-        }
-    }
+if (defined('CMS_ROOT')) {
+    require_once CMS_ROOT . '/core/polyfills.php';
+    require_once CMS_ROOT . '/core/shared_helpers.php';
+} else {
+    // Standalone mode: load local polyfills
+    require_once __DIR__ . '/../cms/core/polyfills.php';
 }
 
 // ===========================================================================
 // String / Output helpers
 // ===========================================================================
 
-/**
- * Escapes a string for safe HTML output, preventing XSS.
- *
- * @param string $string  Raw input.
- * @return string  HTML-safe string.
- */
-function e(string $string): string
-{
-    return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-}
-
-
-/**
- * Converts a string into a URL-friendly slug.
- *
- * @param string $text  Input text.
- * @return string  Slug.
- */
-function slugify(string $text): string
-{
-    $text = mb_strtolower(trim($text));
-    $text = preg_replace('/[^a-z0-9\s\-]/', '', $text);
-    $text = preg_replace('/[\s\-]+/', '-', $text);
-    return trim($text, '-');
-}
-
-/**
- * Formats a UTC date string for human-readable display.
- *
- * @param string $dateString  SQLite datetime string.
- * @param string $format      PHP date() format.
- * @return string
- */
-function formatDate(string $dateString, string $format = 'j F Y'): string
-{
-    $dt = new DateTime($dateString, new DateTimeZone('UTC'));
-    return $dt->format($format);
-}
+// ===========================================================================
+// String / Output helpers (provided by CMS core when in CMS mode)
+// ===========================================================================
+// The following functions are now centralized in cms/core/shared_helpers.php:
+//   - e()           : HTML escaping
+//   - slugify()     : URL slug generation  
+//   - formatDate()  : Date formatting
+//   - redirect()    : HTTP redirect
+//   - truncate()    : Text truncation
+// These are loaded automatically when CMS_ROOT is defined.
 
 /**
  * Formats a date string as "1 January 2025 at 3:45pm".
+ * Forum-specific date format helper.
  *
  * @param string $dateString  SQLite datetime string.
- * @return string
+ * @return string             Formatted date and time.
  */
 function formatDateTime(string $dateString): string
 {
     return formatDate($dateString, 'j F Y \a\t g:ia');
-}
-
-/**
- * Redirects the browser to the given URL and terminates execution.
- *
- * @param string $url  Destination URL.
- * @return never
- */
-function redirect(string $url): never
-{
-    header('Location: ' . $url);
-    exit;
-}
-
-/**
- * Truncates a string (stripping HTML) to the given character length.
- *
- * @param string $text    Input text (may contain HTML).
- * @param int    $length  Max characters.
- * @return string
- */
-function truncate(string $text, int $length = 120): string
-{
-    $plain = html_entity_decode(strip_tags($text), ENT_QUOTES, 'UTF-8');
-    $plain = preg_replace('/\s+/', ' ', trim($plain));
-    if (mb_strlen($plain) <= $length) {
-        return $plain;
-    }
-    return mb_substr($plain, 0, $length) . '...';
 }
 
 // ===========================================================================

@@ -20,9 +20,15 @@ require_once __DIR__ . '/functions.php';
 
 // When inside CMS, redirect to the shared CMS login page
 if (defined('CMS_ROOT')) {
+    require_once CMS_ROOT . '/core/rate_limiter.php';
     $cmsLogin = defined('CMS_URL') ? CMS_URL . '/login.php' : '../login.php';
     header('Location: ' . $cmsLogin);
     exit;
+}
+
+// Load rate limiter for standalone mode
+if (!defined('CMS_ROOT') && file_exists(__DIR__ . '/../cms/core/rate_limiter.php')) {
+    require_once __DIR__ . '/../cms/core/rate_limiter.php';
 }
 
 // Already logged in → redirect to dashboard
@@ -33,27 +39,46 @@ if (!empty($_SESSION['admin_id'])) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $token = trim($_POST['csrf_token'] ?? '');
-
-    if (!validateCsrf($token)) {
-        $error = 'Invalid request. Please try again.';
+    // Get client IP for rate limiting
+    $clientIp = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    
+    // Check rate limit before processing
+    if (function_exists('checkLoginRateLimit') && !checkLoginRateLimit($clientIp)) {
+        $remainingTime = function_exists('getRemainingLockoutTime') ? getRemainingLockoutTime($clientIp) : 0;
+        $minutes = ceil($remainingTime / 60);
+        $error = "Too many failed login attempts. Please try again in {$minutes} minute" . ($minutes > 1 ? 's' : '') . '.';
     } else {
-        $username = trim($_POST['username'] ?? '');
-        $password = $_POST['password'] ?? '';
+        $token = trim($_POST['csrf_token'] ?? '');
 
-        if ($username === '' || $password === '') {
-            $error = 'Please enter both username and password.';
+        if (!validateCsrf($token)) {
+            $error = 'Invalid request. Please try again.';
         } else {
-            $user = getUserByUsername($username);
+            $username = trim($_POST['username'] ?? '');
+            $password = $_POST['password'] ?? '';
 
-            if ($user && password_verify($password, $user['password'])) {
-                session_regenerate_id(true);
-                $_SESSION['admin_id']       = $user['id'];
-                $_SESSION['admin_username'] = $user['username'];
-                redirect(SITE_URL . '/admin/');
+            if ($username === '' || $password === '') {
+                $error = 'Please enter both username and password.';
             } else {
-                // Generic – do not reveal whether username or password was wrong
-                $error = 'Invalid username or password.';
+                $user = getUserByUsername($username);
+
+                if ($user && password_verify($password, $user['password'])) {
+                    // Clear rate limit on successful login
+                    if (function_exists('clearLoginAttempts')) {
+                        clearLoginAttempts($clientIp);
+                    }
+                    
+                    session_regenerate_id(true);
+                    $_SESSION['admin_id']       = $user['id'];
+                    $_SESSION['admin_username'] = $user['username'];
+                    redirect(SITE_URL . '/admin/');
+                } else {
+                    // Record failed login attempt
+                    if (function_exists('recordFailedLogin')) {
+                        recordFailedLogin($clientIp);
+                    }
+                    // Generic – do not reveal whether username or password was wrong
+                    $error = 'Invalid username or password.';
+                }
             }
         }
     }

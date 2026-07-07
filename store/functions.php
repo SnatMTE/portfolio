@@ -1,4 +1,12 @@
-﻿<?php
+<?php
+/**
+ * File: functions.php
+ * What it does: Short description of the file's purpose.
+ *
+ * @author  Snat
+ * @link    https://terra.me.uk
+ */
+
 /**
  * functions.php
  *
@@ -19,140 +27,41 @@
  *  10. User / auth queries
  *  11. Currency helpers
  *
- * @author  M. Terra Ellis
+ * @author  Snat
  * @link    https://terra.me.uk
  */
 
 require_once __DIR__ . '/config.php';
 
 // ---------------------------------------------------------------------------
-// 1. mbstring compatibility shim
+// 1. mbstring compatibility shim (use CMS core polyfills)
 // ---------------------------------------------------------------------------
-if (!extension_loaded('mbstring')) {
-    if (!function_exists('mb_strlen')) {
-        
-        /**
-         * UTF-8-aware strlen fallback (mbstring not available).
-         *
-         * @param string $s
-         * @param string $encoding
-         * @return int
-         */
-        function mb_strlen(string $s, string $encoding = 'UTF-8'): int
-        {
-            if ($s === '') return 0;
-            preg_match_all('/./us', $s, $m);
-            return count($m[0]);
-        }
-    }
-    if (!function_exists('mb_substr')) {
-        
-        /**
-         * UTF-8-aware substr fallback (mbstring not available).
-         *
-         * @param string $s
-         * @param int $start
-         * @param ?int $length
-         * @param string $encoding
-         * @return string
-         */
-        function mb_substr(string $s, int $start, ?int $length = null, string $encoding = 'UTF-8'): string
-        {
-            if ($s === '') return '';
-            preg_match_all('/./us', $s, $m);
-            $arr = $m[0];
-            if ($start < 0) $start = count($arr) + $start;
-            return $length === null
-                ? implode('', array_slice($arr, $start))
-                : implode('', array_slice($arr, $start, $length));
-        }
-    }
-    if (!function_exists('mb_strtolower')) {
-        
-        /**
-         * Best-effort strtolower fallback for UTF-8 strings.
-         *
-         * @param string $s
-         * @param string $encoding
-         * @return string
-         */
-        function mb_strtolower(string $s, string $encoding = 'UTF-8'): string
-        { return strtolower($s); }
-    }
+if (defined('CMS_ROOT')) {
+    require_once CMS_ROOT . '/core/polyfills.php';
+    require_once CMS_ROOT . '/core/shared_helpers.php';
+} else {
+    // Standalone mode: load local polyfills
+    require_once __DIR__ . '/../cms/core/polyfills.php';
 }
 
 // ===========================================================================
 // 2. String / output helpers
 // ===========================================================================
 
-/**
- * Escapes a string for safe HTML output (prevents XSS).
- *
- * @param string $string  Raw input.
- * @return string  HTML-safe string.
- */
-function e(string $string): string
-{
-    return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-}
-
-/**
- * Converts a string to a URL-friendly slug.
- *
- * @param string $text  Input text.
- * @return string  URL slug.
- */
-function slugify(string $text): string
-{
-    $text = mb_strtolower(trim($text));
-    $text = preg_replace('/[^a-z0-9\s\-]/', '', $text);
-    $text = preg_replace('/[\s\-]+/', '-', $text);
-    return trim($text, '-');
-}
-
-/**
- * Truncates HTML content to a plain-text excerpt.
- *
- * @param string $htmlContent  HTML content.
- * @param int    $length       Max character length.
- * @return string  Plain-text excerpt.
- */
-function makeExcerpt(string $htmlContent, int $length = 160): string
-{
-    $plain = html_entity_decode(strip_tags($htmlContent), ENT_QUOTES, 'UTF-8');
-    $plain = preg_replace('/\s+/', ' ', trim($plain));
-    if (mb_strlen($plain) <= $length) return $plain;
-    return mb_substr($plain, 0, $length) . '…';
-}
-
-/**
- * Formats a UTC date string for human-readable display.
- *
- * @param string $dateString  SQLite datetime string.
- * @param string $format      PHP date() format.
- * @return string  Formatted date.
- */
-function formatDate(string $dateString, string $format = 'j F Y'): string
-{
-    $dt = new DateTime($dateString, new DateTimeZone('UTC'));
-    return $dt->format($format);
-}
+// ===========================================================================
+// 2. String / output helpers (provided by CMS core when in CMS mode)
+// ===========================================================================
+// The following functions are now centralized in cms/core/shared_helpers.php:
+//   - e()           : HTML escaping
+//   - slugify()     : URL slug generation  
+//   - makeExcerpt() : Content excerpt generation
+//   - formatDate()  : Date formatting
+//   - redirect()    : HTTP redirect
+// These are loaded automatically when CMS_ROOT is defined.
 
 // ===========================================================================
 // 3. Routing helpers
 // ===========================================================================
-
-/**
- * Redirects the browser to the given URL and terminates execution.
- *
- * @param string $url  Destination URL.
- * @return never
- */
-function redirect(string $url): never
-{
-    header('Location: ' . $url);
-    exit;
-}
 
 // ===========================================================================
 // 4. Session / CSRF helpers

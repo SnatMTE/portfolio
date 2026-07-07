@@ -17,6 +17,7 @@
  */
 
 require_once __DIR__ . '/functions.php';
+require_once CMS_ROOT . '/core/rate_limiter.php';
 
 // Already logged in
 if (cmsIsLoggedIn()) {
@@ -27,7 +28,15 @@ $errors   = [];
 $formLogin = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!cmsValidateCsrf($_POST['csrf_token'] ?? '')) {
+    // Get client IP for rate limiting
+    $clientIp = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    
+    // Check rate limit before processing
+    if (!checkLoginRateLimit($clientIp)) {
+        $remainingTime = getRemainingLockoutTime($clientIp);
+        $minutes = ceil($remainingTime / 60);
+        $errors[] = "Too many failed login attempts. Please try again in {$minutes} minute" . ($minutes > 1 ? 's' : '') . '.';
+    } elseif (!cmsValidateCsrf($_POST['csrf_token'] ?? '')) {
         $errors[] = 'Invalid security token. Please try again.';
     } else {
         $formLogin = trim($_POST['login']    ?? '');
@@ -52,6 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user = $stmt->fetch();
 
             if ($user && password_verify($password, $user['password_hash'])) {
+                // Clear rate limit on successful login
+                clearLoginAttempts($clientIp);
+                
                 session_regenerate_id(true);
 
                 // Set all session variables needed by CMS and all modules
@@ -64,12 +76,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 cmsFlashMessage('Welcome back, ' . $user['username'] . '!', 'success');
 
                 // Redirect to intended destination or admin dashboard
-                $next = filter_var($_GET['next'] ?? '', FILTER_SANITIZE_URL);
-                if ($next && str_starts_with($next, '/')) {
-                    redirect($next);
+                // Validate redirect URL to prevent open redirect attacks
+                $next = trim($_GET['next'] ?? '');
+                if ($next !== '') {
+                    // Only allow relative URLs starting with /
+                    if (str_starts_with($next, '/') && !str_starts_with($next, '//')) {
+                        // Ensure it's not a protocol-relative URL
+                        $parsed = parse_url($next);
+                        if ($parsed !== false && !isset($parsed['host']) && !isset($parsed['scheme'])) {
+                            redirect($next);
+                        }
+                    }
                 }
                 redirect(SITE_URL . '/admin/');
             } else {
+                // Record failed login attempt
+                recordFailedLogin($clientIp);
                 $errors[] = 'Invalid username/email or password.';
             }
         }

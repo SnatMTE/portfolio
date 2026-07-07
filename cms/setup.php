@@ -13,12 +13,25 @@
 
 require_once __DIR__ . '/functions.php';
 
-// Redirect to admin if an admin user already exists
+// Check if setup has already been completed
+$setupFlagFile = CMS_ROOT . '/db/.setup_complete';
+if (file_exists($setupFlagFile)) {
+    cmsFlashMessage('Setup already completed. Please log in.', 'info');
+    redirect(SITE_URL . '/login.php');
+}
+
+// Redirect to admin if an admin user already exists (defence-in-depth)
 $adminCount = (int) getCMSDB()->query(
     "SELECT COUNT(*) FROM users u JOIN roles r ON r.id = u.role_id WHERE r.name = 'admin'"
 )->fetchColumn();
 
 if ($adminCount > 0) {
+    // Mark setup as complete and create flag file
+    if (!is_dir(CMS_ROOT . '/db')) {
+        mkdir(CMS_ROOT . '/db', 0755, true);
+    }
+    file_put_contents($setupFlagFile, date('Y-m-d H:i:s'));
+    
     cmsFlashMessage('Setup already completed. Please log in.', 'info');
     redirect(SITE_URL . '/login.php');
 }
@@ -77,6 +90,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':role_id'       => $adminRoleId,
             ]);
 
+            // Create setup completion flag file
+            if (!is_dir(CMS_ROOT . '/db')) {
+                mkdir(CMS_ROOT . '/db', 0755, true);
+            }
+            file_put_contents($setupFlagFile, date('Y-m-d H:i:s'));
+            
             $done = true;
         }
     }

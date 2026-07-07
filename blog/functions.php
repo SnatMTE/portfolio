@@ -1,199 +1,45 @@
-﻿<?php
+<?php
 /**
  * functions.php
  *
  * Global helper functions used across the portfolio blog.
  * All database queries use PDO prepared statements to prevent SQL injection.
  *
- * @author  M. Terra Ellis
+ * @author  Snat
  * @link    https://terra.me.uk
  */
 
 require_once __DIR__ . '/config.php';
 
 // --------------------------------------------------------------------------
-// mbstring compatibility shim
+// When running inside CMS, use shared helpers from CMS core
 // --------------------------------------------------------------------------
-// Provide tiny UTF-8-safe fallbacks when `mbstring` is absent.
-// Enable the `mbstring` extension for reliable internationalisation.
-if (!extension_loaded('mbstring')) {
-    if (!function_exists('mb_strlen')) {
-        
-        /**
-         * UTF-8-aware strlen fallback (mbstring not available).
-         *
-         * @param string $s
-         * @param string $encoding
-         * @return int
-         */
-        function mb_strlen(string $s, string $encoding = 'UTF-8'): int
-        {
-            if ($encoding === '8bit') {
-                return strlen($s);
-            }
-            if ($s === '') {
-                return 0;
-            }
-            preg_match_all('/./us', $s, $m);
-            return count($m[0]);
-        }
-    }
-
-    if (!function_exists('mb_substr')) {
-        
-        /**
-         * UTF-8-aware substr fallback (mbstring not available).
-         *
-         * @param string $s
-         * @param int $start
-         * @param ?int $length
-         * @param string $encoding
-         * @return string
-         */
-        function mb_substr(string $s, int $start, ?int $length = null, string $encoding = 'UTF-8'): string
-        {
-            if ($encoding === '8bit') {
-                return $length === null ? substr($s, $start) : substr($s, $start, $length);
-            }
-            if ($s === '') {
-                return '';
-            }
-            preg_match_all('/./us', $s, $m);
-            $arr = $m[0];
-            if ($start < 0) {
-                $start = count($arr) + $start;
-            }
-            if ($length === null) {
-                return implode('', array_slice($arr, $start));
-            }
-            return implode('', array_slice($arr, $start, $length));
-        }
-    }
-
-    if (!function_exists('mb_strtolower')) {
-        
-        /**
-         * Best-effort strtolower fallback for UTF-8 strings.
-         *
-         * @param string $s
-         * @param string $encoding
-         * @return string
-         */
-        function mb_strtolower(string $s, string $encoding = 'UTF-8'): string
-        {
-            // Best-effort fallback; for full Unicode casing enable mbstring.
-            return strtolower($s);
-        }
-    }
-
-    if (!function_exists('mb_strtoupper')) {
-        
-        /**
-         * Best-effort strtoupper fallback for UTF-8 strings.
-         *
-         * @param string $s
-         * @param string $encoding
-         * @return string
-         */
-        function mb_strtoupper(string $s, string $encoding = 'UTF-8'): string
-        {
-            return strtoupper($s);
-        }
-    }
+if (defined('CMS_ROOT')) {
+    require_once CMS_ROOT . '/core/polyfills.php';
+    require_once CMS_ROOT . '/core/shared_helpers.php';
+} else {
+    // Standalone mode: load local polyfills and helpers
+    require_once __DIR__ . '/../cms/core/polyfills.php';
 }
 
 // ===========================================================================
 // String / Output helpers
 // ===========================================================================
 
-/**
- * Escapes a string for safe HTML output.
- *
- * Wraps htmlspecialchars() with UTF-8 encoding and ENT_QUOTES so both
- * single and double quotes are escaped, preventing XSS.
- *
- * @param string $string  Raw input string.
- *
- * @return string  HTML-safe string.
- */
-function e(string $string): string
-{
-    return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-}
+// ===========================================================================
+// String / Output helpers (provided by CMS core when in CMS mode)
+// ===========================================================================
+// The following functions are now centralized in cms/core/shared_helpers.php:
+//   - e()           : HTML escaping
+//   - slugify()     : URL slug generation  
+//   - makeExcerpt() : Content excerpt generation
+//   - formatDate()  : Date formatting
+//   - redirect()    : HTTP redirect
+// These are loaded automatically when CMS_ROOT is defined.
 
-/**
- * Converts a plain text string into a URL-friendly slug.
- *
- * Lowercases the string, replaces spaces and non-alphanumeric characters
- * with hyphens, then trims leading/trailing hyphens.
- *
- * @param string $text  Input text (e.g. post title).
- *
- * @return string  URL slug (e.g. "my-first-post").
- */
-function slugify(string $text): string
-{
-    $text = mb_strtolower(trim($text));
-    $text = preg_replace('/[^a-z0-9\s\-]/', '', $text);
-    $text = preg_replace('/[\s\-]+/', '-', $text);
-    return trim($text, '-');
-}
-
-/**
- * Generates an excerpt from a block of HTML content.
- *
- * Strips HTML tags, decodes entities, then truncates to $length characters,
- * appending an ellipsis if the content was truncated.
- *
- * @param string $htmlContent  Full HTML post content.
- * @param int    $length       Maximum character length of the excerpt.
- *
- * @return string  Plain-text excerpt.
- */
-function makeExcerpt(string $htmlContent, int $length = 200): string
-{
-    $plain = html_entity_decode(strip_tags($htmlContent), ENT_QUOTES, 'UTF-8');
-    $plain = preg_replace('/\s+/', ' ', trim($plain));
-
-    if (mb_strlen($plain) <= $length) {
-        return $plain;
-    }
-
-    return mb_substr($plain, 0, $length) . '…';
-}
-
-/**
- * Formats a UTC date string for human-readable display.
- *
- * @param string $dateString  Date string stored in the database (SQLite datetime).
- * @param string $format      PHP date() format string.
- *
- * @return string  Formatted date string.
- */
-function formatDate(string $dateString, string $format = 'j F Y'): string
-{
-    $dt = new DateTime($dateString, new DateTimeZone('UTC'));
-    return $dt->format($format);
-}
-
-/**
- * Redirects the browser to the given URL and terminates execution.
- *
- * @param string $url  Destination URL (absolute or relative).
- *
- * @return never
- */
-function redirect(string $url): never
-{
-    header('Location: ' . $url);
-    exit;
-}
-
-/**
- * Generates a CSRF token for the current session and stores it.
- *
- * If a token already exists in the session it is returned unchanged so
- * that forms rendered multiple times in one request share the same token.
+// ===========================================================================
+// CSRF Protection
+// ===========================================================================
  *
  * @return string  A 64-character hex CSRF token.
  */
@@ -219,122 +65,6 @@ function validateCsrf(string $submittedToken): bool
 {
     $sessionToken = $_SESSION['csrf_token'] ?? '';
     return hash_equals($sessionToken, $submittedToken);
-}
-
-/**
- * Detects whether the server supports the blog's "pretty" URLs
- * (e.g. `/post/my-slug`). Performs a lightweight HTTP probe once and
- * caches the result to avoid repeated network calls.
- *
- * Returns TRUE when slug-based URLs are routed to `post.php` correctly,
- * otherwise FALSE so callers can fall back to `post.php?id=...` links.
- *
- * @return bool
- */
-function supportsPrettyUrls(): bool
-{
-    static $cached = null;
-
-    if ($cached !== null) {
-        return $cached;
-    }
-
-    $cacheFile = ROOT_PATH . '/db/pretty_url_cache.json';
-    $ttl = 3600; // 1 hour
-
-    if (file_exists($cacheFile)) {
-        $data = @json_decode(@file_get_contents($cacheFile), true);
-        if (is_array($data) && isset($data['ts']) && isset($data['value']) && (time() - $data['ts'] < $ttl)) {
-            $cached = (bool) $data['value'];
-            return $cached;
-        }
-    }
-
-    // Built-in PHP server: look for `router.php` to detect rewrite routing.
-    if (PHP_SAPI === 'cli-server') {
-        $routerFound = file_exists(ROOT_PATH . '/router.php') || file_exists(dirname(ROOT_PATH) . '/router.php');
-        if ($routerFound && (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'router.php' || basename($_SERVER['SCRIPT_NAME'] ?? '') === 'router.php')) {
-            $detected = true;
-            if (!is_dir(dirname($cacheFile))) {
-                @mkdir(dirname($cacheFile), 0750, true);
-            }
-            @file_put_contents($cacheFile, json_encode(['ts' => time(), 'value' => $detected]));
-            $cached = $detected;
-            return $detected;
-        }
-
-        $detected = false;
-        if (!is_dir(dirname($cacheFile))) {
-            @mkdir(dirname($cacheFile), 0750, true);
-        }
-        @file_put_contents($cacheFile, json_encode(['ts' => time(), 'value' => $detected]));
-        $cached = $detected;
-        return $detected;
-    }
-
-    // Probe a fake slug and look for the public "Post Not Found" text
-    // — indicates rewrites route to `post.php` correctly.
-    try {
-        $testSlug = 'rewrite-detect-' . substr(bin2hex(random_bytes(4)), 0, 8);
-    } catch (Exception $e) {
-        $testSlug = 'rewrite-detect';
-    }
-    $testUrl = SITE_URL . '/post/' . $testSlug;
-
-    $body = false;
-    $httpCode = 0;
-
-    if (function_exists('curl_init')) {
-        $ch = @curl_init();
-        @curl_setopt($ch, CURLOPT_URL, $testUrl);
-        @curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        @curl_setopt($ch, CURLOPT_HEADER, false);
-        @curl_setopt($ch, CURLOPT_TIMEOUT, 2);
-        @curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        @curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        @curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        $body = @curl_exec($ch);
-        $httpCode = @curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        @curl_close($ch);
-    } elseif (ini_get('allow_url_fopen')) {
-        $ctx = stream_context_create(['http' => ['timeout' => 2, 'ignore_errors' => true]]);
-        $body = @file_get_contents($testUrl, false, $ctx);
-        if (isset($http_response_header) && is_array($http_response_header)) {
-            foreach ($http_response_header as $hdr) {
-                if (preg_match('#^HTTP/[\d.]+\s+(\d{3})#i', $hdr, $m)) {
-                    $httpCode = (int) $m[1];
-                    break;
-                }
-            }
-        }
-    } else {
-        // Can't probe this environment — assume pretty URLs are available.
-        $detected = true;
-        if (!is_dir(dirname($cacheFile))) {
-            @mkdir(dirname($cacheFile), 0750, true);
-        }
-        @file_put_contents($cacheFile, json_encode(['ts' => time(), 'value' => $detected]));
-        $cached = $detected;
-        return $detected;
-    }
-
-    $detected = false;
-    if ($body !== false && $body !== null) {
-        if (strpos($body, '404 – Post Not Found') !== false || strpos($body, '404 - Post Not Found') !== false || strpos($body, 'The post you are looking for does not exist') !== false) {
-            $detected = true;
-        }
-    } else {
-        if ($httpCode === 404) {
-            $detected = true;
-        }
-    }
-
-    if (!is_dir(dirname($cacheFile))) {
-        @mkdir(dirname($cacheFile), 0750, true);
-    }
-    @file_put_contents($cacheFile, json_encode(['ts' => time(), 'value' => $detected]));
-    $cached = $detected;
-    return $detected;
 }
 
 // ===========================================================================
@@ -696,45 +426,63 @@ function buildPagination(int $currentPage, int $totalItems, string $baseUrl, int
 /**
  * Handles a featured image upload for a blog post.
  *
- * Validates the file type and size, generates a unique filename, then
- * moves the file to the assets/images/uploads/ directory.
+ * Validates the file type, size, and extension, generates a unique filename,
+ * then moves the file to the assets/images/uploads/ directory.
  *
- * Allowed MIME types: image/jpeg, image/png, image/gif, image/webp.
+ * Security measures:
+ *   - MIME type verification using finfo (not browser-supplied)
+ *   - Whitelist of allowed extensions (not extracted from user input)
+ *   - Maximum file size enforcement
+ *   - Random filename generation to prevent path traversal
+ *   - Restrictive directory permissions (0750)
+ *
+ * Allowed types: JPEG, PNG, GIF, WebP.
  * Maximum file size: 5 MB.
  *
  * @param array<string, mixed> $fileInput  A single entry from $_FILES (e.g. $_FILES['featured_image']).
  *
- * @return string|null  The stored filename (relative to assets/images/uploads/) on success, or NULL on failure.
+ * @return string|null  The stored filename on success, or NULL on failure.
  */
 function handleImageUpload(array $fileInput): ?string
 {
-    $allowedMime = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    $maxSize     = 5 * 1024 * 1024; // 5 MB
+    // Whitelist of allowed MIME types
+    $allowedMime = [
+        'image/jpeg' => 'jpg',
+        'image/png'  => 'png',
+        'image/gif'  => 'gif',
+        'image/webp' => 'webp',
+    ];
+    $maxSize = 5 * 1024 * 1024; // 5 MB
 
+    // Check for upload errors
     if ($fileInput['error'] !== UPLOAD_ERR_OK) {
         return null;
     }
 
-    if ($fileInput['size'] > $maxSize) {
+    // Validate file size
+    if ($fileInput['size'] > $maxSize || $fileInput['size'] === 0) {
         return null;
     }
 
-    // Verify MIME type from file contents, not the browser-supplied value
+    // Verify MIME type from file contents (not browser-supplied)
     $finfo    = new finfo(FILEINFO_MIME_TYPE);
     $mimeType = $finfo->file($fileInput['tmp_name']);
 
-    if (!in_array($mimeType, $allowedMime, true)) {
+    if (!isset($allowedMime[$mimeType])) {
         return null;
     }
 
-    $ext      = pathinfo($fileInput['name'], PATHINFO_EXTENSION);
-    $filename = bin2hex(random_bytes(8)) . '.' . strtolower($ext);
+    // Use whitelisted extension based on verified MIME type (not user input)
+    $safeExt  = $allowedMime[$mimeType];
+    $filename = bin2hex(random_bytes(8)) . '.' . $safeExt;
     $destDir  = ROOT_PATH . '/assets/images/uploads/';
 
+    // Create upload directory with restrictive permissions if it doesn't exist
     if (!is_dir($destDir)) {
         mkdir($destDir, 0750, true);
     }
 
+    // Move uploaded file
     if (!move_uploaded_file($fileInput['tmp_name'], $destDir . $filename)) {
         return null;
     }
