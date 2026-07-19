@@ -102,16 +102,11 @@ function verifyCsrf(): void
     }
 }
 
-// ===========================================================================
-// Flash messages
-// ===========================================================================
-
 /**
  * Stores a one-time flash message in the session.
  *
- * @param string $message  Message text.
- * @param string $type     'success' | 'error' | 'info'
- * @return void
+ * @param string $message
+ * @param string $type
  */
 function flashMessage(string $message, string $type = 'success'): void
 {
@@ -133,10 +128,6 @@ function getFlash(): ?array
     return null;
 }
 
-// ===========================================================================
-// Authentication helpers
-// ===========================================================================
-
 /**
  * Returns true if a user is currently logged in.
  *
@@ -150,8 +141,6 @@ function isLoggedIn(): bool
 /**
  * Returns the currently logged-in user's data, or null.
  *
- * Caches the result for the duration of the request.
- *
  * @return array<string, mixed>|null
  */
 function currentUser(): ?array
@@ -164,22 +153,19 @@ function currentUser(): ?array
         return $user;
     }
 
-    // CMS mode: return session-based data and ensure a shadow record exists
-    // in the forum DB for FK constraints (threads/posts).
     if (defined('CMS_ROOT')) {
         $user = [
-            'id'         => (int) $_SESSION['user_id'],
-            'username'   => $_SESSION['username'] ?? 'User',
-            'email'      => '',
-            'bio'        => '',
+            'id' => (int) $_SESSION['user_id'],
+            'username' => $_SESSION['username'] ?? 'User',
+            'email' => '',
+            'bio' => '',
             'created_at' => '',
-            'role'       => $_SESSION['role'] ?? 'user',
+            'role' => $_SESSION['role'] ?? 'user',
         ];
         _ensureForumUserRecord($user['id'], $user['username'], $user['role']);
         return $user;
     }
 
-    // Standalone mode: query the forum DB.
     $stmt = getDB()->prepare(
         "SELECT u.id, u.username, u.email, u.bio, u.created_at, r.name AS role
          FROM users u
@@ -193,9 +179,9 @@ function currentUser(): ?array
 
 /**
  * Ensures a shadow user record exists in the forum DB for FK constraints.
- * Only used in CMS mode. Silently no-ops on failure.
+ * Only used in CMS mode.
  *
- * @param int    $userId
+ * @param int $userId
  * @param string $username
  * @param string $role
  * @return void

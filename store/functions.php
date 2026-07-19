@@ -1,31 +1,9 @@
 <?php
 /**
- * File: functions.php
- * What it does: Short description of the file's purpose.
+ * store/functions.php
  *
- * @author  Snat
- * @link    https://terra.me.uk
- */
-
-/**
- * functions.php
- *
- * Global helper functions used across the portfolio store.
- * All database queries use PDO prepared statements to prevent SQL injection.
- *
- * Sections
- * --------
- *   1. mbstring compatibility shim
- *   2. String / output helpers
- *   3. Routing helpers
- *   4. Session / CSRF helpers
- *   5. Flash messages
- *   6. Cart helpers
- *   7. Product queries
- *   8. Category queries
- *   9. Order queries
- *  10. User / auth queries
- *  11. Currency helpers
+ * Global helper functions for the store module.
+ * All database queries use PDO prepared statements.
  *
  * @author  Snat
  * @link    https://terra.me.uk
@@ -33,39 +11,15 @@
 
 require_once __DIR__ . '/config.php';
 
-// ---------------------------------------------------------------------------
-// 1. mbstring compatibility shim (use CMS core polyfills)
-// ---------------------------------------------------------------------------
 if (defined('CMS_ROOT')) {
     require_once CMS_ROOT . '/core/polyfills.php';
     require_once CMS_ROOT . '/core/shared_helpers.php';
 } else {
-    // Standalone mode: load local polyfills
     require_once __DIR__ . '/../cms/core/polyfills.php';
 }
 
-// ===========================================================================
-// 2. String / output helpers
-// ===========================================================================
-
-// ===========================================================================
-// 2. String / output helpers (provided by CMS core when in CMS mode)
-// ===========================================================================
-// The following functions are now centralized in cms/core/shared_helpers.php:
-//   - e()           : HTML escaping
-//   - slugify()     : URL slug generation  
-//   - makeExcerpt() : Content excerpt generation
-//   - formatDate()  : Date formatting
-//   - redirect()    : HTTP redirect
-// These are loaded automatically when CMS_ROOT is defined.
-
-// ===========================================================================
-// 3. Routing helpers
-// ===========================================================================
-
-// ===========================================================================
-// 4. Session / CSRF helpers
-// ===========================================================================
+// The following functions are provided by CMS core when in CMS mode:
+// e(), slugify(), makeExcerpt(), formatDate(), redirect()
 
 /**
  * Generates (or reuses) a CSRF token for the current session.
@@ -93,15 +47,11 @@ function validateCsrf(string $submittedToken): bool
 }
 
 // ===========================================================================
-// 5. Flash messages
-// ===========================================================================
-
 /**
  * Stores a one-time message in the session for display on the next load.
  *
- * @param string $message  The message text.
- * @param string $type     'success' | 'error' | 'info'.
- * @return void
+ * @param string $message
+ * @param string $type
  */
 function flashMessage(string $message, string $type = 'info'): void
 {
@@ -111,7 +61,7 @@ function flashMessage(string $message, string $type = 'info'): void
 /**
  * Retrieves and clears the stored flash message.
  *
- * @return array{message: string, type: string}|null  Flash data or NULL.
+ * @return array{message: string, type: string}|null
  */
 function getFlash(): ?array
 {
@@ -122,9 +72,7 @@ function getFlash(): ?array
 }
 
 /**
- * Renders the flash message as an HTML alert div (if one exists).
- *
- * @return void
+ * Renders the flash message as an HTML alert div.
  */
 function renderFlash(): void
 {
@@ -134,13 +82,8 @@ function renderFlash(): void
     echo '<div class="alert alert--' . $type . '" role="alert">' . e($flash['message']) . '</div>';
 }
 
-// ===========================================================================
-// 6. Cart helpers  (session-based, no login required)
-// ===========================================================================
-
 /**
  * Returns the current cart from the session.
- *
  * Cart structure: [ product_id (int) => quantity (int), ... ]
  *
  * @return array<int, int>
@@ -153,11 +96,9 @@ function getCart(): array
 /**
  * Adds a product to the cart or increases its quantity.
  *
- * Validates that the requested quantity does not exceed available stock.
- *
- * @param int $productId  Product ID.
- * @param int $qty        Quantity to add (default 1).
- * @return bool  TRUE on success, FALSE if product not found or insufficient stock.
+ * @param int $productId
+ * @param int $qty
+ * @return bool
  */
 function addToCart(int $productId, int $qty = 1): bool
 {
@@ -166,9 +107,9 @@ function addToCart(int $productId, int $qty = 1): bool
     $product = getProductById($productId);
     if ($product === null || $product['status'] !== 'active') return false;
 
-    $cart    = getCart();
+    $cart = getCart();
     $current = $cart[$productId] ?? 0;
-    $newQty  = $current + $qty;
+    $newQty = $current + $qty;
 
     if ($product['stock'] >= 0 && $newQty > $product['stock']) {
         $newQty = $product['stock'];
@@ -176,19 +117,17 @@ function addToCart(int $productId, int $qty = 1): bool
 
     if ($newQty < 1) return false;
 
-    $cart[$productId]  = $newQty;
-    $_SESSION['cart']  = $cart;
+    $cart[$productId] = $newQty;
+    $_SESSION['cart'] = $cart;
     return true;
 }
 
 /**
  * Sets the quantity of a cart item directly.
- *
  * Setting qty to 0 removes the item from the cart.
  *
- * @param int $productId  Product ID.
- * @param int $qty        New quantity.
- * @return void
+ * @param int $productId
+ * @param int $qty
  */
 function updateCartItem(int $productId, int $qty): void
 {

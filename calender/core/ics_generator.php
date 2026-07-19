@@ -23,12 +23,10 @@ class IcsGenerator
     /**
      * Generates a VCALENDAR string from an array of event rows.
      *
-     * @param array<int, array<string, mixed>> $events     Rows from cal_events.
-     * @param string                           $calName    Calendar display name.
-     * @param string                           $calDesc    Calendar description.
-    * @return string  Complete .ics content.
-    * @author Snat
-    * @link https://terra.me.uk
+     * @param array<int, array<string, mixed>> $events
+     * @param string $calName
+     * @param string $calDesc
+     * @return string
      */
     public function generate(array $events, string $calName = 'Calendar', string $calDesc = ''): string
     {
@@ -94,13 +92,10 @@ class IcsGenerator
     }
 
     /**
-     * Formats a database datetime string ("YYYY-MM-DD HH:MM:SS") as an
-     * iCalendar UTC datetime ("YYYYMMDDTHHmmssZ").
+     * Formats a database datetime string as iCalendar UTC datetime.
      *
      * @param string $dt
-    * @return string
-    * @author Snat
-    * @link https://terra.me.uk
+     * @return string
      */
     private function formatDatetime(string $dt): string
     {
@@ -116,9 +111,7 @@ class IcsGenerator
      * Escapes special characters in iCalendar text values.
      *
      * @param string $text
-    * @return string
-    * @author Snat
-    * @link https://terra.me.uk
+     * @return string
      */
     private function escapeText(string $text): string
     {
@@ -130,12 +123,10 @@ class IcsGenerator
     }
 
     /**
-     * Folds a long content line per RFC 5545 §3.1 (max 75 octets).
+     * Folds a long content line per RFC 5545.
      *
      * @param string $line
-    * @return string  Line with CRLF+SPACE fold insertions.
-    * @author Snat
-    * @link https://terra.me.uk
+     * @return string
      */
     private function foldLine(string $line): string
     {

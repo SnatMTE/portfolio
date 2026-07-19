@@ -11,37 +11,20 @@
 
 require_once __DIR__ . '/config.php';
 
-// --------------------------------------------------------------------------
-// When running inside CMS, use shared helpers from CMS core
-// --------------------------------------------------------------------------
 if (defined('CMS_ROOT')) {
     require_once CMS_ROOT . '/core/polyfills.php';
     require_once CMS_ROOT . '/core/shared_helpers.php';
 } else {
-    // Standalone mode: load local polyfills and helpers
     require_once __DIR__ . '/../cms/core/polyfills.php';
 }
 
-// ===========================================================================
-// String / Output helpers
-// ===========================================================================
+// The following functions are provided by CMS core when in CMS mode:
+// e(), slugify(), makeExcerpt(), formatDate(), redirect()
 
-// ===========================================================================
-// String / Output helpers (provided by CMS core when in CMS mode)
-// ===========================================================================
-// The following functions are now centralized in cms/core/shared_helpers.php:
-//   - e()           : HTML escaping
-//   - slugify()     : URL slug generation  
-//   - makeExcerpt() : Content excerpt generation
-//   - formatDate()  : Date formatting
-//   - redirect()    : HTTP redirect
-// These are loaded automatically when CMS_ROOT is defined.
-
-// ===========================================================================
-// CSRF Protection
-// ===========================================================================
+/**
+ * Generates or reuses a CSRF token for the current session.
  *
- * @return string  A 64-character hex CSRF token.
+ * @return string
  */
 function csrfToken(): string
 {
@@ -54,12 +37,8 @@ function csrfToken(): string
 /**
  * Validates the CSRF token submitted with a POST request.
  *
- * Compares the submitted token against the session token using a
- * timing-safe comparison to prevent timing attacks.
- *
- * @param string $submittedToken  The token value from the POST form field.
- *
- * @return bool  TRUE if the token is valid, FALSE otherwise.
+ * @param string $submittedToken
+ * @return bool
  */
 function validateCsrf(string $submittedToken): bool
 {
@@ -67,20 +46,12 @@ function validateCsrf(string $submittedToken): bool
     return hash_equals($sessionToken, $submittedToken);
 }
 
-// ===========================================================================
-// Post queries
-// ===========================================================================
-
 /**
  * Retrieves a paginated list of published posts with author and category info.
  *
- * Joins posts with users and categories so each returned row contains all
- * data needed to render a post card without additional queries.
- *
- * @param int $page    Current page number (1-based).
- * @param int $perPage Number of posts per page.
- *
- * @return array<int, array<string, mixed>>  Array of post rows.
+ * @param int $page
+ * @param int $perPage
+ * @return array<int, array<string, mixed>>
  */
 function getPosts(int $page = 1, int $perPage = POSTS_PER_PAGE): array
 {
@@ -101,9 +72,9 @@ function getPosts(int $page = 1, int $perPage = POSTS_PER_PAGE): array
 }
 
 /**
- * Returns the total count of published posts (used for pagination).
+ * Returns the total count of published posts.
  *
- * @return int  Total number of published posts.
+ * @return int
  */
 function countPosts(): int
 {
@@ -111,13 +82,10 @@ function countPosts(): int
 }
 
 /**
- * Retrieves a single post by its numeric ID.
+ * Retrieves a single post by ID with author and category data.
  *
- * Includes joined author and category data. Returns NULL if not found.
- *
- * @param int $id  Post ID.
- *
- * @return array<string, mixed>|null  Post row or NULL if not found.
+ * @param int $id
+ * @return array<string, mixed>|null
  */
 function getPostById(int $id): ?array
 {
@@ -134,11 +102,10 @@ function getPostById(int $id): ?array
 }
 
 /**
- * Retrieves a single published post by its URL slug.
+ * Retrieves a single published post by URL slug.
  *
- * @param string $slug  URL slug of the post.
- *
- * @return array<string, mixed>|null  Post row or NULL if not found.
+ * @param string $slug
+ * @return array<string, mixed>|null
  */
 function getPostBySlug(string $slug): ?array
 {
@@ -155,13 +122,12 @@ function getPostBySlug(string $slug): ?array
 }
 
 /**
- * Retrieves published posts filtered by category slug with pagination.
+ * Retrieves published posts by category with pagination.
  *
- * @param string $categorySlug  The category's URL slug.
- * @param int    $page          Current page number (1-based).
- * @param int    $perPage       Posts per page.
- *
- * @return array<int, array<string, mixed>>  Array of matching post rows.
+ * @param string $categorySlug
+ * @param int $page
+ * @param int $perPage
+ * @return array<int, array<string, mixed>>
  */
 function getPostsByCategory(string $categorySlug, int $page = 1, int $perPage = POSTS_PER_PAGE): array
 {
@@ -183,11 +149,10 @@ function getPostsByCategory(string $categorySlug, int $page = 1, int $perPage = 
 }
 
 /**
- * Returns the count of published posts belonging to a given category.
+ * Returns the count of published posts in a given category.
  *
- * @param string $categorySlug  The category's URL slug.
- *
- * @return int  Total matching post count.
+ * @param string $categorySlug
+ * @return int
  */
 function countPostsByCategory(string $categorySlug): int
 {
@@ -202,13 +167,12 @@ function countPostsByCategory(string $categorySlug): int
 }
 
 /**
- * Retrieves published posts that have a given tag, with pagination.
+ * Retrieves published posts with a given tag and pagination.
  *
- * @param string $tagSlug  The tag's URL slug.
- * @param int    $page     Current page number (1-based).
- * @param int    $perPage  Posts per page.
- *
- * @return array<int, array<string, mixed>>  Array of matching post rows.
+ * @param string $tagSlug
+ * @param int $page
+ * @param int $perPage
+ * @return array<int, array<string, mixed>>
  */
 function getPostsByTag(string $tagSlug, int $page = 1, int $perPage = POSTS_PER_PAGE): array
 {
@@ -232,11 +196,10 @@ function getPostsByTag(string $tagSlug, int $page = 1, int $perPage = POSTS_PER_
 }
 
 /**
- * Returns the count of published posts associated with a given tag.
+ * Returns the count of published posts matching a tag.
  *
- * @param string $tagSlug  The tag's URL slug.
- *
- * @return int  Total matching post count.
+ * @param string $tagSlug
+ * @return int
  */
 function countPostsByTag(string $tagSlug): int
 {
@@ -254,13 +217,10 @@ function countPostsByTag(string $tagSlug): int
 /**
  * Performs a full-text search across post titles and content.
  *
- * Uses LIKE with a sanitised search term. Returns only published posts.
- *
- * @param string $query    The raw search string entered by the user.
- * @param int    $page     Current page number (1-based).
- * @param int    $perPage  Posts per page.
- *
- * @return array<int, array<string, mixed>>  Array of matching post rows.
+ * @param string $query
+ * @param int $page
+ * @param int $perPage
+ * @return array<int, array<string, mixed>>
  */
 function searchPosts(string $query, int $page = 1, int $perPage = POSTS_PER_PAGE): array
 {
@@ -287,9 +247,8 @@ function searchPosts(string $query, int $page = 1, int $perPage = POSTS_PER_PAGE
 /**
  * Returns the count of published posts matching a search query.
  *
- * @param string $query  The raw search string.
- *
- * @return int  Total matching post count.
+ * @param string $query
+ * @return int
  */
 function countSearchPosts(string $query): int
 {
@@ -306,16 +265,11 @@ function countSearchPosts(string $query): int
     return (int) $stmt->fetchColumn();
 }
 
-// ===========================================================================
-// Tag queries
-// ===========================================================================
-
 /**
  * Retrieves all tags associated with a given post.
  *
- * @param int $postId  The post's numeric ID.
- *
- * @return array<int, array<string, mixed>>  Array of tag rows (id, name, slug).
+ * @param int $postId
+ * @return array<int, array<string, mixed>>
  */
 function getTagsForPost(int $postId): array
 {
@@ -333,7 +287,7 @@ function getTagsForPost(int $postId): array
 /**
  * Retrieves all tags ordered alphabetically.
  *
- * @return array<int, array<string, mixed>>  Array of all tag rows.
+ * @return array<int, array<string, mixed>>
  */
 function getAllTags(): array
 {
@@ -343,7 +297,7 @@ function getAllTags(): array
 /**
  * Retrieves all categories ordered alphabetically.
  *
- * @return array<int, array<string, mixed>>  Array of all category rows.
+ * @return array<int, array<string, mixed>>
  */
 function getAllCategories(): array
 {
@@ -353,14 +307,8 @@ function getAllCategories(): array
 /**
  * Replaces all tag associations for a post with a new set of tag IDs.
  *
- * Deletes the existing post_tags rows for the given post then inserts
- * fresh rows for each tag ID in the supplied array.  Uses INSERT OR IGNORE
- * so any FK violations are silently discarded rather than throwing.
- *
- * @param int   $postId  The post's numeric ID.
- * @param int[] $tagIds  Array of tag IDs to associate with the post.
- *
- * @return void
+ * @param int $postId
+ * @param int[] $tagIds
  */
 function syncPostTags(int $postId, array $tagIds): void
 {
@@ -377,17 +325,12 @@ function syncPostTags(int $postId, array $tagIds): void
     }
 }
 
-// ===========================================================================
-// Pagination helpers
-// ===========================================================================
-
 /**
- * Calculates the total number of pages given a total item count and page size.
+ * Calculates the total number of pages.
  *
- * @param int $total    Total number of items.
- * @param int $perPage  Items per page.
- *
- * @return int  Total page count (minimum 1).
+ * @param int $total
+ * @param int $perPage
+ * @return int
  */
 function totalPages(int $total, int $perPage = POSTS_PER_PAGE): int
 {
@@ -395,16 +338,12 @@ function totalPages(int $total, int $perPage = POSTS_PER_PAGE): int
 }
 
 /**
- * Builds an array of pagination data for rendering page links.
+ * Builds pagination data for rendering page navigation.
  *
- * Returns the current page, total pages, and boolean flags for whether
- * previous/next pages exist.
- *
- * @param int    $currentPage  The currently displayed page.
- * @param int    $totalItems   Total items across all pages.
- * @param string $baseUrl      Base URL to prepend to page query strings.
- * @param int    $perPage      Items per page.
- *
+ * @param int $currentPage
+ * @param int $totalItems
+ * @param string $baseUrl
+ * @param int $perPage
  * @return array{current: int, total: int, hasPrev: bool, hasNext: bool, baseUrl: string}
  */
 function buildPagination(int $currentPage, int $totalItems, string $baseUrl, int $perPage = POSTS_PER_PAGE): array
@@ -419,70 +358,47 @@ function buildPagination(int $currentPage, int $totalItems, string $baseUrl, int
     ];
 }
 
-// ===========================================================================
-// File upload helpers
-// ===========================================================================
-
 /**
  * Handles a featured image upload for a blog post.
+ * Validates file type, size, and extension, then moves to assets/images/uploads/.
+ * Allowed types: JPEG, PNG, GIF, WebP. Maximum size: 5 MB.
  *
- * Validates the file type, size, and extension, generates a unique filename,
- * then moves the file to the assets/images/uploads/ directory.
- *
- * Security measures:
- *   - MIME type verification using finfo (not browser-supplied)
- *   - Whitelist of allowed extensions (not extracted from user input)
- *   - Maximum file size enforcement
- *   - Random filename generation to prevent path traversal
- *   - Restrictive directory permissions (0750)
- *
- * Allowed types: JPEG, PNG, GIF, WebP.
- * Maximum file size: 5 MB.
- *
- * @param array<string, mixed> $fileInput  A single entry from $_FILES (e.g. $_FILES['featured_image']).
- *
- * @return string|null  The stored filename on success, or NULL on failure.
+ * @param array<string, mixed> $fileInput
+ * @return string|null The stored filename on success, or null on failure.
  */
 function handleImageUpload(array $fileInput): ?string
 {
-    // Whitelist of allowed MIME types
     $allowedMime = [
         'image/jpeg' => 'jpg',
-        'image/png'  => 'png',
-        'image/gif'  => 'gif',
+        'image/png' => 'png',
+        'image/gif' => 'gif',
         'image/webp' => 'webp',
     ];
-    $maxSize = 5 * 1024 * 1024; // 5 MB
+    $maxSize = 5 * 1024 * 1024;
 
-    // Check for upload errors
     if ($fileInput['error'] !== UPLOAD_ERR_OK) {
         return null;
     }
 
-    // Validate file size
     if ($fileInput['size'] > $maxSize || $fileInput['size'] === 0) {
         return null;
     }
 
-    // Verify MIME type from file contents (not browser-supplied)
-    $finfo    = new finfo(FILEINFO_MIME_TYPE);
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
     $mimeType = $finfo->file($fileInput['tmp_name']);
 
     if (!isset($allowedMime[$mimeType])) {
         return null;
     }
 
-    // Use whitelisted extension based on verified MIME type (not user input)
-    $safeExt  = $allowedMime[$mimeType];
+    $safeExt = $allowedMime[$mimeType];
     $filename = bin2hex(random_bytes(8)) . '.' . $safeExt;
-    $destDir  = ROOT_PATH . '/assets/images/uploads/';
+    $destDir = ROOT_PATH . '/assets/images/uploads/';
 
-    // Create upload directory with restrictive permissions if it doesn't exist
     if (!is_dir($destDir)) {
         mkdir($destDir, 0750, true);
     }
 
-    // Move uploaded file
     if (!move_uploaded_file($fileInput['tmp_name'], $destDir . $filename)) {
         return null;
     }

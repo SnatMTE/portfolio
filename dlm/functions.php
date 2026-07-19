@@ -11,16 +11,11 @@
 
 require_once __DIR__ . '/config.php';
 
-// ===========================================================================
-// Output / string helpers
-// ===========================================================================
-
 /**
  * Escapes a string for safe HTML output.
  *
- * @param string $string  Raw input string.
- *
- * @return string  HTML-safe string.
+ * @param string $string
+ * @return string
  */
 function e(string $string): string
 {
@@ -30,8 +25,7 @@ function e(string $string): string
 /**
  * Redirects the browser to a URL and terminates execution.
  *
- * @param string $url  Destination URL.
- *
+ * @param string $url
  * @return never
  */
 function redirect(string $url): never
@@ -41,12 +35,11 @@ function redirect(string $url): never
 }
 
 /**
- * Formats a UTC database date string for human-readable display.
+ * Formats a UTC database date string for display.
  *
- * @param string $dateString  SQLite datetime string.
- * @param string $format      PHP date format.
- *
- * @return string  Formatted date.
+ * @param string $dateString
+ * @param string $format
+ * @return string
  */
 function formatDate(string $dateString, string $format = 'j F Y'): string
 {
@@ -57,9 +50,8 @@ function formatDate(string $dateString, string $format = 'j F Y'): string
 /**
  * Converts a byte count into a human-readable file size string.
  *
- * @param int $bytes  File size in bytes.
- *
- * @return string  e.g. "4.2 MB", "780 KB".
+ * @param int $bytes
+ * @return string
  */
 function formatFileSize(int $bytes): string
 {
@@ -75,19 +67,14 @@ function formatFileSize(int $bytes): string
     return $bytes . ' B';
 }
 
-// ===========================================================================
-// CSRF protection
-// ===========================================================================
-
 /**
- * Generates (or reuses) a CSRF token stored in the session.
+ * Generates or reuses a CSRF token stored in the session.
  *
- * @return string  64-character hex token.
+ * @return string
  */
 function csrfToken(): string
 {
     if (empty($_SESSION['csrf_token'])) {
-        // random_bytes is cryptographically secure
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
     return $_SESSION['csrf_token'];
@@ -96,11 +83,8 @@ function csrfToken(): string
 /**
  * Validates a submitted CSRF token against the session value.
  *
- * Uses hash_equals to prevent timing attacks.
- *
- * @param string $submitted  Token value from the form.
- *
- * @return bool  True when the token is valid.
+ * @param string $submitted
+ * @return bool
  */
 function validateCsrf(string $submitted): bool
 {
@@ -108,17 +92,11 @@ function validateCsrf(string $submitted): bool
     return $stored !== '' && hash_equals($stored, $submitted);
 }
 
-// ===========================================================================
-// Flash messages
-// ===========================================================================
-
 /**
  * Stores a one-time flash message in the session.
  *
- * @param string $message  Message text.
- * @param string $type     'success' | 'error' | 'info'.
- *
- * @return void
+ * @param string $message
+ * @param string $type
  */
 function flashMessage(string $message, string $type = 'success'): void
 {
@@ -128,7 +106,7 @@ function flashMessage(string $message, string $type = 'success'): void
 /**
  * Retrieves and clears the stored flash message.
  *
- * @return array{message:string,type:string}|null  Flash data or null.
+ * @return array{message:string,type:string}|null
  */
 function getFlash(): ?array
 {
@@ -142,8 +120,6 @@ function getFlash(): ?array
 
 /**
  * Renders the flash message as HTML if one is present.
- *
- * @return void
  */
 function renderFlash(): void
 {
@@ -157,16 +133,11 @@ function renderFlash(): void
     echo '<div class="alert alert--' . $type . '" role="alert">' . e($flash['message']) . '</div>';
 }
 
-// ===========================================================================
-// File type helpers
-// ===========================================================================
-
 /**
- * Returns a CSS class name used to colour-code file type icons.
+ * Returns a CSS class name for file type icons.
  *
- * @param string $mimeType  MIME type string.
- *
- * @return string  CSS modifier class, e.g. 'pdf', 'archive', 'image'.
+ * @param string $mimeType
+ * @return string
  */
 function fileTypeClass(string $mimeType): string
 {
@@ -184,9 +155,8 @@ function fileTypeClass(string $mimeType): string
 /**
  * Returns a Unicode icon character for a given MIME type.
  *
- * @param string $mimeType  MIME type string.
- *
- * @return string  Unicode icon.
+ * @param string $mimeType
+ * @return string
  */
 function fileTypeIcon(string $mimeType): string
 {
@@ -202,20 +172,15 @@ function fileTypeIcon(string $mimeType): string
     };
 }
 
-// ===========================================================================
-// Download record queries
-// ===========================================================================
-
 /**
  * Retrieves a paginated list of download records.
  *
- * @param string $visibility  'public' | 'private' | 'all'.
- * @param string $search      Optional search term (title or description).
- * @param string $category    Optional category filter.
- * @param int    $limit       Maximum rows to return.
- * @param int    $offset      Row offset for pagination.
- *
- * @return list<array<string,mixed>>  Array of download rows.
+ * @param string $visibility
+ * @param string $search
+ * @param string $category
+ * @param int $limit
+ * @param int $offset
+ * @return list<array<string,mixed>>
  */
 function getDownloads(
     string $visibility = 'public',
@@ -262,13 +227,10 @@ function getDownloads(
 /**
  * Counts download records matching the given filters.
  *
- * Mirrors getDownloads() filters so pagination totals are accurate.
- *
- * @param string $visibility  'public' | 'private' | 'all'.
- * @param string $search      Optional search term.
- * @param string $category    Optional category filter.
- *
- * @return int  Total matching rows.
+ * @param string $visibility
+ * @param string $search
+ * @param string $category
+ * @return int
  */
 function countDownloads(
     string $visibility = 'public',
@@ -311,11 +273,10 @@ function countDownloads(
  * Fetches a single download record by its ID.
  *
  * @param int $id  Download record ID.
+ *ID.
  *
- * @return array<string,mixed>|null  Row data or null when not found.
- */
-function getDownload(int $id): ?array
-{
+ * @param int $id
+ * @return array<string,mixed>|null
     $stmt = getDB()->prepare('SELECT * FROM dm_downloads WHERE id = :id LIMIT 1');
     $stmt->execute([':id' => $id]);
     $row = $stmt->fetch();
@@ -329,8 +290,6 @@ function getDownload(int $id): ?array
  *
  * @return void
  */
-function incrementDownloadCount(int $id): void
-{
     $stmt = getDB()->prepare(
         'UPDATE dm_downloads SET download_count = download_count + 1 WHERE id = :id'
     );
@@ -344,23 +303,19 @@ function incrementDownloadCount(int $id): void
  */
 function getCategories(): array
 {
+ */
+function getCategories(): array
+{
     $rows = getDB()
         ->query("SELECT DISTINCT category FROM dm_downloads WHERE category != '' ORDER BY category ASC")
         ->fetchAll(PDO::FETCH_COLUMN);
     return $rows;
 }
 
-// ===========================================================================
-// Download token helpers
-// ===========================================================================
-
 /**
  * Generates a cryptographically secure random token string.
  *
- * @return string  64-character hex token.
- */
-function generateToken(): string
-{
+ * @return string
     return bin2hex(random_bytes(32));
 }
 
@@ -370,10 +325,9 @@ function generateToken(): string
  * @param int $downloadId     ID of the download record.
  * @param int $expiresInHours Number of hours until the token expires.
  *
- * @return string  The generated token string.
- */
-function createDownloadToken(int $downloadId, int $expiresInHours = 24): string
-{
+ * @return string  The ge
+ * @param int $expiresInHours
+ * @return string
     $token     = generateToken();
     $expiresAt = gmdate('Y-m-d H:i:s', time() + ($expiresInHours * 3600));
 
@@ -394,12 +348,11 @@ function createDownloadToken(int $downloadId, int $expiresInHours = 24): string
  * Validates a download token and returns the associated download ID.
  *
  * Returns null if the token is missing, expired, or does not match
- * the given download ID. Does not consume (delete) the token.
+ * the given download ID. Does not consume rue if valid and unexpired.
  *
- * @param int    $downloadId  Expected download ID.
- * @param string $token       Token string from the query string.
- *
- * @return bool  True when the token is valid and unexpired.
+ * @param int $downloadId
+ * @param string $token
+ * @return bool
  */
 function validateDownloadToken(int $downloadId, string $token): bool
 {
@@ -417,22 +370,14 @@ function validateDownloadToken(int $downloadId, string $token): bool
     return $stmt->fetch() !== false;
 }
 
-// ===========================================================================
-// Pagination helper
-// ===========================================================================
-
 /**
  * Renders HTML pagination links.
  *
- * @param int    $total    Total number of items.
- * @param int    $perPage  Items per page.
- * @param int    $current  Current page number (1-based).
- * @param string $baseUrl  Base URL without page parameter.
- *
- * @return string  HTML pagination markup.
- */
-function renderPagination(int $total, int $perPage, int $current, string $baseUrl): string
-{
+ * @param int $total
+ * @param int $perPage
+ * @param int $current
+ * @param string $baseUrl
+ * @return string
     $pages = (int) ceil($total / $perPage);
     if ($pages <= 1) {
         return '';

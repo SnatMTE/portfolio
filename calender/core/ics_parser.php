@@ -22,14 +22,10 @@ class IcsParser
 {
     /**
      * Parses an iCalendar string and returns an array of event arrays.
+     * Each returned event has: title, description, start_datetime, end_datetime, location
      *
-     * Each returned event has the keys:
-     *   title, description, start_datetime, end_datetime, location
-     *
-     * @param string $icsContent  Raw .ics file content.
+     * @param string $icsContent
      * @return array<int, array<string, string>>
-     * @author Snat
-     * @link https://terra.me.uk
      */
     public function parse(string $icsContent): array
     {
@@ -84,13 +80,10 @@ class IcsParser
 
      /**
       * Converts a raw VEVENT property array into a normalised event array.
-      *
-      * Returns null if mandatory fields (SUMMARY or DTSTART) are missing.
+      * Returns null if mandatory fields are missing.
       *
       * @param array<string, string> $raw
       * @return array<string, string>|null
-      * @author Snat
-      * @link https://terra.me.uk
       */
     private function buildEvent(array $raw): ?array
     {
@@ -113,18 +106,11 @@ class IcsParser
     }
 
     /**
-     * Converts an iCalendar datetime string to an SQLite-compatible
-     * "YYYY-MM-DD HH:MM:SS" string.
-     *
-     * Supports formats:
-     *   - 20260415T100000Z  (UTC)
-     *   - 20260415T100000   (floating / local)
-     *   - 20260415          (all-day date)
+     * Converts an iCalendar datetime string to SQLite format (YYYY-MM-DD HH:MM:SS).
+     * Supports: 20260415T100000Z (UTC), 20260415T100000 (local), 20260415 (all-day).
      *
      * @param string $icsDate
-     * @return string  "YYYY-MM-DD HH:MM:SS"
-     * @author Snat
-     * @link https://terra.me.uk
+     * @return string
      */
     private function parseIcsDatetime(string $icsDate): string
     {

@@ -35,31 +35,22 @@ if (!extension_loaded('mbstring')) {
     }
 }
 
-// ---------------------------------------------------------------------------
-// Output / security helpers
-// ---------------------------------------------------------------------------
-
 /**
  * HTML-encodes a value for safe output.
  *
- * @param mixed $val  Value to encode.
+ * @param mixed $val
  * @return string
- * @author Snat
- * @link https://terra.me.uk
  */
 function e(mixed $val): string
 {
     return htmlspecialchars((string) $val, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
-
 /**
  * Redirects the browser and halts execution.
  *
  * @param string $url
  * @return never
- * @author Snat
- * @link https://terra.me.uk
  */
 function redirect(string $url): never
 {
@@ -68,11 +59,9 @@ function redirect(string $url): never
 }
 
 /**
- * Generates (or returns) the CSRF token stored in the session.
+ * Generates or returns the CSRF token stored in the session.
  *
- * @return string  64-char hex token.
- * @author Snat
- * @link https://terra.me.uk
+ * @return string
  */
 function csrfToken(): string
 {
@@ -87,8 +76,6 @@ function csrfToken(): string
  *
  * @param string $submitted
  * @return bool
- * @author Snat
- * @link https://terra.me.uk
  */
 function validateCsrf(string $submitted): bool
 {
@@ -96,17 +83,11 @@ function validateCsrf(string $submitted): bool
     return $token !== '' && hash_equals($token, $submitted);
 }
 
-// ---------------------------------------------------------------------------
-// Flash messages
-// ---------------------------------------------------------------------------
-
 /**
  * Stores a one-time flash message in the session.
  *
  * @param string $msg
- * @param string $type  'success' | 'error'
- * @author Snat
- * @link https://terra.me.uk
+ * @param string $type
  */
 function flashMessage(string $msg, string $type = 'success'): void
 {
@@ -117,8 +98,6 @@ function flashMessage(string $msg, string $type = 'success'): void
  * Retrieves and clears the stored flash message.
  *
  * @return array{message:string, type:string}|null
- * @author Snat
- * @link https://terra.me.uk
  */
 function getFlash(): ?array
 {
@@ -132,8 +111,6 @@ function getFlash(): ?array
 
 /**
  * Renders the flash message HTML if one is present.
- * @author Snat
- * @link https://terra.me.uk
  */
 function renderFlash(): void
 {
@@ -144,18 +121,12 @@ function renderFlash(): void
     }
 }
 
-// ---------------------------------------------------------------------------
-// Date helpers
-// ---------------------------------------------------------------------------
-
 /**
- * Formats a datetime string for human-readable display.
+ * Formats a datetime string for display.
  *
- * @param string $dt      SQLite datetime string.
- * @param string $format  PHP date() format.
+ * @param string $dt
+ * @param string $format
  * @return string
- * @author Snat
- * @link https://terra.me.uk
  */
 function formatDate(string $dt, string $format = 'j F Y'): string
 {
@@ -163,12 +134,10 @@ function formatDate(string $dt, string $format = 'j F Y'): string
 }
 
 /**
- * Formats a datetime string for a datetime-local HTML input.
+ * Formats a datetime string for a datetime-local input field.
  *
  * @param string $dt
- * @return string  e.g. "2026-04-15T10:00"
- * @author Snat
- * @link https://terra.me.uk
+ * @return string
  */
 function toInputDatetime(string $dt): string
 {
@@ -179,18 +148,12 @@ function toInputDatetime(string $dt): string
  * Formats a datetime string as a human-friendly short form.
  *
  * @param string $dt
- * @return string  e.g. "15 Apr 2026, 10:00"
- * @author Snat
- * @link https://terra.me.uk
+ * @return string
  */
 function formatDatetime(string $dt): string
 {
     return (new DateTime($dt))->format('j M Y, H:i');
 }
-
-// ---------------------------------------------------------------------------
-// Event CRUD
-// ---------------------------------------------------------------------------
 
 /**
  * Returns a paginated list of all events, ordered by start time.
@@ -198,17 +161,15 @@ function formatDatetime(string $dt): string
  * @param int $page
  * @param int $perPage
  * @return array<int, array<string, mixed>>
- * @author Snat
- * @link https://terra.me.uk
  */
 function getEvents(int $page = 1, int $perPage = EVENTS_PER_PAGE): array
 {
     $offset = ($page - 1) * $perPage;
-    $stmt   = getDB()->prepare(
+    $stmt = getDB()->prepare(
         "SELECT * FROM cal_events ORDER BY start_datetime ASC LIMIT :limit OFFSET :offset"
     );
-    $stmt->bindValue(':limit',  $perPage, PDO::PARAM_INT);
-    $stmt->bindValue(':offset', $offset,  PDO::PARAM_INT);
+    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
     $stmt->execute();
     return $stmt->fetchAll();
 }
@@ -217,8 +178,6 @@ function getEvents(int $page = 1, int $perPage = EVENTS_PER_PAGE): array
  * Returns the total number of events.
  *
  * @return int
- * @author Snat
- * @link https://terra.me.uk
  */
 function countEvents(): int
 {
@@ -230,8 +189,6 @@ function countEvents(): int
  *
  * @param int $id
  * @return array<string, mixed>|null
- * @author Snat
- * @link https://terra.me.uk
  */
 function getEvent(int $id): ?array
 {
@@ -244,18 +201,16 @@ function getEvent(int $id): ?array
 /**
  * Returns all events that start within a given calendar month.
  *
- * @param int $year   e.g. 2026
- * @param int $month  1–12
+ * @param int $year
+ * @param int $month
  * @return array<int, array<string, mixed>>
- * @author Snat
- * @link https://terra.me.uk
  */
 function getEventsByMonth(int $year, int $month): array
 {
-    $start  = sprintf('%04d-%02d-01 00:00:00', $year, $month);
-    $nextY  = $month === 12 ? $year + 1 : $year;
-    $nextM  = $month === 12 ? 1 : $month + 1;
-    $end    = sprintf('%04d-%02d-01 00:00:00', $nextY, $nextM);
+    $start = sprintf('%04d-%02d-01 00:00:00', $year, $month);
+    $nextY = $month === 12 ? $year + 1 : $year;
+    $nextM = $month === 12 ? 1 : $month + 1;
+    $end = sprintf('%04d-%02d-01 00:00:00', $nextY, $nextM);
 
     $stmt = getDB()->prepare(
         "SELECT * FROM cal_events
@@ -267,11 +222,9 @@ function getEventsByMonth(int $year, int $month): array
 }
 
 /**
- * Returns all public events ordered by start time (used for sync feed).
+ * Returns all public events ordered by start time.
  *
  * @return array<int, array<string, mixed>>
- * @author Snat
- * @link https://terra.me.uk
  */
 function getPublicEvents(): array
 {
@@ -281,11 +234,9 @@ function getPublicEvents(): array
 }
 
 /**
- * Returns all events (for admin export).
+ * Returns all events for admin export.
  *
  * @return array<int, array<string, mixed>>
- * @author Snat
- * @link https://terra.me.uk
  */
 function getAllEvents(): array
 {
@@ -295,16 +246,14 @@ function getAllEvents(): array
 }
 
 /**
- * Returns the N nearest upcoming events from now.
+ * Returns the nearest upcoming events from now.
  *
  * @param int $limit
  * @return array<int, array<string, mixed>>
- * @author Snat
- * @link https://terra.me.uk
  */
 function getUpcomingEvents(int $limit = 5): array
 {
-    $now  = date('Y-m-d H:i:s');
+    $now = date('Y-m-d H:i:s');
     $stmt = getDB()->prepare(
         "SELECT * FROM cal_events WHERE start_datetime >= :now ORDER BY start_datetime ASC LIMIT :lim"
     );
@@ -315,12 +264,10 @@ function getUpcomingEvents(int $limit = 5): array
 }
 
 /**
- * Creates a new event and returns its new ID.
+ * Creates a new event and returns its ID.
  *
  * @param array<string, mixed> $data
- * @return int  New event ID.
- * @author Snat
- * @link https://terra.me.uk
+ * @return int
  */
 function createEvent(array $data): int
 {
@@ -331,13 +278,13 @@ function createEvent(array $data): int
              (:user_id, :title, :description, :start_datetime, :end_datetime, :location, :is_public)"
     );
     $stmt->execute([
-        ':user_id'        => $data['user_id']        ?? null,
-        ':title'          => $data['title'],
-        ':description'    => $data['description']    ?? '',
+        ':user_id' => $data['user_id'] ?? null,
+        ':title' => $data['title'],
+        ':description' => $data['description'] ?? '',
         ':start_datetime' => $data['start_datetime'],
-        ':end_datetime'   => $data['end_datetime'],
-        ':location'       => $data['location']       ?? '',
-        ':is_public'      => isset($data['is_public']) ? (int) $data['is_public'] : 1,
+        ':end_datetime' => $data['end_datetime'],
+        ':location' => $data['location'] ?? '',
+        ':is_public' => isset($data['is_public']) ? (int) $data['is_public'] : 1,
     ]);
     return (int) getDB()->lastInsertId();
 }
@@ -345,32 +292,30 @@ function createEvent(array $data): int
 /**
  * Updates an existing event.
  *
- * @param int                  $id
+ * @param int $id
  * @param array<string, mixed> $data
- * @author Snat
- * @link https://terra.me.uk
  */
 function updateEvent(int $id, array $data): void
 {
     $stmt = getDB()->prepare(
         "UPDATE cal_events
-         SET title          = :title,
-             description    = :description,
+         SET title = :title,
+             description = :description,
              start_datetime = :start_datetime,
-             end_datetime   = :end_datetime,
-             location       = :location,
-             is_public      = :is_public,
-             updated_at     = datetime('now')
+             end_datetime = :end_datetime,
+             location = :location,
+             is_public = :is_public,
+             updated_at = datetime('now')
          WHERE id = :id"
     );
     $stmt->execute([
-        ':title'          => $data['title'],
-        ':description'    => $data['description']    ?? '',
+        ':title' => $data['title'],
+        ':description' => $data['description'] ?? '',
         ':start_datetime' => $data['start_datetime'],
-        ':end_datetime'   => $data['end_datetime'],
-        ':location'       => $data['location']       ?? '',
-        ':is_public'      => isset($data['is_public']) ? (int) $data['is_public'] : 1,
-        ':id'             => $id,
+        ':end_datetime' => $data['end_datetime'],
+        ':location' => $data['location'] ?? '',
+        ':is_public' => isset($data['is_public']) ? (int) $data['is_public'] : 1,
+        ':id' => $id,
     ]);
 }
 
@@ -378,8 +323,6 @@ function updateEvent(int $id, array $data): void
  * Deletes an event by ID.
  *
  * @param int $id
- * @author Snat
- * @link https://terra.me.uk
  */
 function deleteEvent(int $id): void
 {
@@ -387,23 +330,17 @@ function deleteEvent(int $id): void
     $stmt->execute([':id' => $id]);
 }
 
-// ---------------------------------------------------------------------------
-// Sync token helpers
-// ---------------------------------------------------------------------------
-
 /**
- * Creates a new sync token and returns the raw token string.
+ * Creates a new sync token and returns the token string.
  *
  * @param int|null $userId
- * @param string   $label
- * @return string  48-char hex token.
- * @author Snat
- * @link https://terra.me.uk
+ * @param string $label
+ * @return string
  */
 function createSyncToken(?int $userId, string $label = 'My Calendar'): string
 {
     $token = bin2hex(random_bytes(24));
-    $stmt  = getDB()->prepare(
+    $stmt = getDB()->prepare(
         "INSERT INTO cal_tokens (user_id, token, label) VALUES (:user_id, :token, :label)"
     );
     $stmt->execute([':user_id' => $userId, ':token' => $token, ':label' => $label]);
@@ -415,8 +352,6 @@ function createSyncToken(?int $userId, string $label = 'My Calendar'): string
  *
  * @param string $token
  * @return bool
- * @author Snat
- * @link https://terra.me.uk
  */
 function validateSyncToken(string $token): bool
 {
@@ -431,8 +366,6 @@ function validateSyncToken(string $token): bool
  * Returns all active sync tokens.
  *
  * @return array<int, array<string, mixed>>
- * @author Snat
- * @link https://terra.me.uk
  */
 function getSyncTokens(): array
 {
@@ -445,8 +378,6 @@ function getSyncTokens(): array
  * Deactivates a sync token by ID.
  *
  * @param int $id
- * @author Snat
- * @link https://terra.me.uk
  */
 function revokeSyncToken(int $id): void
 {
@@ -454,33 +385,25 @@ function revokeSyncToken(int $id): void
     $stmt->execute([':id' => $id]);
 }
 
-// ---------------------------------------------------------------------------
-// Auth helpers (standalone mode only)
-// ---------------------------------------------------------------------------
-
 /**
- * Returns the currently logged-in admin user, or null.
- * Works in both standalone (admin_id) and CMS (user_id) modes.
+ * Returns the currently logged-in user, or null.
+ * Works in both standalone and CMS modes.
  *
  * @return array<string, mixed>|null
- * @author Snat
- * @link https://terra.me.uk
  */
 function currentUser(): ?array
 {
     if (defined('CMS_ROOT')) {
-        // CMS mode: user_id set by CMS auth
         $id = (int) ($_SESSION['user_id'] ?? 0);
         if ($id === 0) return null;
         return [
-            'id'       => $id,
+            'id' => $id,
             'username' => $_SESSION['username'] ?? '',
-            'email'    => $_SESSION['email']    ?? '',
-            'role'     => $_SESSION['role']     ?? 'user',
+            'email' => $_SESSION['email'] ?? '',
+            'role' => $_SESSION['role'] ?? 'user',
         ];
     }
 
-    // Standalone mode
     $id = (int) ($_SESSION['admin_id'] ?? 0);
     if ($id === 0) return null;
 
@@ -494,8 +417,6 @@ function currentUser(): ?array
  * Returns true when an admin session is active.
  *
  * @return bool
- * @author Snat
- * @link https://terra.me.uk
  */
 function isLoggedIn(): bool
 {
