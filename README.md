@@ -11,15 +11,16 @@ PDO + SQLite and hand-written CSS.
 - **cms** — shared authentication, roles and a module loader
 - **calendar** — month grid, event management, ICS import/export and sync feeds
 - **dlm** — download manager with secure file delivery
+- **crm** — customers, companies, leads, tasks and internal messaging
 
-### dlm
+### crm
 
-A small file distribution module.
+A small customer relationship management module.
 
-- Public listing with search and category filters
-- Files streamed through PHP, never linked directly
-- MIME validation on upload and token-based download links
-- Admin area for uploading, editing and deleting files
+- Customers and companies with full CRUD and CSV export
+- Lead pipeline with stage tracking
+- Tasks, notes, internal messages and an activity log
+- JSON endpoints for autocomplete and dashboard stats
 
 ## Running locally
 
@@ -30,6 +31,7 @@ cd store    && php -S localhost:8002
 cd cms      && php -S localhost:8003
 cd calendar && php -S localhost:8004
 cd dlm      && php -S localhost:8005
+cd crm      && php -S localhost:8006
 ```
 
 Each project still runs standalone, and each one can be dropped inside the CMS
