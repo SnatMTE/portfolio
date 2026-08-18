@@ -85,7 +85,7 @@ function csrfToken(): string
 function validateCsrf(string $submitted): bool
 {
     $token = $_SESSION['cal_csrf'] ?? '';
-    return $token !== '' && $token === $submitted;
+    return $token !== '' && hash_equals($token, $submitted);
 }
 
 // ---------------------------------------------------------------------------

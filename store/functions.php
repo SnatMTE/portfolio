@@ -180,7 +180,7 @@ function csrfToken(): string
 function validateCsrf(string $submittedToken): bool
 {
     $sessionToken = $_SESSION['csrf_token'] ?? '';
-    return $sessionToken !== '' && $sessionToken === $submittedToken;
+    return $sessionToken !== '' && hash_equals($sessionToken, $submittedToken);
 }
 
 // ===========================================================================
