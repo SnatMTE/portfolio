@@ -216,6 +216,15 @@ if (!file_exists($_dmStorageIndex)) {
 unset($_dmStorageIndex);
 
 // ---------------------------------------------------------------------------
-// Bootstrap the schema
+// Bootstrap schema and optional demo data
 // ---------------------------------------------------------------------------
 require_once DM_ROOT . '/db/schema.php';
+
+if ((isset($_GET['demo']) && $_GET['demo'] === '1') || file_exists(DM_ROOT . '/DEMO')) {
+    if (file_exists(DM_ROOT . '/db/demo_seed.php')) {
+        require_once DM_ROOT . '/db/demo_seed.php';
+        if (function_exists('seedDemoDownloads')) {
+            seedDemoDownloads(getDB());
+        }
+    }
+}

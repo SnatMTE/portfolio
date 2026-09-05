@@ -162,6 +162,8 @@ function getDB(): PDO
     static $pdo = null;
 
     if ($pdo === null) {
+        $isDemo = (isset($_GET['demo']) && $_GET['demo'] === '1') || file_exists(ROOT_PATH . '/DEMO');
+
         // Ensure the db/ directory exists before SQLite tries to create the file
         $dbDir = dirname(DB_FILE);
         if (!is_dir($dbDir)) {
@@ -189,3 +191,13 @@ function getDB(): PDO
 // Initialise schema on first run
 // ---------------------------------------------------------------------------
 require_once ROOT_PATH . '/db/schema.php';
+
+// Seed demo data when requested via ?demo=1 or by creating a local DEMO file.
+if ((isset($_GET['demo']) && $_GET['demo'] === '1') || file_exists(ROOT_PATH . '/DEMO')) {
+    if (file_exists(ROOT_PATH . '/db/demo_seed.php')) {
+        require_once ROOT_PATH . '/db/demo_seed.php';
+        if (function_exists('seedDemoBlog')) {
+            seedDemoBlog(getDB());
+        }
+    }
+}

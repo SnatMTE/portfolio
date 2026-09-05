@@ -180,5 +180,15 @@ function getDB(): PDO
 
     require_once ROOT_PATH . '/db/schema.php';
     initCalendarSchema($pdo);
+
+    // Seed demo data when requested
+    $isDemo = (isset($_GET['demo']) && $_GET['demo'] === '1') || file_exists(ROOT_PATH . '/DEMO');
+    if ($isDemo && file_exists(ROOT_PATH . '/db/demo_seed.php')) {
+        require_once ROOT_PATH . '/db/demo_seed.php';
+        if (function_exists('seedDemoCalendar')) {
+            seedDemoCalendar($pdo);
+        }
+    }
+
     return $pdo;
 }
