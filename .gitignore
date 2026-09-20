@@ -1,1 +1,4 @@
 */db/*.sqlite
+.github/
+docs/
+blog/db/pretty_url_cache.json
